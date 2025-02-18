@@ -1,0 +1,30 @@
+services:
+    backend:
+        build: ./backend
+        ports:
+            - "8000:8000"
+        env_file:
+            - backend/.env
+        depends_on:
+            - db
+
+    frontend:
+        build: ./frontend
+        ports:
+            - "5173:5173"
+        depends_on:
+            - backend
+
+    db:
+        image: mysql:8
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: 123456
+            MYSQL_DATABASE: homestay_web
+        ports:
+            - "3306:3306"
+        volumes:
+            - db_data:/var/lib/mysql
+
+volumes:
+    db_data:
