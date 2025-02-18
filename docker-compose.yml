@@ -1,6 +1,8 @@
 services:
     backend:
         build: ./backend
+        volumes:
+            - ./backend:/app
         ports:
             - "8000:8000"
         env_file:
@@ -10,6 +12,8 @@ services:
 
     frontend:
         build: ./frontend
+        volumes:
+            - ./frontend:/app
         ports:
             - "5173:5173"
         depends_on:
