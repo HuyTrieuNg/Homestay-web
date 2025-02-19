@@ -45,26 +45,20 @@ DB_PASSWORD=123456
 DB_NAME=homestay_web
 ```
 
-## 4. Chạy với Docker
+## 4. Chạy MySQL với Docker
 
 1. Quay lại thư mục gốc của project:
     ```sh
     cd ..
     ```
 2. Xây dựng và chạy container:
+
     ```sh
     docker-compose up -d --build
     ```
-3. Truy cập ứng dụng:
-    - Backend API: http://localhost:8000
-    - Frontend: http://localhost:5173
 
-## 5. Dừng Docker Container
+3. Dừng Docker Container
 
 ```sh
 docker-compose down
 ```
-
-## 5. Ghi chú
-
--   Nếu có chạy MySQL Server trên cổng 3306 thì đổi sang cổng khác để tránh xung đột.
