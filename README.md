@@ -33,7 +33,19 @@ cd Homestay-web
     npm install
     ```
 
-## 3. Chạy với Docker
+## 3. Thiết lập Biến Môi Trường
+
+Tạo file `.env` trong thư mục `backend/` với nội dung như sau:
+
+```sh
+DB_HOST=db
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=123456
+DB_NAME=homestay_web
+```
+
+## 4. Chạy với Docker
 
 1. Quay lại thư mục gốc của project:
     ```sh
@@ -47,7 +59,7 @@ cd Homestay-web
     - Backend API: http://localhost:8000
     - Frontend: http://localhost:5173
 
-## 4. Dừng Docker Container
+## 5. Dừng Docker Container
 
 ```sh
 docker-compose down
