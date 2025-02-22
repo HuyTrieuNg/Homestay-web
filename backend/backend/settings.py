@@ -32,17 +32,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-# Khi nào setup jwt thì bỏ comment phần này
-# REST_FRAMEWORK = {
-#     "DEFAULT_AUTHENTICATION_CLASSES": {
-#         "rest_framework_simplejwt.authentication.JWTAuthentication",
-#         'rest_framework.authentication.SessionAuthentication',
-#         'rest_framework.authentication.BasicAuthentication',
-#     },
-#     "DEFAULT_PERMISSION_CLASSES": {
-#         "rest_framework.permissions.IsAuthenticated",
-#     }
-# }
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ]
+}
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
