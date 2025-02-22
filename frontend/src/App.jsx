@@ -1,14 +1,13 @@
-import HomestayList from "./components/HomestayList";
-import CategoryFilter from "./components/CategoryFilter";
-import SearchBar from "./components/SearchBar";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
 
 function App() {
     return (
-        <>
-            <SearchBar />
-            <CategoryFilter />
-            <HomestayList />
-        </>
+        <Router>
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+            </Routes>
+        </Router>
     );
 }
 

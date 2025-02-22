@@ -1,5 +1,15 @@
-function NotFound() {
-    return <div>Not Found</div>;
+import HomestayList from "../components/HomestayList";
+import CategoryFilter from "../components/CategoryFilter";
+import SearchBar from "../components/SearchBar";
+
+function HomePage() {
+    return (
+        <>
+            <SearchBar />
+            <CategoryFilter />
+            <HomestayList />
+        </>
+    );
 }
 
-export default NotFound;
+export default HomePage;
