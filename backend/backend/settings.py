@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'users',
+    'homestays',
 ]
 
 AUTH_USER_MODEL = 'users.User'
