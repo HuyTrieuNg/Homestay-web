@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'users',
     'homestays',
+    'host',
 ]
 
 AUTH_USER_MODEL = 'users.User'

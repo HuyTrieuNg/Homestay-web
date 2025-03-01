@@ -1,5 +1,5 @@
 from django.db import models
-
+from users.models import User
 class Province(models.Model):
     name = models.CharField(max_length=255)
 
@@ -28,7 +28,8 @@ class Ward(models.Model):
         return self.name
 
 class Homestay(models.Model):
-    host_id = models.IntegerField()
+    # host_id = models.IntegerField()
+    host = models.ForeignKey(User, on_delete=models.CASCADE, related_name="homestays")  # Liên kết với User
     name = models.CharField(max_length=255)
     description = models.TextField()
     type = models.CharField(max_length=50)
