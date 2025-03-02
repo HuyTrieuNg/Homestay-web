@@ -29,7 +29,7 @@ class Ward(models.Model):
 
 class Homestay(models.Model):
     # host_id = models.IntegerField()
-    host = models.ForeignKey(User, on_delete=models.CASCADE, related_name="homestays")  # Liên kết với User
+    host = models.ForeignKey(User, on_delete=models.CASCADE, related_name="homestays", default=1)  # Liên kết với User
     name = models.CharField(max_length=255)
     description = models.TextField()
     type = models.CharField(max_length=50)
