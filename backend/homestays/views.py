@@ -1,16 +1,23 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.generics import RetrieveAPIView
 from .models import Homestay, PropertyType, Amenity
-from .serializers import HomestaySerializer, PropertitypeSerializer, AmenitySerializer
+from .serializers import HomestaySerializer, HomestayListSerializer, PropertitypeSerializer, AmenitySerializer
 
 class HomestayListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
         homestays = Homestay.objects.all()
-        serializer = HomestaySerializer(homestays, many=True, context={'request': self.request})
+        serializer = HomestayListSerializer(homestays, many=True, context={'request': self.request})
         return Response(serializer.data)
+    
+class HomestayDetailView(RetrieveAPIView):
+    permission_classes = [AllowAny]
+    
+    queryset = Homestay.objects.all()
+    serializer_class = HomestaySerializer
 
 class PropertyTypeListView(APIView):
     permission_classes = [AllowAny]

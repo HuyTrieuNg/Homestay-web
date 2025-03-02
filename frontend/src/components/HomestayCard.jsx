@@ -1,10 +1,16 @@
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 const HomestayCard = ({ homestay }) => {
+    const navigate = useNavigate();
     const imageUrl = homestay.images.length > 0 ? homestay.images[0] : "";
 
+    const handleClick = () => {
+        navigate(`/homestays/${homestay.id}`);
+    };
+
     return (
-        <div className="homestay-card">
+        <div className="homestay-card" onClick={handleClick}>
             {imageUrl && (
                 <img
                     src={imageUrl}
@@ -25,6 +31,7 @@ const HomestayCard = ({ homestay }) => {
 
 HomestayCard.propTypes = {
     homestay: PropTypes.shape({
+        id: PropTypes.number.isRequired,
         name: PropTypes.string.isRequired,
         images: PropTypes.string.isRequired,
         base_price: PropTypes.string.isRequired,
