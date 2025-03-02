@@ -8,10 +8,12 @@ const HomestayList = () => {
     useEffect(() => {
         axiosInstance
             .get("homestays")
-            .then((response) => setHomestays(response.data))
-            .catch((error) =>
-                console.error("Error fetching homestays:", error)
-            );
+            .then((response) => {
+                setHomestays(response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching homestays:", error);
+            });
     }, []);
 
     return (
