@@ -1,9 +1,21 @@
 import PropTypes from "prop-types";
 
 const HomestayCard = ({ homestay }) => {
+    const imageUrl = homestay.images.length > 0 ? homestay.images[0] : "";
+
     return (
         <div className="homestay-card">
-            {/* <img src={homestay.images.split(",")[0]} alt={homestay.name} /> */}
+            {imageUrl && (
+                <img
+                    src={imageUrl}
+                    alt={homestay.name}
+                    style={{
+                        width: "100%",
+                        height: "200px",
+                        objectFit: "cover",
+                    }}
+                />
+            )}
             <h3>{homestay.name}</h3>
             <p>📍 {homestay.address}</p>
             <p>💰 {homestay.base_price} / night</p>

@@ -9,7 +9,7 @@ class HomestayListView(APIView):
 
     def get(self, request):
         homestays = Homestay.objects.all()
-        serializer = HomestaySerializer(homestays, many=True)
+        serializer = HomestaySerializer(homestays, many=True, context={'request': self.request})
         return Response(serializer.data)
 
 class PropertyTypeListView(APIView):

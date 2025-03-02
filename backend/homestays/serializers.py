@@ -9,6 +9,9 @@ class HomestaySerializer(serializers.ModelSerializer):
         fields = ["id", "name", "base_price", "address", "images"]
 
     def get_images(self, obj):
+        request = self.context.get("request")
+        if request:
+            return [request.build_absolute_uri(img.image.url) for img in obj.images.all()]
         return [img.image.url for img in obj.images.all()]
 
         
