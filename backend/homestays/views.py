@@ -15,7 +15,6 @@ class HomestayListView(APIView):
     
 class HomestayDetailView(RetrieveAPIView):
     permission_classes = [AllowAny]
-    
     queryset = Homestay.objects.all()
     serializer_class = HomestaySerializer
 
