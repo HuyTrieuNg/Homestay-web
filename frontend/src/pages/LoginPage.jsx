@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
-import AuthContext from '../context/AuthContext';
+import { useContext } from "react";
+import { Link } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
 import "../assets/styles.css";
 
 function LoginPage() {
@@ -31,12 +31,16 @@ function LoginPage() {
             <input type="password" id="password" name="password" required />
           </div>
 
-          <button type="submit" className="auth-button">Login</button>
+          <button type="submit" className="auth-button">
+            Login
+          </button>
         </form>
 
         <div className="auth-links">
           <Link to="/forgot-password">Forgot password?</Link>
-          <p>Don't have an account? <Link to="/register">Register Now</Link></p>
+          <p>
+            Don&apos;t have an account? <Link to="/register">Register Now</Link>
+          </p>
         </div>
       </div>
     </div>

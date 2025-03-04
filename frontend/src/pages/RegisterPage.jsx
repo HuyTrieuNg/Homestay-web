@@ -1,13 +1,13 @@
-import { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import AuthContext from '../context/AuthContext';
-import '../assets/styles.css';
+import { useState, useContext } from "react";
+import { Link } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
+import "../assets/styles.css";
 
 function RegisterPage() {
-  const [phone, setPhone] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [password2, setPassword2] = useState('');
+  const [phone, setPhone] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
 
   const { registerUser } = useContext(AuthContext);
 
@@ -66,11 +66,15 @@ function RegisterPage() {
             />
           </div>
 
-          <button type="submit" className="auth-button">Register</button>
+          <button type="submit" className="auth-button">
+            Register
+          </button>
         </form>
 
         <div className="auth-links">
-          <p>Already have an account? <Link to="/login">Login Now</Link></p>
+          <p>
+            Already have an account? <Link to="/login">Login Now</Link>
+          </p>
         </div>
       </div>
     </div>

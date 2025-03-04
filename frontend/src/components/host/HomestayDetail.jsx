@@ -1,8 +1,8 @@
-
-import React, { useEffect, useState } from "react";
-import axiosInstance from "../../axiosConfig";
+import { useEffect, useState } from "react";
+import useAxios from "../../utils/useAxios";
 
 function HomestayDetail({ id }) {
+  const axiosInstance = useAxios();
   const [homestay, setHomestay] = useState(null);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ function HomestayDetail({ id }) {
       })
       .then((res) => setHomestay(res.data))
       .catch((err) => console.error("Error fetching homestay detail:", err));
-  }, [id]);
+  }, [axiosInstance, id]);
 
   if (!homestay) {
     return <div className="text-center py-10">Loading...</div>;
@@ -22,17 +22,33 @@ function HomestayDetail({ id }) {
   return (
     <div className="p-4 bg-white rounded-md shadow-md">
       <h1 className="text-3xl font-bold mb-4">{homestay.name}</h1>
-      <p><strong>Description:</strong> {homestay.description}</p>
-      <p><strong>Type:</strong> {homestay.type}</p>
-      <p><strong>Base Price:</strong> {homestay.base_price}</p>
-      <p><strong>Address:</strong> {homestay.address}</p>
+      <p>
+        <strong>Description:</strong> {homestay.description}
+      </p>
+      <p>
+        <strong>Type:</strong> {homestay.type}
+      </p>
+      <p>
+        <strong>Base Price:</strong> {homestay.base_price}
+      </p>
+      <p>
+        <strong>Address:</strong> {homestay.address}
+      </p>
       <p>
         <strong>Coordinates:</strong> {homestay.longitude}, {homestay.latitude}
       </p>
-      <p><strong>Max Guests:</strong> {homestay.max_guests}</p>
-      <p><strong>Commune:</strong> {homestay.commune}</p>
-      <p><strong>District:</strong> {homestay.district}</p>
-      <p><strong>Province:</strong> {homestay.province}</p>
+      <p>
+        <strong>Max Guests:</strong> {homestay.max_guests}
+      </p>
+      <p>
+        <strong>Commune:</strong> {homestay.commune}
+      </p>
+      <p>
+        <strong>District:</strong> {homestay.district}
+      </p>
+      <p>
+        <strong>Province:</strong> {homestay.province}
+      </p>
 
       {homestay.images && homestay.images.length > 0 && (
         <div className="mt-6">

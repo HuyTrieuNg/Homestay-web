@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -11,9 +11,9 @@ function EditHomestay() {
 
   useEffect(() => {
     fetchHomestay();
-  }, []);
+  }, [fetchHomestay]);
 
-  const fetchHomestay = async () => {
+  const fetchHomestay = useCallback(async () => {
     try {
       const token = localStorage.getItem("access_token");
       const response = await axios.get(`${API_URL}${id}/`, {
@@ -23,7 +23,7 @@ function EditHomestay() {
     } catch (error) {
       console.error("Lỗi khi lấy homestay:", error);
     }
-  };
+  }, [id]);
 
   const handleUpdateHomestay = async () => {
     try {

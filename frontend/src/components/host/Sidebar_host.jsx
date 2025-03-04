@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import axiosInstance from "../../axiosConfig";
+import { useEffect, useState } from "react";
+import useAxios from "../../utils/useAxios";
 
 function LeftSidebar({ onSelectHomestay }) {
+  const axiosInstance = useAxios();
   const [homestays, setHomestays] = useState([]);
   const [collapsed, setCollapsed] = useState(false);
 
@@ -17,7 +18,7 @@ function LeftSidebar({ onSelectHomestay }) {
           console.error("Error fetching homestays in sidebar:", err)
         );
     }
-  }, []);
+  }, [axiosInstance]);
 
   return (
     <div

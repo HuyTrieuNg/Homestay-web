@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../axiosConfig";
+import useAxios from "../utils/useAxios";
 
 const HOMESTAY_API_URL = "host/homestays/";
 const TYPES_API_URL = "homestay-types/";
@@ -10,6 +10,7 @@ const COMMUNES_API_URL = "communes/";
 const AMENITIES_API_URL = "amenities/";
 
 function HomestayForm() {
+  const axiosInstance = useAxios();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -39,60 +40,69 @@ function HomestayForm() {
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
 
-  // Kiểm tra đăng nhập
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (!token) {
-      navigate("/login");
-    }
-  }, [navigate]);
-
   // Load dữ liệu selection từ server
   useEffect(() => {
-    const config = { headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` } };
-    axiosInstance.get(TYPES_API_URL, config)
-      .then(res => setTypes(res.data))
-      .catch(err => console.error("Error fetching types:", err));
-    axiosInstance.get(PROVINCES_API_URL, config)
-      .then(res => setProvinces(res.data))
-      .catch(err => console.error("Error fetching provinces:", err));
-    axiosInstance.get(AMENITIES_API_URL, config)
-      .then(res => setAmenities(res.data))
-      .catch(err => console.error("Error fetching amenities:", err));
-  }, []);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("authTokens")}`,
+      },
+    };
+    axiosInstance
+      .get(TYPES_API_URL, config)
+      .then((res) => setTypes(res.data))
+      .catch((err) => console.error("Error fetching types:", err));
+    axiosInstance
+      .get(PROVINCES_API_URL, config)
+      .then((res) => setProvinces(res.data))
+      .catch((err) => console.error("Error fetching provinces:", err));
+    axiosInstance
+      .get(AMENITIES_API_URL, config)
+      .then((res) => setAmenities(res.data))
+      .catch((err) => console.error("Error fetching amenities:", err));
+  }, [axiosInstance]);
 
   // Khi chọn province, load danh sách district
   useEffect(() => {
     if (!selectedProvince) return;
-    const config = { headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` } };
-    axiosInstance.get(`${DISTRICTS_API_URL}?province_id=${selectedProvince}`, config)
-      .then(res => setDistricts(res.data))
-      .catch(err => console.error("Error fetching districts:", err));
-  }, [selectedProvince]);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      },
+    };
+    axiosInstance
+      .get(`${DISTRICTS_API_URL}?province_id=${selectedProvince}`, config)
+      .then((res) => setDistricts(res.data))
+      .catch((err) => console.error("Error fetching districts:", err));
+  }, [axiosInstance, selectedProvince]);
 
   // Khi chọn district, load danh sách commune
   useEffect(() => {
     if (!selectedDistrict) return;
-    const config = { headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` } };
-    axiosInstance.get(`${COMMUNES_API_URL}?district_id=${selectedDistrict}`, config)
-      .then(res => setCommunes(res.data))
-      .catch(err => console.error("Error fetching communes:", err));
-  }, [selectedDistrict]);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      },
+    };
+    axiosInstance
+      .get(`${COMMUNES_API_URL}?district_id=${selectedDistrict}`, config)
+      .then((res) => setCommunes(res.data))
+      .catch((err) => console.error("Error fetching communes:", err));
+  }, [axiosInstance, selectedDistrict]);
 
   // Cập nhật preview mỗi khi imageFiles thay đổi
   useEffect(() => {
-    const previews = imageFiles.map(file => URL.createObjectURL(file));
+    const previews = imageFiles.map((file) => URL.createObjectURL(file));
     setImagePreviews(previews);
     // Clean-up: revoke object URLs khi component unmount hoặc files thay đổi
     return () => {
-      previews.forEach(url => URL.revokeObjectURL(url));
+      previews.forEach((url) => URL.revokeObjectURL(url));
     };
   }, [imageFiles]);
 
   // Xử lý thay đổi input (cho các trường text và file)
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   // Xử lý thay đổi file input (cho phép chọn nhiều file)
@@ -104,7 +114,7 @@ function HomestayForm() {
       alert("Chỉ được chọn tối đa 15 ảnh");
       return;
     }
-    setImageFiles(prev => [...prev, ...files]);
+    setImageFiles((prev) => [...prev, ...files]);
   };
 
   // Cho phép kéo thả file ảnh
@@ -116,7 +126,7 @@ function HomestayForm() {
       alert("Chỉ được chọn tối đa 15 ảnh");
       return;
     }
-    setImageFiles(prev => [...prev, ...files]);
+    setImageFiles((prev) => [...prev, ...files]);
   };
 
   const handleDragOver = (e) => {
@@ -125,7 +135,7 @@ function HomestayForm() {
 
   // Loại bỏ ảnh khỏi danh sách khi bấm nút xóa
   const handleRemoveImage = (index) => {
-    setImageFiles(prev => prev.filter((_, i) => i !== index));
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   // Xử lý chọn amenity (multi-select toggle)
@@ -133,11 +143,11 @@ function HomestayForm() {
     let selectedAmenities = [...formData.amenities];
     const idStr = String(amenityId);
     if (selectedAmenities.includes(idStr)) {
-      selectedAmenities = selectedAmenities.filter(id => id !== idStr);
+      selectedAmenities = selectedAmenities.filter((id) => id !== idStr);
     } else {
       selectedAmenities.push(idStr);
     }
-    setFormData(prev => ({ ...prev, amenities: selectedAmenities }));
+    setFormData((prev) => ({ ...prev, amenities: selectedAmenities }));
   };
 
   // Xử lý thay đổi dropdown cho địa chỉ
@@ -149,11 +159,11 @@ function HomestayForm() {
 
   const handleDistrictChange = (e) => {
     setSelectedDistrict(e.target.value);
-    setFormData(prev => ({ ...prev, commune: "" }));
+    setFormData((prev) => ({ ...prev, commune: "" }));
   };
 
   const handleCommuneChange = (e) => {
-    setFormData(prev => ({ ...prev, commune: e.target.value }));
+    setFormData((prev) => ({ ...prev, commune: e.target.value }));
   };
 
   // const handleSubmit = async (e) => {
@@ -187,7 +197,7 @@ function HomestayForm() {
       // Append các trường thông thường
       Object.keys(formData).forEach((key) => {
         if (key === "amenities") {
-          // Lặp qua mảng amenities và append từng giá trị. 
+          // Lặp qua mảng amenities và append từng giá trị.
           //Không lặp thì bị lỗi vì không nhận diện được là list
           formData[key].forEach((item) => {
             payload.append("amenities", item);
@@ -204,7 +214,9 @@ function HomestayForm() {
         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         "Content-Type": "multipart/form-data",
       };
-      const response = await axiosInstance.post(HOMESTAY_API_URL, payload, { headers });
+      const response = await axiosInstance.post(HOMESTAY_API_URL, payload, {
+        headers,
+      });
       console.log("Homestay created:", response.data);
       navigate("/host");
     } catch (error) {
@@ -212,7 +224,6 @@ function HomestayForm() {
     }
   };
 
-  
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-md mt-10">
       <h1 className="text-2xl font-bold mb-6 text-center">Thêm Homestay Mới</h1>
@@ -251,7 +262,7 @@ function HomestayForm() {
             className="w-full mt-1 p-2 border border-gray-300 rounded-md"
           >
             <option value="">Chọn loại</option>
-            {types.map(option => (
+            {types.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -260,7 +271,9 @@ function HomestayForm() {
         </div>
         {/* Hình ảnh */}
         <div>
-          <label className="block text-gray-700 mb-1">Hình ảnh (tối đa 15 ảnh):</label>
+          <label className="block text-gray-700 mb-1">
+            Hình ảnh (tối đa 15 ảnh):
+          </label>
           <input
             type="file"
             name="images"
@@ -281,7 +294,11 @@ function HomestayForm() {
             <div className="grid grid-cols-5 gap-2 mt-4">
               {imagePreviews.map((src, index) => (
                 <div key={index} className="relative">
-                  <img src={src} alt={`Preview ${index}`} className="w-full h-24 object-cover rounded-md" />
+                  <img
+                    src={src}
+                    alt={`Preview ${index}`}
+                    className="w-full h-24 object-cover rounded-md"
+                  />
                   <button
                     type="button"
                     onClick={() => handleRemoveImage(index)}
@@ -367,7 +384,7 @@ function HomestayForm() {
               className="w-full mt-1 p-2 border border-gray-300 rounded-md"
             >
               <option value="">Chọn tỉnh</option>
-              {provinces.map(p => (
+              {provinces.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
                 </option>
@@ -383,7 +400,7 @@ function HomestayForm() {
               disabled={!selectedProvince}
             >
               <option value="">Chọn huyện</option>
-              {districts.map(d => (
+              {districts.map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.name}
                 </option>
@@ -400,7 +417,7 @@ function HomestayForm() {
               disabled={!selectedDistrict}
             >
               <option value="">Chọn xã</option>
-              {communes.map(c => (
+              {communes.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
@@ -412,7 +429,7 @@ function HomestayForm() {
         <div>
           <label className="block text-gray-700 mb-1">Amenities:</label>
           <div className="grid grid-cols-5 gap-2">
-            {amenities.map(a => {
+            {amenities.map((a) => {
               const isSelected = formData.amenities.includes(String(a.id));
               return (
                 <button
@@ -420,7 +437,11 @@ function HomestayForm() {
                   key={a.id}
                   onClick={() => handleAmenityToggle(a.id)}
                   className={`px-3 py-1 rounded-md border transition-colors 
-                    ${isSelected ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700 border-gray-300"}`}
+                    ${
+                      isSelected
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-white text-gray-700 border-gray-300"
+                    }`}
                 >
                   {a.name}
                 </button>

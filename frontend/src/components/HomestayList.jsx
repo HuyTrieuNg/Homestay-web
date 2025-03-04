@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import axiosInstance from "../axiosConfig";
+import useAxios from "../utils/useAxios";
 import HomestayCard from "./HomestayCard";
 
 const HomestayList = () => {
+  const axiosInstance = useAxios();
   const [homestays, setHomestays] = useState([]);
 
   useEffect(() => {
@@ -14,7 +15,7 @@ const HomestayList = () => {
       .catch((error) => {
         console.error("Error fetching homestays:", error);
       });
-  }, []);
+  }, [axiosInstance]);
 
   return (
     <div>

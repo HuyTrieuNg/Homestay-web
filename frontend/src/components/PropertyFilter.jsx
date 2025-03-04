@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import axiosInstance from "../axiosConfig"; // Adjust the import path as necessary
+import useAxios from "../utils/useAxios";
 
 const PropertyFilter = () => {
+  const axiosInstance = useAxios();
   const [propertyTypes, setPropertyTypes] = useState([]);
 
   useEffect(() => {
@@ -20,7 +21,7 @@ const PropertyFilter = () => {
         console.error("Error fetching property types:", error);
         setPropertyTypes([]);
       });
-  }, []);
+  }, [axiosInstance]);
 
   return (
     <div className="">
