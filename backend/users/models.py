@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_save
 
 class User(AbstractUser):
     phone = models.CharField(max_length=10, blank=False, null=False)
@@ -10,6 +11,9 @@ class User(AbstractUser):
     ]
     type = models.CharField(max_length=10, choices=USE_TYPE_CHOICES, default='guest')
     status = models.BooleanField(default=True)
+    
+    def profile(self):
+        profile = Profile.objects.get(user=self)
 
     def __str__(self):
         return self.name
@@ -25,3 +29,12 @@ class Profile(models.Model):
     def __str__(self):
         return f"Profile of {self.user.username}"
 
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
+
+post_save.connect(create_user_profile, sender=User)
+post_save.connect(save_user_profile, sender=User)
