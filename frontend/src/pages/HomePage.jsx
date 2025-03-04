@@ -1,15 +1,15 @@
 import HomestayList from "../components/HomestayList";
-import CategoryFilter from "../components/CategoryFilter";
+import PropertyFilter from "../components/PropertyFilter";
 import SearchBar from "../components/SearchBar";
 
 function HomePage() {
-    return (
-        <>
-            <SearchBar />
-            <CategoryFilter />
-            <HomestayList />
-        </>
-    );
+  return (
+    <>
+      <SearchBar />
+      <PropertyFilter />
+      <HomestayList />
+    </>
+  );
 }
 
 export default HomePage;
