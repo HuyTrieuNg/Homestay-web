@@ -9,7 +9,6 @@ class Province(models.Model):
 class District(models.Model):
     name = models.CharField(max_length=255)
     province = models.ForeignKey(Province, on_delete=models.CASCADE, default=1)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="districts")
 
     def __str__(self):
         return self.name
@@ -43,8 +42,7 @@ class Amenity(models.Model):
 
     def __str__(self):
         return self.name
-
-
+    
 class Homestay(models.Model):
     HOMESTAY_TYPES = [
         ("villa", "Villa"),
@@ -54,7 +52,7 @@ class Homestay(models.Model):
         ("homestay", "Homestay"),
     ]
     # host_id = models.IntegerField()
-    host = models.ForeignKey(User, on_delete=models.CASCADE, related_name="homestays", default=1)  # Liên kết với User
+    host = models.ForeignKey(User, on_delete=models.CASCADE, related_name="homestays", default=1)
     name = models.CharField(max_length=255)
     description = models.TextField()
     type = models.CharField(max_length=50, choices=HOMESTAY_TYPES, default="homestay")
@@ -80,10 +78,6 @@ class Homestay(models.Model):
     @property
     def province(self):
         return self.commune.district.province
-
-class Amenity(models.Model):
-    name = models.CharField(max_length=255)
-    icon = models.CharField(max_length=255)
 
 class HomestayImage(models.Model):
     homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE, related_name="images")

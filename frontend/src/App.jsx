@@ -15,12 +15,23 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route
+            path="/homestays/:id"
+            element={<h1>Homestay Detail Page</h1>}
+          />
           {/* Sử dụng LoginPage cho route "/login" theo nhánh login-register-feature */}
           <Route path="/login" element={<LoginPage />} />
           {/* Thêm route cho LoginTemp nếu cần */}
           <Route path="/login-temp" element={<LoginTemp />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <ProfilePage />
+              </PrivateRoute>
+            }
+          />
           <Route path="/host" element={<HostDashboard />} />
           <Route path="/host/newHomestay" element={<HomestayForm />} />
         </Routes>
