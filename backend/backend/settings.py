@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from datetime import timedelta
 from pathlib import Path
+from datetime import timedelta
 import os
 from dotenv import load_dotenv
 
@@ -30,23 +31,7 @@ SECRET_KEY = 'django-insecure-v&mwg9-33yi35tpr_pru80usl_7&3jjy84)lk4z-3z7sos!%xo
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
-# Application definition
-
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'corsheaders',
-    'rest_framework',
-    'rest_framework_simplejwt.token_blacklist',
-    'users'
-]
+ALLOWED_HOSTS = ["*"]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -81,7 +66,22 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
-# CORS_ALLOWED_ORIGINS = True
+# Application definition
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'corsheaders',
+    'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
+    'users',
+    'homestays',
+    'host',
+]
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -127,11 +127,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mysql.connector.django',
-        'NAME': os.getenv('DB_NAME', 'homestay_web'),
+        'NAME': os.getenv('DB_NAME'),
         'USER': os.getenv('DB_USER', 'root'),
-        'PASSWORD': os.getenv('DB_PASSWORD', '123456'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': '3308',
+        'PORT': os.getenv('DB_PORT', '3308'),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         }
@@ -175,7 +175,22 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Media files
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWS_CREDENTIALS = True
+
+
+
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Đảm bảo backend mặc định được dùng
+]

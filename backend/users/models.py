@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 
-# Create your models here.
 class User(AbstractUser):
     phone = models.CharField(max_length=10, blank=False, null=False)
     name = models.CharField(max_length=50)
@@ -12,7 +11,7 @@ class User(AbstractUser):
     ]
     type = models.CharField(max_length=10, choices=USE_TYPE_CHOICES, default='guest')
     status = models.BooleanField(default=True)
-
+    
     def profile(self):
         profile = Profile.objects.get(user=self)
 

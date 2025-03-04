@@ -1,9 +1,15 @@
-const HomePage = () =>{
-    console.log("HomePage is rendering...")
-    return (
-        <div>
-            <p>HomePage!</p>
-        </div>
-    )
+import HomestayList from "../components/HomestayList";
+import PropertyFilter from "../components/PropertyFilter";
+import SearchBar from "../components/SearchBar";
+
+function HomePage() {
+  return (
+    <>
+      <SearchBar />
+      <PropertyFilter />
+      <HomestayList />
+    </>
+  );
 }
-export default HomePage
+
+export default HomePage;
