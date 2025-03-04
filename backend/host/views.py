@@ -1,91 +1,26 @@
 from rest_framework import generics, permissions
-from homestays.models import Homestay
+from homestays.models import Homestay, HomestayImage
 from .serializers import HomestaySerializer
-
 class HomestayListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = HomestaySerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Chỉ trả về các Homestay của host đang đăng nhập
         return Homestay.objects.filter(host=self.request.user)
 
     def perform_create(self, serializer):
-        # Tự động gán host là user hiện tại
-        serializer.save(host=self.request.user)
+        homestay = serializer.save(host=self.request.user)
+        # Xử lý upload nhiều ảnh: Lấy danh sách file từ key "images"
+        images = self.request.FILES.getlist("images")
+        for image in images:
+            HomestayImage.objects.create(homestay=homestay, image=image)
 
 class HomestayRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = HomestaySerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Chỉ cho phép host truy cập các Homestay của mình
         return Homestay.objects.filter(host=self.request.user)
-
-
-# from django.shortcuts import render
-
-# from rest_framework.views import APIView
-# from rest_framework.permissions import IsAuthenticated, AllowAny
-# from rest_framework.response import Response
-# from rest_framework import status
-# from homestays.models import Homestay, HomestayAvailability
-# from rest_framework import generics
-# from .serializers import *
-
-# from .permissions import IsHost
-# class HomestayListCreateView(APIView):
-#     permission_classes = [IsAuthenticated, IsHost]
-
-#     def get(self, request):
-#         # Lấy danh sách homestay của host đang đăng nhập
-#         homestays = Homestay.objects.filter(host=request.user)
-#         serializer = HomestaySerializer(homestays, many=True)
-#         return Response(serializer.data)
-
-#     def post(self, request):
-#         # Khi tạo mới, gán host là user đang đăng nhập
-#         serializer = HomestaySerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save(host=request.user)
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# class HomestayDetailView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def get_object(self, pk, user):
-#         try:
-#             # Chỉ cho phép host của homestay truy cập
-#             return Homestay.objects.get(pk=pk, host=user)
-#         except Homestay.DoesNotExist:
-#             return None
-
-#     def get(self, request, pk):
-#         homestay = self.get_object(pk, request.user)
-#         if not homestay:
-#             return Response({"error": "Homestay not found"}, status=status.HTTP_404_NOT_FOUND)
-#         serializer = HomestaySerializer(homestay)
-#         return Response(serializer.data)
-
-#     def put(self, request, pk):
-#         homestay = self.get_object(pk, request.user)
-#         if not homestay:
-#             return Response({"error": "Homestay not found"}, status=status.HTTP_404_NOT_FOUND)
-#         serializer = HomestaySerializer(homestay, data=request.data, partial=True)
-#         if serializer.is_valid():
-#             serializer.save()  # Trong update, nếu có amenities, chúng ta xử lý như ở serializer.update()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#     def delete(self, request, pk):
-#         homestay = self.get_object(pk, request.user)
-#         if not homestay:
-#             return Response({"error": "Homestay not found"}, status=status.HTTP_404_NOT_FOUND)
-#         homestay.delete()
-#         return Response({"message": "Deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-
-
 
 # class AvailabilityListCreateView(generics.ListCreateAPIView):
 #     serializer_class = HomestayAvailabilitySerializer

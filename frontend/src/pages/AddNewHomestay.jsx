@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../axiosConfig"; // Cập nhật đường dẫn nếu cần
+import axiosInstance from "../axiosConfig";
 
-const HOMESTAY_API_URL = "host/homestays/"; // Vì baseURL đã được cấu hình trong axiosInstance
-
+const HOMESTAY_API_URL = "host/homestays/";
 const TYPES_API_URL = "homestay-types/";
 const PROVINCES_API_URL = "provinces/";
 const DISTRICTS_API_URL = "districts/";
@@ -20,12 +19,14 @@ function HomestayForm() {
     address: "",
     longitude: "",
     latitude: "",
-    geometry: "",
     max_guests: "",
-    commune: "", // Lưu id của xã được chọn
-    amenities: [], // Lưu danh sách ID của amenity được chọn
+    commune: "", // ID của xã được chọn
+    amenities: [], // Danh sách ID amenity được chọn
   });
-  const [imageFile, setImageFile] = useState(null);
+  // Sử dụng state để lưu danh sách file ảnh đã chọn
+  const [imageFiles, setImageFiles] = useState([]);
+  // Preview URLs cho các file ảnh
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   // Data cho các selection
   const [types, setTypes] = useState([]);
@@ -49,18 +50,12 @@ function HomestayForm() {
   // Load dữ liệu selection từ server
   useEffect(() => {
     const config = { headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` } };
-
-    // Lấy danh sách types
     axiosInstance.get(TYPES_API_URL, config)
       .then(res => setTypes(res.data))
       .catch(err => console.error("Error fetching types:", err));
-
-    // Lấy danh sách provinces
     axiosInstance.get(PROVINCES_API_URL, config)
       .then(res => setProvinces(res.data))
       .catch(err => console.error("Error fetching provinces:", err));
-
-    // Lấy danh sách amenities
     axiosInstance.get(AMENITIES_API_URL, config)
       .then(res => setAmenities(res.data))
       .catch(err => console.error("Error fetching amenities:", err));
@@ -84,67 +79,131 @@ function HomestayForm() {
       .catch(err => console.error("Error fetching communes:", err));
   }, [selectedDistrict]);
 
+  // Cập nhật preview mỗi khi imageFiles thay đổi
+  useEffect(() => {
+    const previews = imageFiles.map(file => URL.createObjectURL(file));
+    setImagePreviews(previews);
+    // Clean-up: revoke object URLs khi component unmount hoặc files thay đổi
+    return () => {
+      previews.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [imageFiles]);
+
+  // Xử lý thay đổi input (cho các trường text và file)
   const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
-    if (type === "file") {
-      setImageFile(files[0]);
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Xử lý thay đổi file input (cho phép chọn nhiều file)
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    // Giới hạn tối đa 15 ảnh
+    const totalFiles = imageFiles.length + files.length;
+    if (totalFiles > 15) {
+      alert("Chỉ được chọn tối đa 15 ảnh");
+      return;
+    }
+    setImageFiles(prev => [...prev, ...files]);
+  };
+
+  // Cho phép kéo thả file ảnh
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files);
+    const totalFiles = imageFiles.length + files.length;
+    if (totalFiles > 15) {
+      alert("Chỉ được chọn tối đa 15 ảnh");
+      return;
+    }
+    setImageFiles(prev => [...prev, ...files]);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  // Loại bỏ ảnh khỏi danh sách khi bấm nút xóa
+  const handleRemoveImage = (index) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Xử lý chọn amenity (multi-select toggle)
+  const handleAmenityToggle = (amenityId) => {
+    let selectedAmenities = [...formData.amenities];
+    const idStr = String(amenityId);
+    if (selectedAmenities.includes(idStr)) {
+      selectedAmenities = selectedAmenities.filter(id => id !== idStr);
     } else {
-      setFormData({ ...formData, [name]: value });
+      selectedAmenities.push(idStr);
     }
+    setFormData(prev => ({ ...prev, amenities: selectedAmenities }));
   };
 
-  // Xử lý chọn amenity (multi-select)
-  const handleAmenitiesChange = (e) => {
-    const options = e.target.options;
-    const selected = [];
-    for (let i = 0; i < options.length; i++) {
-      if (options[i].selected) {
-        selected.push(options[i].value);
-      }
-    }
-    setFormData({ ...formData, amenities: selected });
-  };
-
-  // Xử lý thay đổi dropdown cho address
+  // Xử lý thay đổi dropdown cho địa chỉ
   const handleProvinceChange = (e) => {
     setSelectedProvince(e.target.value);
     setSelectedDistrict("");
-    setCommunes([]); // Reset communes
+    setCommunes([]);
   };
 
   const handleDistrictChange = (e) => {
     setSelectedDistrict(e.target.value);
-    setFormData({ ...formData, commune: "" });
+    setFormData(prev => ({ ...prev, commune: "" }));
   };
 
   const handleCommuneChange = (e) => {
-    setFormData({ ...formData, commune: e.target.value });
+    setFormData(prev => ({ ...prev, commune: e.target.value }));
   };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     let payload = new FormData();
+  //     // Append các trường của formData
+  //     Object.keys(formData).forEach(key => {
+  //       payload.append(key, formData[key]);
+  //     });
+  //     // Append từng file ảnh (sử dụng key "images" nhiều lần)
+  //     imageFiles.forEach(file => {
+  //       payload.append("images", file);
+  //     });
+  //     const headers = {
+  //       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+  //       "Content-Type": "multipart/form-data"
+  //     };
+  //     const response = await axiosInstance.post(HOMESTAY_API_URL, payload, { headers });
+  //     console.log("Homestay created:", response.data);
+  //     navigate("/host");
+  //   } catch (error) {
+  //     console.error("Error creating homestay:", error.response?.data || error);
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      let payload;
-      let headers = {
+      let payload = new FormData();
+      // Append các trường thông thường
+      Object.keys(formData).forEach((key) => {
+        if (key === "amenities") {
+          // Lặp qua mảng amenities và append từng giá trị. 
+          //Không lặp thì bị lỗi vì không nhận diện được là list
+          formData[key].forEach((item) => {
+            payload.append("amenities", item);
+          });
+        } else {
+          payload.append(key, formData[key]);
+        }
+      });
+      // Append từng file ảnh từ imageFiles
+      imageFiles.forEach((file) => {
+        payload.append("images", file);
+      });
+      const headers = {
         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        "Content-Type": "multipart/form-data",
       };
-
-      if (imageFile) {
-        payload = new FormData();
-        Object.keys(formData).forEach((key) => {
-          if (key === "amenities") {
-            payload.append(key, JSON.stringify(formData[key]));
-          } else {
-            payload.append(key, formData[key]);
-          }
-        });
-        payload.append("images", imageFile);
-        headers["Content-Type"] = "multipart/form-data";
-      } else {
-        payload = formData;
-        headers["Content-Type"] = "application/json";
-      }
-
       const response = await axiosInstance.post(HOMESTAY_API_URL, payload, { headers });
       console.log("Homestay created:", response.data);
       navigate("/host");
@@ -153,22 +212,7 @@ function HomestayForm() {
     }
   };
 
-  //Hàm bắt thao tác chọn
-  const handleAmenityToggle = (amenityId) => {
-    let selectedAmenities = [...formData.amenities];
-    // Chuyển về string nếu cần (vì dữ liệu có thể lưu dưới dạng string từ input)
-    const idStr = String(amenityId);
-    if (selectedAmenities.includes(idStr)) {
-      // Nếu đã chọn, bỏ đi
-      selectedAmenities = selectedAmenities.filter((id) => id !== idStr);
-    } else {
-      // Nếu chưa chọn, thêm vào danh sách
-      selectedAmenities.push(idStr);
-    }
-    setFormData({ ...formData, amenities: selectedAmenities });
-  };
   
-
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-md mt-10">
       <h1 className="text-2xl font-bold mb-6 text-center">Thêm Homestay Mới</h1>
@@ -207,7 +251,7 @@ function HomestayForm() {
             className="w-full mt-1 p-2 border border-gray-300 rounded-md"
           >
             <option value="">Chọn loại</option>
-            {types.map((option) => (
+            {types.map(option => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -216,13 +260,39 @@ function HomestayForm() {
         </div>
         {/* Hình ảnh */}
         <div>
-          <label className="block text-gray-700">Hình ảnh:</label>
+          <label className="block text-gray-700 mb-1">Hình ảnh (tối đa 15 ảnh):</label>
           <input
             type="file"
             name="images"
-            onChange={handleChange}
+            multiple
+            onChange={handleFileChange}
             className="w-full mt-1"
           />
+          {/* Khu vực kéo thả */}
+          <div
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            className="mt-2 p-4 border-dashed border-2 border-gray-300 rounded-md text-center text-gray-600"
+          >
+            Kéo thả ảnh vào đây
+          </div>
+          {/* Hiển thị preview ảnh */}
+          {imagePreviews.length > 0 && (
+            <div className="grid grid-cols-5 gap-2 mt-4">
+              {imagePreviews.map((src, index) => (
+                <div key={index} className="relative">
+                  <img src={src} alt={`Preview ${index}`} className="w-full h-24 object-cover rounded-md" />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(index)}
+                    className="absolute top-1 right-1 bg-red-600 text-white text-xs p-1 rounded-full"
+                  >
+                    X
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         {/* Giá cơ bản */}
         <div>
@@ -275,17 +345,6 @@ function HomestayForm() {
             />
           </div>
         </div>
-        {/* Geometry */}
-        <div>
-          <label className="block text-gray-700">Geometry:</label>
-          <input
-            type="text"
-            name="geometry"
-            value={formData.geometry}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-          />
-        </div>
         {/* Số khách tối đa */}
         <div>
           <label className="block text-gray-700">Số khách tối đa:</label>
@@ -308,7 +367,7 @@ function HomestayForm() {
               className="w-full mt-1 p-2 border border-gray-300 rounded-md"
             >
               <option value="">Chọn tỉnh</option>
-              {provinces.map((p) => (
+              {provinces.map(p => (
                 <option key={p.id} value={p.id}>
                   {p.name}
                 </option>
@@ -324,7 +383,7 @@ function HomestayForm() {
               disabled={!selectedProvince}
             >
               <option value="">Chọn huyện</option>
-              {districts.map((d) => (
+              {districts.map(d => (
                 <option key={d.id} value={d.id}>
                   {d.name}
                 </option>
@@ -341,7 +400,7 @@ function HomestayForm() {
               disabled={!selectedDistrict}
             >
               <option value="">Chọn xã</option>
-              {communes.map((c) => (
+              {communes.map(c => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
@@ -349,12 +408,11 @@ function HomestayForm() {
             </select>
           </div>
         </div>
-        {/* Amenities selection (multi-select) */}
-        
+        {/* Amenities selection (custom multi-select bằng buttons, 5 ảnh trên 1 hàng) */}
         <div>
           <label className="block text-gray-700 mb-1">Amenities:</label>
           <div className="grid grid-cols-5 gap-2">
-            {amenities.map((a) => {
+            {amenities.map(a => {
               const isSelected = formData.amenities.includes(String(a.id));
               return (
                 <button
@@ -370,10 +428,6 @@ function HomestayForm() {
             })}
           </div>
         </div>
-
-
-        {/* Amenities selection (custom multi-select bằng buttons) */}
-
         <button
           type="submit"
           className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"

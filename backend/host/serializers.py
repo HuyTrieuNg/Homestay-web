@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from homestays.models import Homestay, Amenity, HomestayAmenity
-from .common_serializers import AmenitySerializer
+from .common_serializers import AmenitySerializer, HomestayImageSerializer
 
 
 class HomestaySerializer(serializers.ModelSerializer):
@@ -15,6 +15,8 @@ class HomestaySerializer(serializers.ModelSerializer):
     # Tính district và province từ commune (read-only)
     district = serializers.SerializerMethodField(read_only=True)
     province = serializers.SerializerMethodField(read_only=True)
+    # Lấy các ảnh
+    images = HomestayImageSerializer(many=True, read_only=True)
     
     class Meta:
         model = Homestay
@@ -24,19 +26,19 @@ class HomestaySerializer(serializers.ModelSerializer):
             "name",
             "description",
             "type",
-            "images",
             "base_price",
             "address",
             "longitude",
             "latitude",
-            "commune",     # Chọn xã (dropdown)
+            "commune",
             "max_guests",
-            "amenities",         # Nhận danh sách ID amenity khi tạo/cập nhật
-            "amenity_details",   # Trả về chi tiết amenity đã chọn
-            "district",          # Tính từ commune
-            "province",          # Tính từ commune
+            "amenities",
+            "amenity_details",
+            "district",
+            "province",
+            "images",
         ]
-        read_only_fields = ["id", "host", "amenity_details", "district", "province"]
+        read_only_fields = ["id", "host", "amenity_details", "district", "province", "images"]
 
     def get_amenity_details(self, obj):
         # Lấy các tiện ích thông qua quan hệ HomestayAmenity
@@ -57,6 +59,7 @@ class HomestaySerializer(serializers.ModelSerializer):
         for amenity in amenities:
             HomestayAmenity.objects.create(homestay=homestay, amenity=amenity)
         return homestay
+    
 
     def update(self, instance, validated_data):
         amenities = validated_data.pop("amenities", None)

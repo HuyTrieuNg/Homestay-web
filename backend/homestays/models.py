@@ -38,7 +38,6 @@ class Homestay(models.Model):
     description = models.TextField()
     # type = models.CharField(max_length=50)
     type = models.CharField(max_length=50, choices=HOMESTAY_TYPES, default="homestay")
-    images = models.ImageField()
     base_price = models.DecimalField(max_digits=10, decimal_places=2)
     address = models.CharField(max_length=255)
     longitude = models.FloatField()
@@ -70,6 +69,13 @@ class HomestayAmenity(models.Model):
 
     class Meta:
         unique_together = ('homestay', 'amenity')
+
+class HomestayImage(models.Model):
+    homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="homestays/images")
+
+    def __str__(self):
+        return f"Image for {self.homestay.name}"
 
 class HomestayAvailability(models.Model):
     homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE)
