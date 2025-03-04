@@ -1,5 +1,5 @@
 # images of homestays
-homestays/static/homestays/images/
+backend/media/homestays/images/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
