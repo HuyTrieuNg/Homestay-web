@@ -17,7 +17,14 @@ const HomestayList = () => {
   }, []);
 
   return (
-    <div>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gap: "16px",
+        margin: "16px",
+      }}
+    >
       {homestays.length > 0 ? (
         homestays.map((homestay) => (
           <HomestayCard key={homestay.id} homestay={homestay} />

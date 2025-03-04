@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from homestays.models import Province, City, District, Ward, Homestay, PropertyType, HomestayImage
+from homestays.models import Province, City, District, Ward, Homestay, PropertyType, HomestayImage, Amenity
 
 class Command(BaseCommand):
     help = "Seed initial homestay data"
@@ -8,6 +8,10 @@ class Command(BaseCommand):
         HomestayImage.objects.all().delete()
         Homestay.objects.all().delete()
         PropertyType.objects.all().delete()
+        Province.objects.all().delete()
+        City.objects.all().delete()
+        District.objects.all().delete()
+        Ward.objects.all().delete()
 
         property_types = ["House", "Apartment", "Guesthouse", "Hotel"]
         for name in property_types:
@@ -33,7 +37,8 @@ class Command(BaseCommand):
                 "latitude": 21.033,
                 "geometry": None,
                 "max_guests": 4,
-                "images": ["homestay.avif"]
+                "images": ["homestay.avif"],
+                "amenities": ["Wifi", "TV", "Air conditioning"]
             },
             {
                 "host_id": 2,
@@ -46,23 +51,25 @@ class Command(BaseCommand):
                 "latitude": 21.035,
                 "geometry": None,
                 "max_guests": 5,
-                "images": ["homestay.avif"]
+                "images": ["homestay.avif"],
+                "amenities": ["Heating", "Kitchen", "Washing machine"]
             },
-    {
-                "host_id": 3,
+            {
+                "host_id": 2,
                 "name": "A-Frame Garden Grove Hideaway",
                 "description": "A beautiful and modern homestay in the city center.",
-                "type": "Apartment",
+                "type": "Guesthouse",
                 "base_price": 100.00,
                 "address": "124 Kim Ma, Ba Dinh, Hanoi",
                 "longitude": 105.824,
                 "latitude": 21.033,
                 "geometry": None,
                 "max_guests": 4,
-                "images": ["homestay.avif"]
+                "images": ["homestay.avif"],
+                "amenities": ["Dryer", "Free parking", "Wifi"]
             },
             {
-                "host_id": 2,
+                "host_id": 4,
                 "name": "Casita Isabella Tiny House on wheels",
                 "description": "A cozy place to stay with family.",
                 "type": "House",
@@ -72,23 +79,25 @@ class Command(BaseCommand):
                 "latitude": 21.035,
                 "geometry": None,
                 "max_guests": 6,
-                "images": ["homestay.avif"]
+                "images": ["homestay.avif"],
+                "amenities": ["TV", "Air conditioning", "Heating"]
             },
-    {
-                "host_id": 4,
-                "name": "Nordic A villa , private pool",
+            {
+                "host_id": 5,
+                "name": "Nordic A villa, private pool",
                 "description": "A beautiful and modern homestay in the city center.",
-                "type": "Apartment",
+                "type": "Hotel",
                 "base_price": 100.00,
                 "address": "223 Kim Ma, Ba Dinh, Hanoi",
                 "longitude": 105.824,
                 "latitude": 21.033,
                 "geometry": None,
                 "max_guests": 4,
-                "images": ["homestay.avif"]
-            },
+                "images": ["homestay.avif"],
+                "amenities": ["Kitchen", "Washing machine", "Dryer"]
+            },  
             {
-                "host_id": 5,
+                "host_id": 3,
                 "name": "Casauary Tiny House",
                 "description": "A cozy place to stay with family.",
                 "type": "House",
@@ -98,7 +107,8 @@ class Command(BaseCommand):
                 "latitude": 21.035,
                 "geometry": None,
                 "max_guests": 2,
-                "images": ["homestay.avif"]
+                "images": ["homestay.avif"],
+                "amenities": ["TV", "Air conditioning", "Heating"]
             },  
         ]
 
@@ -119,6 +129,10 @@ class Command(BaseCommand):
                 city=city,
                 province=province,
             )
+            
+            amenities_names = data["amenities"]  
+            amenities = [Amenity.objects.get_or_create(name=name)[0] for name in amenities_names]
+            homestay.amenities.set(amenities)
 
             for image in data["images"]:
                 HomestayImage.objects.create(homestay=homestay, image=f"homestays/{image}")

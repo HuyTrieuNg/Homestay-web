@@ -68,9 +68,16 @@ class Homestay(models.Model):
     def __str__(self):
         return self.name
     
+# class HomestayImageType(models.Model):
+#     name = models.CharField(max_length=50, unique=True)
+    
+#     def __str__(self):
+#         return self.name
+    
 class HomestayImage(models.Model):
     homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE, related_name="images")
     image = models.ImageField(upload_to="homestays/")
+    # type = models.ForeignKey(HomestayImageType, on_delete=models.SET_NULL, null=True, related_name="images")
 
     def __str__(self):
         return f"Image for {self.homestay.name}"

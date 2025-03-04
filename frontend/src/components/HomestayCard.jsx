@@ -10,7 +10,16 @@ const HomestayCard = ({ homestay }) => {
   };
 
   return (
-    <div className="homestay-card" onClick={handleClick}>
+    <div
+      className="homestay-card"
+      style={{
+        cursor: "pointer",
+        border: "1px solid #ddd",
+        padding: "16px",
+        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+      }}
+      onClick={handleClick}
+    >
       {imageUrl && (
         <img
           src={imageUrl}

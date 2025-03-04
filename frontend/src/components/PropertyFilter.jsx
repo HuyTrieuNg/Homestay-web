@@ -23,10 +23,22 @@ const PropertyFilter = () => {
   }, []);
 
   return (
-    <div className="">
+    <div
+      className=""
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        gap: "8px",
+        marginTop: "20px",
+      }}
+    >
       {propertyTypes.length > 0 ? (
         propertyTypes.map((property) => (
-          <button key={property.id} className="category-button">
+          <button
+            key={property.id}
+            className="category-button"
+            style={{ cursor: "pointer", padding: "8px" }}
+          >
             {property.name}
           </button>
         ))
