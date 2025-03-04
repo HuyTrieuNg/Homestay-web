@@ -6,47 +6,56 @@ class Province(models.Model):
     def __str__(self):
         return self.name
 
-class City(models.Model):
-    name = models.CharField(max_length=255)
-    province = models.ForeignKey(Province, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.name
 
 class District(models.Model):
     name = models.CharField(max_length=255)
-    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    province = models.ForeignKey(Province, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return self.name
 
-class Ward(models.Model):
+
+class Commune(models.Model):
     name = models.CharField(max_length=255)
-    district = models.ForeignKey(District, on_delete=models.CASCADE)
+    district = models.ForeignKey(District, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return self.name
+
 
 class Homestay(models.Model):
+    HOMESTAY_TYPES = [
+        ("villa", "Villa"),
+        ("apartment", "Căn hộ"),
+        ("hotel", "Khách sạn"),
+        ("resort", "Resort"),
+        ("homestay", "Homestay"),
+    ]
     # host_id = models.IntegerField()
     host = models.ForeignKey(User, on_delete=models.CASCADE, related_name="homestays", default=1)  # Liên kết với User
     name = models.CharField(max_length=255)
     description = models.TextField()
-    type = models.CharField(max_length=50)
+    # type = models.CharField(max_length=50)
+    type = models.CharField(max_length=50, choices=HOMESTAY_TYPES, default="homestay")
     images = models.ImageField()
     base_price = models.DecimalField(max_digits=10, decimal_places=2)
     address = models.CharField(max_length=255)
     longitude = models.FloatField()
     latitude = models.FloatField()
-    geometry = models.TextField(null=True, blank=True)
-    ward = models.ForeignKey(Ward, on_delete=models.SET_NULL, null=True)
-    district = models.ForeignKey(District, on_delete=models.SET_NULL, null=True)
-    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
-    province = models.ForeignKey(Province, on_delete=models.SET_NULL, null=True)
+    commune = models.ForeignKey(Commune, on_delete=models.SET_NULL, null=True)
     max_guests = models.IntegerField()
 
     def __str__(self):
         return self.name
+    
+    @property
+    def district(self):
+        return self.commune.district
+
+    @property
+    def province(self):
+        return self.commune.district.province
 
 class Amenity(models.Model):
     name = models.CharField(max_length=255)
