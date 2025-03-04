@@ -21,8 +21,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include('host.common_urls')),
     path('api/homestays/', include('homestays.urls')),
-]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('api/host/', include('host.urls')),
+    path('api/users/', include('users.urls')),
+    
+] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT) 

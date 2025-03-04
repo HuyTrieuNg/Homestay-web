@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'users',
     'homestays',
+    'host',
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -162,3 +163,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
+
+
+
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Đảm bảo backend mặc định được dùng
+]
