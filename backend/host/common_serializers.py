@@ -19,7 +19,8 @@ class CommuneSerializer(serializers.ModelSerializer):
 class AmenitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Amenity
-        fields = ['id', 'name', 'icon']
+        # fields = ['id', 'name', 'icon']
+        fields = ['id', 'name']
 
 class HomestayImageSerializer(serializers.ModelSerializer):
     class Meta:
