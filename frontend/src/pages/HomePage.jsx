@@ -1,6 +1,6 @@
-import HomestayList from "../components/HomestayList";
-import PropertyFilter from "../components/PropertyFilter";
-import SearchBar from "../components/SearchBar";
+import HomestayList from "@components/HomestayList";
+import PropertyFilter from "@components/PropertyFilter";
+import SearchBar from "@components/SearchBar";
 
 function HomePage() {
   return (

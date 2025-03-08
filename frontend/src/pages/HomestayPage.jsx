@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import useAxios from "../utils/useAxios";
+import axiosInstance from "@utils/axiosInstance";
 // import AmenityList from "../components/AmenityList";
 
 function HomestayPage() {
-  const axiosInstance = useAxios();
   const { id } = useParams();
   const [homestay, setHomestay] = useState();
 
@@ -20,7 +19,7 @@ function HomestayPage() {
           console.error("Error fetching homestay details:", error);
         });
     }
-  }, [axiosInstance, id]);
+  }, [id]);
 
   if (!homestay) {
     return <p>Loading...</p>;

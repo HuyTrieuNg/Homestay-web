@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-import AuthContext from "../context/AuthContext";
-import "../assets/styles.css";
+import AuthContext from "@context/AuthContext";
+import "@assets/styles.css";
 
 function LoginPage() {
   const { loginUser } = useContext(AuthContext);
