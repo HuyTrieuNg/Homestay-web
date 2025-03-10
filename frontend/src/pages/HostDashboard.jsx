@@ -1,7 +1,7 @@
 // src/pages/Dashboard.jsx
 import { useState } from "react";
-import LeftSidebar from "../components/host/Sidebar_host";
-import HomestayDetail from "../components/host/HomestayDetail";
+import LeftSidebar from "@components/host/Sidebar_host";
+ import HomestayDetail from "@components/host/HomestayDetail";
 
 function Dashboard() {
   const [selectedHomestayId, setSelectedHomestayId] = useState(null);

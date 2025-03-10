@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import useAxios from "../utils/useAxios";
+import axiosInstance from "@utils/axiosInstance";
 
 const HOMESTAY_API_URL = "host/homestays/";
 const TYPES_API_URL = "homestay-types/";
@@ -10,7 +10,6 @@ const COMMUNES_API_URL = "communes/";
 const AMENITIES_API_URL = "amenities/";
 
 function HomestayForm() {
-  const axiosInstance = useAxios();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -59,7 +58,7 @@ function HomestayForm() {
       .get(AMENITIES_API_URL, config)
       .then((res) => setAmenities(res.data))
       .catch((err) => console.error("Error fetching amenities:", err));
-  }, [axiosInstance]);
+  }, []);
 
   // Khi chọn province, load danh sách district
   useEffect(() => {
@@ -73,7 +72,7 @@ function HomestayForm() {
       .get(`${DISTRICTS_API_URL}?province_id=${selectedProvince}`, config)
       .then((res) => setDistricts(res.data))
       .catch((err) => console.error("Error fetching districts:", err));
-  }, [axiosInstance, selectedProvince]);
+  }, [selectedProvince]);
 
   // Khi chọn district, load danh sách commune
   useEffect(() => {
@@ -87,7 +86,7 @@ function HomestayForm() {
       .get(`${COMMUNES_API_URL}?district_id=${selectedDistrict}`, config)
       .then((res) => setCommunes(res.data))
       .catch((err) => console.error("Error fetching communes:", err));
-  }, [axiosInstance, selectedDistrict]);
+  }, [selectedDistrict]);
 
   // Cập nhật preview mỗi khi imageFiles thay đổi
   useEffect(() => {

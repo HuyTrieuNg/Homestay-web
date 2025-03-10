@@ -13,4 +13,5 @@ urlpatterns = [
     path('test/', views.testEndPoint, name='test'),
     path('', views.getRoutes),
     # path('login/', LoginView.as_view(), name='login'),
+    path('profile/', views.UserProfileView.as_view(), name='user-profile')
 ]

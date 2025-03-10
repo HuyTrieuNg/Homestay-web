@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import useAxios from "../utils/useAxios";
+import axiosInstance from "@utils/axiosInstance";
 
 const PropertyFilter = () => {
-  const axiosInstance = useAxios();
   const [propertyTypes, setPropertyTypes] = useState([]);
 
   useEffect(() => {
@@ -21,13 +20,13 @@ const PropertyFilter = () => {
         console.error("Error fetching property types:", error);
         setPropertyTypes([]);
       });
-  }, [axiosInstance]);
+  }, []);
 
   return (
-    <div className="">
+    <div className="flex">
       {propertyTypes.length > 0 ? (
         propertyTypes.map((property) => (
-          <button key={property.id} className="category-button">
+          <button key={property.id} className="">
             {property.name}
           </button>
         ))

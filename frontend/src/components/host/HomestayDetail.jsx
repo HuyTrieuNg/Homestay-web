@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import useAxios from "../../utils/useAxios";
+import axiosInstance from "@utils/axiosInstance";
 
 function HomestayDetail({ id }) {
-  const axiosInstance = useAxios();
   const [homestay, setHomestay] = useState(null);
 
   useEffect(() => {
@@ -13,7 +12,7 @@ function HomestayDetail({ id }) {
       })
       .then((res) => setHomestay(res.data))
       .catch((err) => console.error("Error fetching homestay detail:", err));
-  }, [axiosInstance, id]);
+  }, [id]);
 
   if (!homestay) {
     return <div className="text-center py-10">Loading...</div>;

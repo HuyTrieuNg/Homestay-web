@@ -2,71 +2,97 @@ import { createContext, useState, useEffect, useCallback } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import axios from "axios";
+import axiosInstance from "@utils/axiosInstance";
+import { setupAxiosInterceptors } from "@utils/axiosService";
 
 const AuthContext = createContext(null);
 
 export default AuthContext;
 
 export const AuthProvider = ({ children }) => {
-  const axiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_BASE_URL,
-    timeout: 5000,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  let [user, setUser] = useState(() =>
+  const [user, setUser] = useState(() =>
     localStorage.getItem("authTokens")
-      ? jwtDecode(localStorage.getItem("authTokens"))
+      ? jwtDecode(JSON.parse(localStorage.getItem("authTokens")).access)
       : null
   );
-  let [authTokens, setAuthTokens] = useState(() =>
+
+  const [authTokens, setAuthTokens] = useState(() =>
     localStorage.getItem("authTokens")
       ? JSON.parse(localStorage.getItem("authTokens"))
       : null
   );
-  let [loading, setLoading] = useState(true);
+
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // login
-  let loginUser = async (username, password) => {
-    try {
-      const response = await axiosInstance.post("/token/", {
-        username,
-        password,
-      });
-
-      const data = await response.data;
-
-      if (response.status === 200) {
-        localStorage.setItem("authTokens", JSON.stringify(data));
-        setAuthTokens(data);
-        setUser(jwtDecode(data.access));
-        navigate("/profile");
-      } else {
-        console.error("Login failed:", response.status, data);
-        alert(
-          "Check login credentials: Something went wrong while logging in!"
-        );
-      }
-    } catch (error) {
-      console.error("Login failed:", error);
-      alert("Check login credentials: Something went wrong while logging in!");
-    }
-  };
-
-  // logout
-  let logoutUser = useCallback(() => {
-    // e.preventDefault()
+  // Logout function
+  const logoutUser = useCallback(() => {
     localStorage.removeItem("authTokens");
     setAuthTokens(null);
     setUser(null);
+    delete axiosInstance.defaults.headers.Authorization;
     // navigate('/login')
-  }, [setAuthTokens, setUser]);
+  }, []);
 
-  // register
+  const setupInterceptors = useCallback(() => {
+    setupAxiosInterceptors(authTokens, setAuthTokens, setUser, logoutUser);
+  }, [authTokens, logoutUser]);
+
+  // Login function
+  // const loginUser = async (username, password) => {
+  //   try {
+  //     const response = await axiosInstance.post("/token/", {
+  //       username,
+  //       password,
+  //     });
+
+  //     const data = response.data;
+
+  //     if (response.status === 200) {
+  //       localStorage.setItem("authTokens", JSON.stringify(data));
+  //       setAuthTokens(data);
+  //       setUser(jwtDecode(data.access));
+  //       navigate("/profile");
+  //       return true;
+  //     } else {
+  //       console.error("Login failed:", response.status, data);
+  //       return false;
+  //     }
+  //   } catch (error) {
+  //     console.error("Login failed:", error);
+  //     return false;
+  //   }
+  // };
+
+  const loginUser = async (username, password) => {
+    try {
+      const response = await axiosInstance.post("/token/", { username, password });
+  
+      const data = response.data;
+      localStorage.setItem("authTokens", JSON.stringify(data));
+      setAuthTokens(data);
+      setUser(jwtDecode(data.access));
+  
+      navigate("/profile");
+      return true;
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 401) {
+          console.error("Sai tài khoản hoặc mật khẩu!");
+          return "Sai tài khoản hoặc mật khẩu!";
+        } else {
+          console.error("Lỗi đăng nhập:", error.response.data);
+          return "Lỗi máy chủ, vui lòng thử lại!";
+        }
+      } else {
+        console.error("Lỗi kết nối đến server:", error);
+        return "Không thể kết nối đến server!";
+      }
+    }
+  };
+  
+
+  // Register function
   const registerUser = async (phone, username, password, password2) => {
     try {
       const response = await axiosInstance.post("/register/", {
@@ -76,7 +102,7 @@ export const AuthProvider = ({ children }) => {
         password2,
       });
 
-      let data = await response.data;
+      // const data = response.data;
 
       if (response.status === 201) {
         navigate("/login");
@@ -92,116 +118,83 @@ export const AuthProvider = ({ children }) => {
             showConfirmButton: false,
           });
         });
-      } else {
-        console.error("Lỗi server:", response.status, data);
-        alert("Lỗi đăng ký: " + JSON.stringify(data));
-        import("sweetalert2").then((Swal) => {
-          Swal.default.fire({
-            title: `Lỗi ${response.status}: ${
-              data.detail || "Đăng ký thất bại!"
-            }`,
-            icon: "error",
-            toast: true,
-            timer: 6000,
-            position: "top-right",
-            timerProgressBar: true,
-            showConfirmButton: false,
-          });
-        });
+        return { success: true };
       }
+      //  else {
+      //   console.error("Lỗi server:", response.status, data);
+
+      //   import("sweetalert2").then((Swal) => {
+      //     Swal.default.fire({
+      //       title: `Lỗi ${response.status}: ${
+      //         data.detail || "Đăng ký thất bại!"
+      //       }`,
+      //       icon: "error",
+      //       toast: true,
+      //       timer: 6000,
+      //       position: "top-right",
+      //       timerProgressBar: true,
+      //       showConfirmButton: false,
+      //     });
+      //   });
+      // }
     } catch (error) {
       console.error("Lỗi đăng ký:", error);
-      alert("Lỗi đăng ký: " + error);
-    }
-  };
 
-  // const updateToken = async () => {
-  //     const response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
-  //         method: 'POST',
-  //         headers: {
-  //             'Content-Type':'application/json'
-  //         },
-  //         body:JSON.stringify({refresh:authTokens?.refresh})
-  //     })
+      let errorMessage = "Đăng ký thất bại!";
+    
+      // Kiểm tra nếu backend trả về lỗi dạng object (vd: { "phone": ["This field must be unique."] })
+      // if (error.response?.data) {
+      //   const errors = error.response.data;
+      //   errorMessage = Object.entries(errors)
+      //     .map(([key, value]) => `${key}: ${value.join(", ")}`)
+      //     .join("\n");
+      // }
+      // return errorMessage;
 
-  //     const data = await response.json()
-  //     if (response.status === 200) {
-  //         setAuthTokens(data)
-  //         setUser(jwtDecode(data.access))
-  //         localStorage.setItem('authTokens',JSON.stringify(data))
-  //     } else {
-  //         logoutUser()
-  //     }
 
-  //     if(loading){
-  //         setLoading(false)
-  //     }
-  // }
-
-  const updateToken = useCallback(async () => {
-    console.log("Đang kiểm tra refresh token...");
-    console.log("authTokens hiện tại:", authTokens);
-
-    if (!authTokens) {
-      console.log("Không tìm thấy refresh token, đăng xuất...");
-      logoutUser();
-      return;
-    }
-
-    try {
-      const response = await axiosInstance.post("/token/refresh/", {
-        refresh: authTokens.refresh,
-      });
-
-      const data = await response.data;
-
-      if (response.status === 200) {
-        setAuthTokens(data);
-        setUser(jwtDecode(data.access));
-        localStorage.setItem("authTokens", JSON.stringify(data));
-        console.log("Token cập nhật thành công!");
-      } else {
-        console.log("Refresh token thất bại, đăng xuất...");
-        logoutUser();
+      if (error.response?.data) {
+        return { success: false, errors: error.response.data }; // ✅ Trả về lỗi theo từng field
       }
-    } catch (error) {
-      console.error("Lỗi refresh token:", error);
+  
+      return { success: false, errors: { general: "Đăng ký thất bại!" } };
+
+      // import("sweetalert2").then((Swal) => {
+      //   Swal.default.fire({
+      //     title: "Lỗi đăng ký",
+      //     text: error.response?.data?.detail || error.message,
+      //     icon: "error",
+      //     toast: true,
+      //     timer: 6000,
+      //     position: "top-right",
+      //     timerProgressBar: true,
+      //     showConfirmButton: false,
+      //   });
+      // });
     }
-
-    setLoading(false);
-  }, [
-    authTokens,
-    logoutUser,
-    setAuthTokens,
-    setUser,
-    setLoading,
-    axiosInstance,
-  ]);
-
-  let contextData = {
-    user: user,
-    authTokens: authTokens,
-    loginUser: loginUser,
-    logoutUser: logoutUser,
-    registerUser: registerUser,
   };
 
+  
+
+  // Initialize auth system and update interceptors when auth tokens change
   useEffect(() => {
-    if (loading) {
-      updateToken();
-    }
+    setupInterceptors();
+    setLoading(false);
+  }, [setupInterceptors]);
 
-    const REFRESH_INTERVAL = 1000 * 60 * 4; // 4 minutes
-    let interval = setInterval(() => {
-      if (authTokens) {
-        updateToken();
-      }
-    }, REFRESH_INTERVAL);
-    return () => clearInterval(interval);
-  }, [authTokens, loading, updateToken]);
+  const contextData = {
+    user,
+    authTokens,
+    setUser,
+    setAuthTokens,
+    loginUser,
+    logoutUser,
+    registerUser,
+  };
 
   return (
-    <AuthContext.Provider value={contextData}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={contextData}>
+      {!loading && children}
+    </AuthContext.Provider>
   );
 };
 

@@ -10,17 +10,9 @@ const HomestayCard = ({ homestay }) => {
   };
 
   return (
-    <div className="homestay-card" onClick={handleClick}>
+    <div className="h-auto" onClick={handleClick}>
       {imageUrl && (
-        <img
-          src={imageUrl}
-          alt={homestay.name}
-          style={{
-            width: "100%",
-            height: "200px",
-            objectFit: "cover",
-          }}
-        />
+        <img src={imageUrl} alt={homestay.name} className="object-cover" />
       )}
       <h3>{homestay.name}</h3>
       <p>📍 {homestay.address}</p>

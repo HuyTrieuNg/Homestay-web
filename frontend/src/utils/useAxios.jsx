@@ -5,6 +5,7 @@ import { useContext, useEffect, useMemo } from "react";
 import AuthContext from "../context/AuthContext";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
+// console.log("Base URL from Vite:", baseURL);
 
 const useAxios = () => {
   const { authTokens, setUser, setAuthTokens } = useContext(AuthContext);

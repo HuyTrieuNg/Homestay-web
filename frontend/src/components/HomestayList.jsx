@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import useAxios from "../utils/useAxios";
-import HomestayCard from "./HomestayCard";
+import HomestayCard from "@components/HomestayCard";
+import axiosInstance from "@utils/axiosInstance";
 
 const HomestayList = () => {
-  const axiosInstance = useAxios();
   const [homestays, setHomestays] = useState([]);
 
   useEffect(() => {
@@ -15,10 +14,10 @@ const HomestayList = () => {
       .catch((error) => {
         console.error("Error fetching homestays:", error);
       });
-  }, [axiosInstance]);
+  }, []);
 
   return (
-    <div>
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {homestays.length > 0 ? (
         homestays.map((homestay) => (
           <HomestayCard key={homestay.id} homestay={homestay} />
