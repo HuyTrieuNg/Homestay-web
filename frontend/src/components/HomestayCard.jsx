@@ -10,13 +10,30 @@ const HomestayCard = ({ homestay }) => {
   };
 
   return (
-    <div className="h-auto" onClick={handleClick}>
+    <div
+      className="cursor-pointer rounded-xl shadow-lg overflow-hidden bg-white"
+      onClick={handleClick}
+    >
       {imageUrl && (
-        <img src={imageUrl} alt={homestay.name} className="object-cover" />
+        <div className="relative">
+          <img
+            src={imageUrl}
+            alt={homestay.name}
+            className="w-full h-64 object-cover transition-transform duration-300 hover:scale-105"
+          />
+          {/* Icon yêu thích */}
+          <div className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md">
+            ❤️
+          </div>
+        </div>
       )}
-      <h3>{homestay.name}</h3>
-      <p>📍 {homestay.address}</p>
-      <p>💰 {homestay.base_price} / night</p>
+      <div className="p-4">
+        <h3 className="text-lg font-semibold">{homestay.name}</h3>
+        <p className="text-gray-500">📍 {homestay.address}</p>
+        <p className="text-gray-700 mt-1">
+          <span className="font-semibold">💰 {homestay.base_price}</span> / đêm
+        </p>
+      </div>
     </div>
   );
 };

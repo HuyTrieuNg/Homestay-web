@@ -1,8 +1,29 @@
 from rest_framework import serializers
-from .models import Homestay, PropertyType, Amenity
+from .models import Homestay, PropertyType, Amenity, Province, District, Commune
+             
+class ProvinceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Province
+        fields = '__all__'
+
+class DistrictSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = District
+        fields = '__all__'
+
+class CommuneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Commune
+        fields = '__all__'
+        
+class AmenitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Amenity
+        fields = '__all__'
 
 class HomestaySerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
+    amenities = AmenitySerializer(many=True)
 
     class Meta:
         model = Homestay
@@ -30,9 +51,4 @@ class HomestayListSerializer(serializers.ModelSerializer):
 class PropertitypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyType
-        fields = '__all__'
-             
-class AmenitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Amenity
         fields = '__all__'

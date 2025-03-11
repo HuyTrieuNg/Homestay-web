@@ -1,11 +1,11 @@
 import HomestayList from "@components/HomestayList";
 import PropertyFilter from "@components/PropertyFilter";
-import SearchBar from "@components/SearchBar";
+import Header from "../components/Header";
 
 function HomePage() {
   return (
     <>
-      <SearchBar />
+      <Header />
       <PropertyFilter />
       <HomestayList />
     </>

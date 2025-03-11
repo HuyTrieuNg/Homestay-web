@@ -37,6 +37,32 @@ class Command(BaseCommand):
                         "communes": ["Võ Thị Sáu", "Phường 6", "Phường 7"]
                     }
                 ]
+            },
+            {
+                "province": "Đà Nẵng",
+                "districts": [
+                    {
+                        "name": "Hải Châu",
+                        "communes": ["Hải Châu 1", "Hải Châu 2", "Phước Ninh"]
+                    },
+                    {
+                        "name": "Sơn Trà",
+                        "communes": ["An Hải Bắc", "An Hải Đông", "Nại Hiên Đông"]
+                    }
+                ]
+            },
+            {
+                "province": "Lâm Đồng",
+                "districts": [
+                    {
+                        "name": "Đà Lạt",
+                        "communes": ["Phường 1", "Phường 2", "Phường 3"]
+                    },
+                    {
+                        "name": "Bảo Lộc",
+                        "communes": ["B'Lao", "Lộc Phát", "Lộc Sơn"]
+                    }
+                ]
             }
         ]
 

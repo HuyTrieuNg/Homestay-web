@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from homestays.models import Homestay, PropertyType, HomestayImage, Commune, User
+from homestays.models import *
 
 class Command(BaseCommand):
     help = "Seed initial homestay data"
@@ -29,6 +29,7 @@ class Command(BaseCommand):
                 "max_guests": 4,
                 "images": ["homestay.avif"],
                 "commune_name": "Hàng Bài",
+                "amenities": ["Heating", "Kitchen", "Washing machine"],
             },
             {
                 "host_id": 2,
@@ -42,6 +43,49 @@ class Command(BaseCommand):
                 "max_guests": 5,
                 "images": ["homestay.avif"],
                 "commune_name": "Hàng Trống",
+                "amenities": ["Wifi", "TV", "Air conditioning"],
+            },
+            {
+                "host_id": 3,
+                "name": "Luxury Beachfront Villa",
+                "description": "A stunning beachfront villa with a private pool.",
+                "type": "villa",
+                "base_price": 250.00,
+                "address": "789 My Khe Beach, Son Tra, Da Nang",
+                "longitude": 108.249,
+                "latitude": 16.057,
+                "max_guests": 6,
+                "images": ["homestay.avif"],
+                "commune_name": "An Hải Đông",
+                "amenities": ["Wifi", "Pool", "Free parking", "Beachfront", "BBQ grill"],
+            },
+            {
+                "host_id": 1,
+                "name": "Cozy Da Lat Cottage",
+                "description": "A warm and cozy cottage surrounded by pine trees.",
+                "type": "homestay",
+                "base_price": 70.00,
+                "address": "321 Ho Xuan Huong, Da Lat, Lam Dong",
+                "longitude": 108.445,
+                "latitude": 11.940,
+                "max_guests": 3,
+                "images": ["homestay.avif"],
+                "commune_name": "Phường 3",
+                "amenities": ["Heating", "TV", "Indoor fireplace", "Free parking", "Dedicated workspace"],
+            },
+            {
+                "host_id": 2,
+                "name": "Mountain View Retreat",
+                "description": "A peaceful homestay with breathtaking mountain views.",
+                "type": "resort",
+                "base_price": 120.00,
+                "address": "567 Bao Loc Mountain, Lam Dong",
+                "longitude": 107.780,
+                "latitude": 11.547,
+                "max_guests": 5,
+                "images": ["homestay.avif"],
+                "commune_name": "B'Lao",
+                "amenities": ["King bed", "Smoke alarm", "BBQ grill", "Breakfast", "Air conditioning"],
             },
         ]
 
@@ -81,10 +125,15 @@ class Command(BaseCommand):
                 commune=commune,  # 🔥 Gán commune vào ForeignKey
             )
 
+            amenities_names = data["amenities"]  
+            amenities = [Amenity.objects.get_or_create(name=name)[0] for name in amenities_names]
+            homestay.amenities.set(amenities)
+            
             # Thêm hình ảnh
             for image in data["images"]:
                 HomestayImage.objects.create(homestay=homestay, image=f"homestays/{image}")
 
             self.stdout.write(self.style.SUCCESS(f'✅ Created: {homestay.name} in {commune.name}'))
+            
 
         self.stdout.write(self.style.SUCCESS("✅ Homestay seeding completed!"))
