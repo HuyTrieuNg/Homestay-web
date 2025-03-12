@@ -8,6 +8,7 @@ import ProfilePage from "./pages/ProfilePage";
 import HostDashboard from "./pages/HostDashboard";
 import HomestayForm from "./pages/AddNewHomestay";
 import HomestayPage from "./pages/HomestayPage";
+import BookingPage from "./pages/BookingPage";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/host" element={<HostDashboard />} />
             <Route path="/host/newHomestay" element={<HomestayForm />} />
+            <Route path="/booking" element={<BookingPage/>}/>
           </Route>
         </Routes>
       </AuthProvider>
