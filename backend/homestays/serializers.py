@@ -1,8 +1,15 @@
 from rest_framework import serializers
 from .models import Homestay, PropertyType, Amenity
 
+class AmenitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Amenity
+        fields = '__all__'
+
+        
 class HomestaySerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
+    amenities = AmenitySerializer(many=True)
 
     class Meta:
         model = Homestay
@@ -32,7 +39,5 @@ class PropertitypeSerializer(serializers.ModelSerializer):
         model = PropertyType
         fields = '__all__'
              
-class AmenitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Amenity
-        fields = '__all__'
+
+

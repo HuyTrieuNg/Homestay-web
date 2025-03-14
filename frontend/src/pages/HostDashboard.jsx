@@ -1,6 +1,6 @@
 // src/pages/Dashboard.jsx
 import { useState } from "react";
-import LeftSidebar from "@components/host/Sidebar_host";
+import Sidebar from "@components/host/Sidebar";
 import HomestayDetail from "@components/host/HomestayDetail";
 
 function Dashboard() {
@@ -9,7 +9,7 @@ function Dashboard() {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <LeftSidebar onSelectHomestay={setSelectedHomestayId} />
+      <Sidebar onSelectHomestay={setSelectedHomestayId} />
       {/* Main Content */}
       <div className="w-full md:w-3/4 p-4">
         {selectedHomestayId ? (

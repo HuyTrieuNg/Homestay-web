@@ -1,53 +1,46 @@
+import json
 from rest_framework import generics, permissions
 from homestays.models import Homestay, HomestayImage
 from .serializers import HomestaySerializer
+from .permissions import IsHost
+
+
+class HomestayRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = HomestaySerializer
+    permission_classes = [IsHost]
+
+    def get_queryset(self):
+        return Homestay.objects.filter(host=self.request.user)
+
+    def perform_update(self, serializer):
+        homestay = serializer.save()
+
+        #Xóa ảnh cũ nếu có danh sách deleted_images gửi lên
+        deleted_images = self.request.data.get("deleted_images", "[]")  # Mặc định là chuỗi JSON rỗng
+
+        try:
+            deleted_images = json.loads(deleted_images)  # Chuyển đổi chuỗi JSON thành list Python
+        except json.JSONDecodeError:
+            deleted_images = []
+        #nếu danh sách hợp lệ thì xóa
+        if isinstance(deleted_images, list):
+            HomestayImage.objects.filter(id__in=deleted_images, homestay=homestay).delete()
+            
+        uploaded_images = self.request.FILES.getlist("uploaded_images")
+        for image in uploaded_images:
+            HomestayImage.objects.create(homestay=homestay, image=image)
+
+
+    # def get_serializer(self, *args, **kwargs):
+    #     """🔹 Truyền context vào serializer"""
+    #     kwargs["context"] = {"request": self.request}
+    #     return super().get_serializer(*args, **kwargs)
+
 class HomestayListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = HomestaySerializer
-    permission_classes = [permissions.IsAuthenticated]
-
+    permission_classes = [permissions.IsAuthenticated, IsHost]  
     def get_queryset(self):
         return Homestay.objects.filter(host=self.request.user)
 
     def perform_create(self, serializer):
-        homestay = serializer.save(host=self.request.user)
-        # Xử lý upload nhiều ảnh: Lấy danh sách file từ key "images"
-        images = self.request.FILES.getlist("images")
-        for image in images:
-            HomestayImage.objects.create(homestay=homestay, image=image)
-
-class HomestayRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = HomestaySerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return Homestay.objects.filter(host=self.request.user)
-
-# class AvailabilityListCreateView(generics.ListCreateAPIView):
-#     serializer_class = HomestayAvailabilitySerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def get_queryset(self):
-#         # Lấy homestay_id từ URL (ví dụ: /api/homestays/{homestay_id}/availability/)
-#         homestay_id = self.kwargs.get('homestay_id')
-#         # Kiểm tra homestay thuộc về host đang đăng nhập
-#         return HomestayAvailability.objects.filter(
-#             homestay__id=homestay_id,
-#             homestay__host=self.request.user
-#         )
-
-#     def perform_create(self, serializer):
-#         homestay_id = self.kwargs.get('homestay_id')
-#         # Lấy homestay của host
-#         homestay = Homestay.objects.get(id=homestay_id, host=self.request.user)
-#         serializer.save(homestay=homestay)
-
-# class AvailabilityDetailView(generics.RetrieveUpdateDestroyAPIView):
-#     serializer_class = HomestayAvailabilitySerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def get_queryset(self):
-#         homestay_id = self.kwargs.get('homestay_id')
-#         return HomestayAvailability.objects.filter(
-#             homestay__id=homestay_id,
-#             homestay__host=self.request.user
-#         )
+        serializer.save()

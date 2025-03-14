@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../axiosConfig";
+import axiosInstance from "@utils/axiosInstance"
 
+const HOMESTAY_API_URL = "host/homestays/";
 const TYPES_API_URL = "homestay-types/";
 const PROVINCES_API_URL = "provinces/";
 const DISTRICTS_API_URL = "districts/";
@@ -41,53 +42,82 @@ const HomestayFormComponent = ({ initialData = {}, onSubmit }) => {
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
 
-  // Load dữ liệu selection từ server
-  useEffect(() => {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-      },
-    };
-    axiosInstance
-      .get(TYPES_API_URL, config)
-      .then((res) => setTypes(res.data))
-      .catch((err) => console.error("Error fetching types:", err));
-    axiosInstance
-      .get(PROVINCES_API_URL, config)
-      .then((res) => setProvinces(res.data))
-      .catch((err) => console.error("Error fetching provinces:", err));
-    axiosInstance
-      .get(AMENITIES_API_URL, config)
-      .then((res) => setAmenities(res.data))
-      .catch((err) => console.error("Error fetching amenities:", err));
-  }, []);
+    useEffect(() => {
+      axiosInstance
+        .get(TYPES_API_URL)
+        .then((response) => {
+          setTypes(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching homestays:", error);
+        });
+      axiosInstance
+        .get(PROVINCES_API_URL)
+        .then((response) => {
+          setProvinces(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching homestays:", error);
+        });
+      axiosInstance
+        .get(AMENITIES_API_URL)
+        .then((response) => {
+          setAmenities(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching homestays:", error);
+        });
+    }, []);
 
   // Khi chọn province, load danh sách district
+  // useEffect(() => {
+  //   if (!selectedProvince) return;
+  //   const config = {
+  //     headers: {
+  //       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+  //     },
+  //   };
+  //   axiosInstance
+  //     .get(`${DISTRICTS_API_URL}?province_id=${selectedProvince}`, config)
+  //     .then((res) => setDistricts(res.data))
+  //     .catch((err) => console.error("Error fetching districts:", err));
+  // }, [selectedProvince]);
+
   useEffect(() => {
-    if (!selectedProvince) return;
-    const config = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-      },
-    };
     axiosInstance
-      .get(`${DISTRICTS_API_URL}?province_id=${selectedProvince}`, config)
-      .then((res) => setDistricts(res.data))
-      .catch((err) => console.error("Error fetching districts:", err));
+      .get(`${DISTRICTS_API_URL}?province_id=${selectedProvince}`)
+      .then((response) => {
+        setDistricts(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching homestays:", error);
+      });
   }, [selectedProvince]);
 
   // Khi chọn district, load danh sách commune
+  // useEffect(() => {
+  //   if (!selectedDistrict) return;
+  //   const config = {
+  //     headers: {
+  //       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+  //     },
+  //   };
+  //   axiosInstance
+  //     .get(`${COMMUNES_API_URL}?district_id=${selectedDistrict}`, config)
+  //     .then((res) => setCommunes(res.data))
+  //     .catch((err) => console.error("Error  cofetchingmmunes:", err));
+  // }, [selectedDistrict]);
+
+
   useEffect(() => {
-    if (!selectedDistrict) return;
-    const config = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-      },
-    };
     axiosInstance
-      .get(`${COMMUNES_API_URL}?district_id=${selectedDistrict}`, config)
-      .then((res) => setCommunes(res.data))
-      .catch((err) => console.error("Error fetching communes:", err));
+      .get(`${COMMUNES_API_URL}?district_id=${selectedDistrict}`)
+      .then((response) => {
+        setCommunes(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching homestays:", error);
+      });
   }, [selectedDistrict]);
 
   // Cập nhật preview mỗi khi imageFiles thay đổi
@@ -173,7 +203,7 @@ const HomestayFormComponent = ({ initialData = {}, onSubmit }) => {
         if (key === "amenities") {
           // Gửi từng giá trị amenities riêng biệt
           formData[key].forEach((item) => {
-            payload.append("amenities", item);
+            payload.append("amenities[]", item);
           });
         } else {
           payload.append(key, formData[key]);
@@ -181,17 +211,14 @@ const HomestayFormComponent = ({ initialData = {}, onSubmit }) => {
       });
       // Append từng file ảnh
       imageFiles.forEach((file) => {
-        payload.append("images", file);
+        payload.append("images[]", file);
       });
-      const headers = {
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        "Content-Type": "multipart/form-data",
-      };
+      
       // Gọi hàm onSubmit được truyền vào nếu có, nếu không thì tự submit qua API
       if (onSubmit) {
-        await onSubmit(payload, headers);
+        await onSubmit(payload);
       } else {
-        const response = await axiosInstance.post(HOMESTAY_API_URL, payload, { headers });
+        const response = await axiosInstance.post(HOMESTAY_API_URL, payload);
         console.log("Homestay created:", response.data);
         navigate("/host");
       }
@@ -201,7 +228,7 @@ const HomestayFormComponent = ({ initialData = {}, onSubmit }) => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-md mt-10">
+    <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-md mt-10 overflow-visible">
       <h1 className="text-2xl font-bold mb-6 text-center">Homestay Form</h1>
       <form onSubmit={handleSubmit} className="space-y-4" 
             onDrop={handleDrop} onDragOver={handleDragOver}>
@@ -399,7 +426,7 @@ const HomestayFormComponent = ({ initialData = {}, onSubmit }) => {
         {/* Amenities selection */}
         <div>
           <label className="block text-gray-700 mb-1">Amenities:</label>
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             {amenities.map((a) => {
               const isSelected = formData.amenities.includes(String(a.id));
               return (

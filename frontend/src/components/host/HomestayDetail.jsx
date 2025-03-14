@@ -4,15 +4,27 @@ import axiosInstance from "@utils/axiosInstance";
 function HomestayDetail({ id }) {
   const [homestay, setHomestay] = useState(null);
 
+  // useEffect(() => {
+  //   const token = localStorage.getItem("access_token");
+  //   axiosInstance
+  //     .get(`host/homestays/${id}/`, {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     })
+  //     .then((res) => setHomestay(res.data))
+  //     .catch((err) => console.error("Error fetching homestay detail:", err));
+  // }, [id]);
+
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
     axiosInstance
-      .get(`host/homestays/${id}/`, {
-        headers: { Authorization: `Bearer ${token}` },
+      .get("host/homestays/${id}/")
+      .then((response) => {
+        setHomestay(response.data);
       })
-      .then((res) => setHomestay(res.data))
-      .catch((err) => console.error("Error fetching homestay detail:", err));
+      .catch((error) => {
+        console.error("Error fetching homestays:", error);
+      });
   }, [id]);
+
 
   if (!homestay) {
     return <div className="text-center py-10">Loading...</div>;

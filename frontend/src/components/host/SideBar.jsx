@@ -1,23 +1,22 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "@utils/axiosInstance";
 
-function LeftSidebar({ onSelectHomestay }) {
+function Sidebar({ onSelectHomestay }) {
   const [homestays, setHomestays] = useState([]);
   const [collapsed, setCollapsed] = useState(false);
 
+
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      axiosInstance
-        .get("host/homestays/", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => setHomestays(res.data))
-        .catch((err) =>
-          console.error("Error fetching homestays in sidebar:", err)
-        );
-    }
+    axiosInstance
+      .get("host/homestays/")
+      .then((response) => {
+        setHomestays(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching homestays:", error);
+      });
   }, []);
+
 
   return (
     <div
@@ -60,4 +59,4 @@ function LeftSidebar({ onSelectHomestay }) {
   );
 }
 
-export default LeftSidebar;
+export default Sidebar;
