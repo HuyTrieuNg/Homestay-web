@@ -9,7 +9,8 @@ class Command(BaseCommand):
         Homestay.objects.all().delete()
         PropertyType.objects.all().delete()
 
-        property_types = ["villa", "apartment", "hotel", "resort", "homestay"]
+        # Create property types
+        property_types = ["Villa", "Apartment", "Hotel", "Resort", "Homestay"]
         for name in property_types:
             PropertyType.objects.create(name=name)
 
@@ -21,7 +22,7 @@ class Command(BaseCommand):
                 "host_id": 1,
                 "name": "Grey Rock Mountain Cabin w/ Jacuzzi 2 Anahaw",
                 "description": "A beautiful and modern homestay in the city center.",
-                "type": "apartment",
+                "type": "Apartment",
                 "base_price": 100.00,
                 "address": "123 Kim Ma, Ba Dinh, Hanoi",
                 "longitude": 105.824,
@@ -35,7 +36,7 @@ class Command(BaseCommand):
                 "host_id": 2,
                 "name": "Cozy Homestay",
                 "description": "A cozy place to stay with family.",
-                "type": "villa",
+                "type": "Villa",
                 "base_price": 80.00,
                 "address": "456 Hoang Hoa Tham, Ba Dinh, Hanoi",
                 "longitude": 105.822,
@@ -49,7 +50,7 @@ class Command(BaseCommand):
                 "host_id": 3,
                 "name": "Luxury Beachfront Villa",
                 "description": "A stunning beachfront villa with a private pool.",
-                "type": "villa",
+                "type": "Villa",
                 "base_price": 250.00,
                 "address": "789 My Khe Beach, Son Tra, Da Nang",
                 "longitude": 108.249,
@@ -63,7 +64,7 @@ class Command(BaseCommand):
                 "host_id": 1,
                 "name": "Cozy Da Lat Cottage",
                 "description": "A warm and cozy cottage surrounded by pine trees.",
-                "type": "homestay",
+                "type": "Homestay",
                 "base_price": 70.00,
                 "address": "321 Ho Xuan Huong, Da Lat, Lam Dong",
                 "longitude": 108.445,
@@ -77,7 +78,7 @@ class Command(BaseCommand):
                 "host_id": 2,
                 "name": "Mountain View Retreat",
                 "description": "A peaceful homestay with breathtaking mountain views.",
-                "type": "resort",
+                "type": "Resort",
                 "base_price": 120.00,
                 "address": "567 Bao Loc Mountain, Lam Dong",
                 "longitude": 107.780,
@@ -88,7 +89,7 @@ class Command(BaseCommand):
                 "amenities": ["King bed", "Smoke alarm", "BBQ grill", "Breakfast", "Air conditioning"],
             },
         ]
-
+        
         for data in homestays_data:
             # Kiểm tra host tồn tại không
             try:
@@ -122,7 +123,7 @@ class Command(BaseCommand):
                 longitude=data["longitude"],
                 latitude=data["latitude"],
                 max_guests=data["max_guests"],
-                commune=commune,  # 🔥 Gán commune vào ForeignKey
+                commune=commune,
             )
 
             amenities_names = data["amenities"]  

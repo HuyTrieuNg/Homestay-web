@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+
 class Province(models.Model):
     name = models.CharField(max_length=255)
 
@@ -16,8 +17,7 @@ class District(models.Model):
 
 class Commune(models.Model):
     name = models.CharField(max_length=255)
-    district = models.ForeignKey(District, on_delete=models.CASCADE, default=1)
-    district = models.ForeignKey(District, on_delete=models.CASCADE, related_name="wards")
+    district = models.ForeignKey(District, on_delete=models.CASCADE, related_name="communes")
 
     def __str__(self):
         return self.name
@@ -44,28 +44,20 @@ class Amenity(models.Model):
         return self.name
     
 class Homestay(models.Model):
-    HOMESTAY_TYPES = [
-        ("villa", "Villa"),
-        ("apartment", "Căn hộ"),
-        ("hotel", "Khách sạn"),
-        ("resort", "Resort"),
-        ("homestay", "Homestay"),
-    ]
     # host_id = models.IntegerField()
     host = models.ForeignKey(User, on_delete=models.CASCADE, related_name="homestays", default=1)
     name = models.CharField(max_length=255)
     description = models.TextField()
-    type = models.CharField(max_length=50, choices=HOMESTAY_TYPES, default="homestay")
+    type = models.ForeignKey(PropertyType, on_delete=models.SET_NULL, null=True, related_name="homestays")
     base_price = models.DecimalField(max_digits=10, decimal_places=2)
     address = models.CharField(max_length=255)
     longitude = models.FloatField()
     latitude = models.FloatField()
     max_guests = models.IntegerField()
     
-    # type = models.ForeignKey(PropertyType, on_delete=models.SET_NULL, null=True, related_name="homestays")
     commune = models.ForeignKey(Commune, on_delete=models.SET_NULL, null=True)
-    district = models.ForeignKey(District, on_delete=models.SET_NULL, null=True, related_name="homestays")
-    province = models.ForeignKey(Province, on_delete=models.SET_NULL, null=True, related_name="homestays")
+    # district = models.ForeignKey(District, on_delete=models.SET_NULL, null=True, related_name="homestays")
+    # province = models.ForeignKey(Province, on_delete=models.SET_NULL, null=True, related_name="homestays")
     amenities = models.ManyToManyField(Amenity, blank=True, related_name="homestays")
 
     def __str__(self):

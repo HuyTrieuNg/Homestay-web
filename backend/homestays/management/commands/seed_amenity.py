@@ -1,10 +1,12 @@
 from django.core.management.base import BaseCommand
-from homestays.models import Amenity
+from homestays.models import Amenity, PropertyType
 
 class Command(BaseCommand):
     help = "Seed initial amenity data"
     
     def handle(self, *args, **kwargs):
+        Amenity.objects.all().delete()
+        PropertyType.objects.all().delete()
         amenities = [
             # Essentials
             ("Wifi", "essentials"),
@@ -41,6 +43,10 @@ class Command(BaseCommand):
         ]
 
         for name, category in amenities:
-            Amenity.objects.get_or_create(name=name, category=category)
+            obj, created = Amenity.objects.get_or_create(name=name, category=category)
+            if created:
+                print(f"Amenity '{name}' seeded successfully!")
+            else:
+                print(f"Amenity '{name}' already exists!") 
 
         print("Seed data added successfully!")

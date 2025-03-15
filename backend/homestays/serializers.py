@@ -20,6 +20,11 @@ class AmenitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Amenity
         fields = '__all__'
+        
+class PropertyTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PropertyType
+        fields = '__all__'
 
 class HomestaySerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
@@ -27,7 +32,7 @@ class HomestaySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Homestay
-        fields = "__all__"
+        fields = '__all__'
 
     def get_images(self, obj):
         request = self.context.get("request")
@@ -37,10 +42,15 @@ class HomestaySerializer(serializers.ModelSerializer):
     
 class HomestayListSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
+    property_type = PropertyTypeSerializer()
+    commune = CommuneSerializer()
+    district = DistrictSerializer()
+    province = ProvinceSerializer()
 
     class Meta:
         model = Homestay
-        fields = ["id", "name", "base_price", "address", "images"]
+        fields = ["id", "name", "base_price", "address", "images", 
+                  "type", "commune", "district", "province"]
 
     def get_images(self, obj):
         request = self.context.get("request")

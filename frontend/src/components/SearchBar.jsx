@@ -1,16 +1,17 @@
 import AddressSearch from "./AddressSearch";
+import PropTypes from "prop-types";
 
-const SearchBar = () => {
+const SearchBar = ({ onSelectAddress }) => {
+  const handleSelectAddress = (address) => {
+    console.log("Selected address:", address);
+    onSelectAddress(address);
+  };
+
   return (
     <div className="flex items-center bg-white rounded-full shadow-md p-2 mt-5 w-full max-w-3xl">
       <div className="flex-1 px-4">
         <p className="text-xs font-semibold text-gray-600">Địa điểm</p>
-        {/* <input
-          type="text"
-          placeholder="Tìm kiếm điểm đến"
-          className="w-full bg-transparent outline-none text-gray-800"
-        /> */}
-        <AddressSearch />
+        <AddressSearch onSelectAddress={handleSelectAddress} />
       </div>
       <div className="border-l h-8" />
       <div className="flex-1 px-4">
@@ -43,6 +44,10 @@ const SearchBar = () => {
       </button>
     </div>
   );
+};
+
+SearchBar.propTypes = {
+  onSelectAddress: PropTypes.func,
 };
 
 export default SearchBar;

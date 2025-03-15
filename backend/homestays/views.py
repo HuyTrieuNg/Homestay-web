@@ -9,8 +9,21 @@ class HomestayListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        homestays = Homestay.objects.all()
-        serializer = HomestayListSerializer(homestays, many=True, context={'request': self.request})
+        property_type_id = request.query_params.get('property_type_id', None)
+        province = request.query_params.get('province', None)
+        
+        homestays = Homestay.objects.select_related(
+            'type', 'commune__district__province'
+        ).prefetch_related('images', 'amenities')
+
+        if property_type_id:
+            homestays = homestays.filter(type_id=property_type_id)
+            
+        if province:
+            print("Province filter value:", province)
+            homestays = homestays.filter(commune__district__province__name__icontains=province)
+        
+        serializer = HomestaySerializer(homestays, many=True, context={'request': self.request})
         return Response(serializer.data)
     
 class HomestayDetailView(RetrieveAPIView):

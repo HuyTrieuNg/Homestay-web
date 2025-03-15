@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
+import PropTypes from "prop-types";
 
-const AddressSearch = () => {
+const AddressSearch = ({ onSelectAddress }) => {
   const [addresses, setAddresses] = useState([]);
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -36,7 +37,8 @@ const AddressSearch = () => {
 
   const handleSelect = (value) => {
     setQuery(value);
-    setSuggestions([]); // Ẩn gợi ý khi chọn
+    setSuggestions([]);
+    onSelectAddress(value);
   };
 
   return (
@@ -46,7 +48,7 @@ const AddressSearch = () => {
         value={query}
         onChange={handleChange}
         placeholder="Tìm kiếm điểm đến"
-        className="w-full bg-transparent outline-none text-gray-800 placeholder-gray-500 py-2 px-3"
+        className="w-full bg-transparent outline-none text-gray-800 placeholder-gray-500 px-3"
       />
       {suggestions.length > 0 && (
         <ul className="absolute left-0 right-0 bg-white border border-gray-300 rounded-md mt-1 shadow-md z-10">
@@ -63,6 +65,10 @@ const AddressSearch = () => {
       )}
     </div>
   );
+};
+
+AddressSearch.propTypes = {
+  onSelectAddress: PropTypes.func,
 };
 
 export default AddressSearch;
