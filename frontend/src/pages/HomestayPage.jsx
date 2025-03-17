@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "@utils/axiosInstance";
 import AmenityList from "../components/AmenityList";
+import ReserveBox from "@/components/ReserveBox";
 
 function HomestayPage() {
   const { id } = useParams();
@@ -76,28 +77,7 @@ function HomestayPage() {
             <AmenityList amenities={homestay.amenities} />
           </div>
         </div>
-
-        {/* Cột phải: Box đặt phòng */}
-        <div className="border border-gray-200 rounded-lg p-4 shadow-sm">
-          <h2 className="text-lg font-semibold mb-2">Giá: đ10.130.897 / đêm</h2>
-          <div className="flex justify-between items-center mb-4">
-            <div>
-              <p className="text-sm text-gray-500">Nhận phòng</p>
-              <p>20/3/2025</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Trả phòng</p>
-              <p>25/3/2025</p>
-            </div>
-          </div>
-          <div className="mb-4">
-            <p className="text-sm text-gray-500">Khách</p>
-            <p>1 khách</p>
-          </div>
-          <button className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition">
-            Đặt phòng
-          </button>
-        </div>
+        <ReserveBox />
       </div>
 
       {/* ========== Hàng 3: Đánh giá (thêm sau) ========== */}
