@@ -27,8 +27,10 @@ const DateRangePicker = ({
   };
 
   const isDateDisabled = (date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const formattedDate = format(date, "yyyy-MM-dd");
-    return date <= new Date() || unavailableDates?.includes(formattedDate);
+    return date < today || unavailableDates?.includes(formattedDate);
   };
 
   const modifiers = {
