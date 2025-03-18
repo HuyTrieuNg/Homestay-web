@@ -32,7 +32,7 @@ class HomestayRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView
 
 
     # def get_serializer(self, *args, **kwargs):
-    #     """🔹 Truyền context vào serializer"""
+    
     #     kwargs["context"] = {"request": self.request}
     #     return super().get_serializer(*args, **kwargs)
 

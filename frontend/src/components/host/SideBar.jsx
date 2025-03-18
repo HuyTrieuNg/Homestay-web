@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "@utils/axiosInstance";
 
-function Sidebar({ onSelectHomestay }) {
+function Sidebar({ onSelectHomestay, refresh }) {
   const [homestays, setHomestays] = useState([]);
   const [collapsed, setCollapsed] = useState(false);
 
+  
 
   useEffect(() => {
     axiosInstance
@@ -15,7 +16,7 @@ function Sidebar({ onSelectHomestay }) {
       .catch((error) => {
         console.error("Error fetching homestays:", error);
       });
-  }, []);
+  }, [refresh]);
 
 
   return (

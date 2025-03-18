@@ -1,31 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axiosInstance from "../axiosConfig";
-import HomestayFormComponent from "../components/HomestayFormComponent";
+import axiosInstance from "@utils/axiosInstance";
+import HomestayFormComponent from "@components/host/HomestayFormComponent";
 
 function UpdateHomestay() {
   const { id } = useParams(); // Lấy ID của homestay cần cập nhật từ URL
   const navigate = useNavigate();
   const [initialData, setInitialData] = useState(null);
-  const token = localStorage.getItem("access_token");
 
   // Lấy dữ liệu chi tiết của homestay khi component mount hoặc id thay đổi
   useEffect(() => {
     axiosInstance
-      .get(`host/homestays/${id}/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get(`host/homestays/${id}/`)
       .then((res) => setInitialData(res.data))
       .catch((err) =>
         console.error("Error fetching homestay detail:", err.response?.data || err)
       );
-  }, [id, token]);
+  }, [id]);
 
-  // Hàm xử lý submit của form, dùng cho update
-  const handleSubmit = async (payload, headers) => {
+  const handleSubmit = async (payload) => {
     try {
       const response = await axiosInstance.put(`host/homestays/${id}/`, payload, {
-        headers,
+        headers: { "Content-Type": "multipart/form-data" },
       });
       console.log("Homestay updated:", response.data);
       navigate("/host"); // Chuyển hướng sau khi cập nhật thành công

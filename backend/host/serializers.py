@@ -70,14 +70,5 @@ class HomestaySerializer(serializers.ModelSerializer):
 
         #delete dùng mặc định
 
-    #Nếu muốn lấy nhanh tỉnh huyện mà không cần call api riêng
-    # istrict = serializers.SerializerMethodField()
-    # province = serializers.SerializerMethodField()
-    # def get_district(self, obj):
-    #     # Lấy tên huyện từ commune (nếu có)
-    #     return obj.commune.district.name if obj.commune and obj.commune.district else None
-
-    # def get_province(self, obj):
-    #     # Lấy tên tỉnh từ commune (nếu có)
-    #     return obj.commune.district.province.name if obj.commune and obj.commune.district and obj.commune.district.province else None
+    
 

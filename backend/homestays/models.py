@@ -89,7 +89,6 @@ class HomestayImage(models.Model):
         return f"Image for {self.homestay.name}"
     
     def delete(self, *args, **kwargs):
-        """Xóa file ảnh trên ổ đĩa trước khi xóa bản ghi"""
         if self.image:
             image_path = os.path.join(settings.MEDIA_ROOT, self.image.name)
             if os.path.exists(image_path):

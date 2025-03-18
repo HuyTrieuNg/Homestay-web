@@ -23,8 +23,34 @@ const HomestayFormComponent = ({ initialData = {}, onSubmit }) => {
     max_guests: "",
     commune: "",
     amenities: [],
-    ...initialData,
   });
+
+
+  // Cập nhật dữ liệu từ `initialData`
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        ...formData,
+        ...initialData,
+        amenities: initialData.amenities?.map(String) || [],
+        commune: initialData.commune || "",
+      });
+
+      // Load địa chỉ
+      if (initialData.commune) {
+        axiosInstance.get(`commune/${initialData.commune}/`).then((res) => {
+          setSelectedDistrict(res.data.district_id);
+          setSelectedProvince(res.data.province_id);
+        });
+      }
+
+      // Load ảnh
+      if (initialData.images) {
+        setImagePreviews(initialData.images);
+      }
+    }
+  }, [initialData]);
+
 
   // State cho ảnh
   const [imageFiles, setImageFiles] = useState([]);
@@ -65,11 +91,23 @@ const HomestayFormComponent = ({ initialData = {}, onSubmit }) => {
   }, [selectedDistrict]);
 
   // Cập nhật preview ảnh
-  useEffect(() => {
-    const previews = imageFiles.map((file) => URL.createObjectURL(file));
-    setImagePreviews(previews);
-    return () => previews.forEach((url) => URL.revokeObjectURL(url));
-  }, [imageFiles]);
+  // useEffect(() => {
+  //   const previews = imageFiles.map((file) => URL.createObjectURL(file));
+  //   setImagePreviews(previews);
+  //   return () => previews.forEach((url) => URL.revokeObjectURL(url));
+  // }, [imageFiles]);
+
+// Cập nhật thêm preview ảnh trong form cập nhật
+ useEffect(() => {
+  const newPreviews = [
+    ...(initialData.images || []),
+    ...imageFiles.map((file) => URL.createObjectURL(file)),
+  ];
+  setImagePreviews(newPreviews);
+
+    return () => newPreviews.forEach((url) => URL.revokeObjectURL(url));
+  }, [imageFiles, initialData.images]);
+
 
   // Hàm xử lý chung cho các trường input
   const handleChange = (e) => {
@@ -105,18 +143,19 @@ const HomestayFormComponent = ({ initialData = {}, onSubmit }) => {
   // Hàm xử lý ảnh (file input, drag & drop, xóa ảnh)
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-    if (imageFiles.length + files.length > 15) {
-      alert("Chỉ được chọn tối đa 15 ảnh");
+    if (imageFiles.length + files.length > 20) {
+      alert("Chỉ được chọn tối đa 20 ảnh");
       return;
     }
     setImageFiles([...imageFiles, ...files]);
+    
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
     const files = Array.from(e.dataTransfer.files);
-    if (imageFiles.length + files.length > 15) {
-      alert("Chỉ được chọn tối đa 15 ảnh");
+    if (imageFiles.length + files.length > 20) {
+      alert("Chỉ được chọn tối đa 20 ảnh");
       return;
     }
     setImageFiles([...imageFiles, ...files]);
@@ -167,7 +206,6 @@ const HomestayFormComponent = ({ initialData = {}, onSubmit }) => {
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-md">
-      <h1 className="text-2xl font-bold mb-6 text-center">Homestay Form</h1>
       <form
         onSubmit={handleSubmit}
         className="space-y-6"

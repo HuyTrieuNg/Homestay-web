@@ -6,7 +6,8 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
 import HostDashboard from "./pages/HostDashboard";
-import HomestayForm from "./pages/AddNewHomestay";
+import AddNewHomestay from "./pages/AddNewHomestay";
+import UpdateHomestay from "./pages/UpdateHomestay";
 import HomestayPage from "./pages/HomestayPage";
 
 function App() {
@@ -22,7 +23,8 @@ function App() {
           <Route element={<PrivateRoute />}>
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/host" element={<HostDashboard />} />
-            <Route path="/host/newHomestay" element={<HomestayForm />} />
+            <Route path="/host/newHomestay" element={<AddNewHomestay />} />
+            <Route path="/host/update/:id" element={<UpdateHomestay />} />
           </Route>
         </Routes>
       </AuthProvider>

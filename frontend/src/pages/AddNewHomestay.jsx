@@ -2,11 +2,11 @@ import React from "react";
 import HomestayFormComponent from "../components/host/HomestayFormComponent";
 
 
-function HomestayForm(){
+function AddNewHomestay(){
   return (
   <div>
     <HomestayFormComponent/>
   </div>);
 }
 
-export default HomestayForm;
+export default AddNewHomestay;
