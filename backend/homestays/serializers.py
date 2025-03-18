@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Homestay, PropertyType, Amenity, Province, District, Commune
+from .models import *
              
 class ProvinceSerializer(serializers.ModelSerializer):
     class Meta:

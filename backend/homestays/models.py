@@ -77,19 +77,3 @@ class HomestayImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.homestay.name}"
-
-class HomestayAvailability(models.Model):
-    STATUS_CHOICES = [
-        ('available', 'Available'),
-        ('booked', 'Booked'),
-        ('unavailable', 'Unavailable'),
-    ]
-    
-    homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE)
-    date = models.DateField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="available")
-    booking_id = models.IntegerField(null=True, blank=True)  # Thay thế bằng ForeignKey nếu có model Booking
-
-    def __str__(self):
-        return f"{self.homestay.name} - {self.date}"

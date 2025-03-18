@@ -77,7 +77,7 @@ function HomestayPage() {
             <AmenityList amenities={homestay.amenities} />
           </div>
         </div>
-        <ReserveBox />
+        <ReserveBox basePrice={homestay.base_price} />
       </div>
 
       {/* ========== Hàng 3: Đánh giá (thêm sau) ========== */}

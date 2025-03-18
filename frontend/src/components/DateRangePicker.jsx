@@ -5,16 +5,52 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { format } from "date-fns";
-import PropTypes from "prop-types";
+import { format, parseISO } from "date-fns";
+import { PropTypes } from "prop-types";
 
-const DateRangePicker = ({ onSelectRange, initialStart, initialEnd }) => {
-  const [start, setStart] = useState(initialStart || null);
+const DateRangePicker = ({
+  onSelectRange,
+  initialStart,
+  initialEnd,
+  unavailableDates,
+}) => {
+  const [start, setStart] = useState(initialStart || new Date());
   const [end, setEnd] = useState(initialEnd || null);
+
+  const parsedUnavailableDates = (unavailableDates || []).map((date) =>
+    parseISO(date)
+  );
+
+  const inRangeModifier = (date) => {
+    if (!start || !end) return false;
+    return date > start && date < end;
+  };
+
+  const isDateDisabled = (date) => {
+    const formattedDate = format(date, "yyyy-MM-dd");
+    return date <= new Date() || unavailableDates?.includes(formattedDate);
+  };
+
+  const modifiers = {
+    selected: [start, end],
+    inRange: inRangeModifier,
+    unavailable: (date) =>
+      unavailableDates?.includes(format(date, "yyyy-MM-dd")),
+  };
+
+  const modifiersClassNames = {
+    inRange: "bg-primary/10",
+    unavailable: "line-through text-gray-400",
+  };
+
+  const getNextUnavailableDate = (startDate) => {
+    return parsedUnavailableDates.find((date) => date > startDate);
+  };
 
   const handleStartSelect = (date) => {
     setStart(date);
-    if (end && date > end) {
+    const nextUnavailable = getNextUnavailableDate(date);
+    if (end && (date > end || (nextUnavailable && end > nextUnavailable))) {
       setEnd(null);
       onSelectRange && onSelectRange({ start: date, end: null });
     } else {
@@ -22,25 +58,18 @@ const DateRangePicker = ({ onSelectRange, initialStart, initialEnd }) => {
     }
   };
 
+  const isDisabledEnd = (date) => {
+    if (!start) return false;
+
+    const nextUnavailable = getNextUnavailableDate(start);
+    return date < start || (nextUnavailable && date > nextUnavailable);
+  };
+
   const handleEndSelect = (date) => {
-    if (!start || date >= start) {
+    if (start && date > start) {
       setEnd(date);
       onSelectRange && onSelectRange({ start, end: date });
     }
-  };
-
-  const inRangeModifier = (date) => {
-    if (!start || !end) return false;
-    return date > start && date < end;
-  };
-
-  const modifiers = {
-    selected: [start, end],
-    inRange: inRangeModifier,
-  };
-
-  const modifiersClassNames = {
-    inRange: "bg-primary/10",
   };
 
   return (
@@ -57,13 +86,14 @@ const DateRangePicker = ({ onSelectRange, initialStart, initialEnd }) => {
               mode="single"
               selected={start}
               onSelect={handleStartSelect}
+              disabled={isDateDisabled}
               modifiers={modifiers}
               modifiersClassNames={modifiersClassNames}
             />
           </PopoverContent>
         </Popover>
       </div>
-
+      <div className="border-l h-8"></div>
       {/* Popover cho ngày trả phòng */}
       <div className="flex-1">
         <p className="text-xs font-semibold text-gray-600">Trả phòng</p>
@@ -76,7 +106,7 @@ const DateRangePicker = ({ onSelectRange, initialStart, initialEnd }) => {
               mode="single"
               selected={end}
               onSelect={handleEndSelect}
-              disabled={(date) => start && date < start}
+              disabled={(date) => isDateDisabled(date) || isDisabledEnd(date)}
               modifiers={modifiers}
               modifiersClassNames={modifiersClassNames}
             />
@@ -87,10 +117,15 @@ const DateRangePicker = ({ onSelectRange, initialStart, initialEnd }) => {
   );
 };
 
+DateRangePicker.defaultProps = {
+  unavailableDates: [],
+};
+
 DateRangePicker.propTypes = {
   onSelectRange: PropTypes.func,
   initialStart: PropTypes.instanceOf(Date),
   initialEnd: PropTypes.instanceOf(Date),
+  unavailableDates: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default DateRangePicker;

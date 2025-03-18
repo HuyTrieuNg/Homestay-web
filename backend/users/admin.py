@@ -1,6 +1,7 @@
 from django.contrib import admin
 from homestays.models import *
 from users.models import *
+from booking.models import *
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ['name', 'phone']

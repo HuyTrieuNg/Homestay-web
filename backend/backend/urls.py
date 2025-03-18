@@ -26,5 +26,6 @@ urlpatterns = [
     path('api/homestays/', include('homestays.urls')),
     path('api/host/', include('host.urls')),
     path('api/users/', include('users.urls')),
+    path('api/homestays/booking/', include('booking.urls')),
     
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT) 

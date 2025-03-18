@@ -1,15 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DateRangePicker from "./DateRangePicker";
+import axiosInstance from "@/utils/axiosInstance";
+import { useParams } from "react-router-dom";
+import { format } from "date-fns";
+import PropTypes from "prop-types";
 
-const ReserveBox = () => {
-  // State để lưu giữ giá trị ngày nhận và trả phòng nếu cần để tính toán
+const ReserveBox = ({ basePrice }) => {
   const [range, setRange] = useState({ start: null, end: null });
+  const [unavailableDates, setUnavailableDates] = useState([]);
+  const [datePrices, setDatePrices] = useState({});
+  const { id } = useParams();
 
   const handleDateRangeChange = ({ start, end }) => {
     setRange({ start, end });
   };
 
-  // Tính số đêm
+  useEffect(() => {
+    if (!id) return;
+
+    axiosInstance
+      .get(`homestays/booking/${id}/unavailable-dates`)
+      .then((response) => {
+        if (Array.isArray(response.data.unavailable_dates)) {
+          setUnavailableDates(response.data.unavailable_dates);
+        } else {
+          console.error("Invalid data format:", response.data);
+          setUnavailableDates([]);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching unavailable dates:", error);
+      });
+
+    axiosInstance
+      .get(`homestays/booking/${id}/prices`)
+      .then((response) => {
+        if (typeof response.data.price_map === "object") {
+          setDatePrices(response.data.price_map);
+        } else {
+          console.error("Invalid data format:", response.data);
+          setDatePrices({});
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching prices:", error);
+      });
+  }, [id]);
+
   const calculateNights = () => {
     const { start, end } = range;
     if (!start || !end) return 0;
@@ -18,21 +55,49 @@ const ReserveBox = () => {
   };
 
   const nights = calculateNights();
-  const pricePerNight = 3668286;
-  const subtotal = pricePerNight * nights;
-  const serviceFee = 2589387;
+
+  const calculateTotalPrice = () => {
+    const { start, end } = range;
+    if (!start || !end) return 0;
+
+    let total = 0;
+    let currentDate = new Date(start);
+
+    while (currentDate <= end) {
+      const formattedDate = format(currentDate, "yyyy-MM-dd");
+      total += datePrices[formattedDate] || 0;
+      currentDate.setDate(currentDate.getDate() + 1);
+      console.log("Date:", formattedDate, "Price:", datePrices[formattedDate]);
+    }
+    console.log("Total price:", total);
+    return total;
+  };
+
+  const subtotal = calculateTotalPrice();
+  const serviceFee = 200;
   const total = subtotal + serviceFee;
 
   // Hàm format tiền tệ
+  // const formatCurrency = (amount) => {
+  //   return new Intl.NumberFormat("vi-VN").format(amount);
+  // };
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("vi-VN").format(amount);
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
   };
 
   return (
     <div className="border border-gray-200 rounded-xl p-6 shadow-md">
-      <h2 className="text-lg font-semibold mb-2">Giá: đ10.130.897 / đêm</h2>
-      <div className="flex justify-between items-center mb-4 border rounded-lg p-2">
-        <DateRangePicker onSelectRange={handleDateRangeChange} />
+      <h2 className="text-lg font-semibold mb-2">
+        Giá: {formatCurrency(basePrice)} / đêm
+      </h2>
+      <div className="mb-4 border rounded-lg p-2">
+        <DateRangePicker
+          onSelectRange={handleDateRangeChange}
+          unavailableDates={unavailableDates}
+        />
       </div>
 
       {/* Số khách */}
@@ -52,21 +117,29 @@ const ReserveBox = () => {
       <div className="space-y-3 px-2 mt-4">
         <div className="flex justify-between items-center">
           <span className="underline">
-            đ{formatCurrency(pricePerNight)} x {nights} đêm
+            {formatCurrency(basePrice)} x {nights} đêm
           </span>
-          <span>đ{formatCurrency(subtotal)}</span>
+          <span>{formatCurrency(subtotal)}</span>
         </div>
         <div className="flex justify-between items-center">
           <span className="underline">Phí dịch vụ</span>
-          <span>đ{formatCurrency(serviceFee)}</span>
+          <span>{formatCurrency(serviceFee)}</span>
         </div>
         <div className="pt-3 border-t border-gray-200 flex justify-between items-center font-semibold">
           <span>Tổng trước thuế</span>
-          <span>đ{formatCurrency(total)}</span>
+          <span>{formatCurrency(total)}</span>
         </div>
       </div>
     </div>
   );
+};
+
+ReserveBox.defaultProps = {
+  basePrice: 0,
+};
+
+ReserveBox.propTypes = {
+  basePrice: PropTypes.number,
 };
 
 export default ReserveBox;
