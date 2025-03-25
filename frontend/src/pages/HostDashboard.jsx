@@ -1,40 +1,47 @@
-// src/pages/Dashboard.jsx
 import { useState } from "react";
 import Sidebar from "@components/host/Sidebar";
-import HomestayDetail from "@components/host/HomestayDetail";
+import Header from "@components/host/Header";
+import HomestayUpdateView from "@components/host/HomestayUpdateView";
 
 function Dashboard() {
   const [selectedHomestayId, setSelectedHomestayId] = useState(null);
   const [refreshSidebar, setRefreshSidebar] = useState(false);
 
   const handleRefresh = () => {
-    setRefreshSidebar((prev) => !prev); // Thay đổi để Sidebar cập nhật danh sách
+    setRefreshSidebar((prev) => !prev);
   };
 
   const handleDeleteHomestay = () => {
-    setSelectedHomestayId(null); // Ẩn chi tiết nếu homestay bị xóa
-    handleRefresh(); // Gọi để cập nhật lại Sidebar
+    setSelectedHomestayId(null);
+    handleRefresh();
   };
 
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <Sidebar  
+    <div className="flex flex-col min-h-screen">
+      {/* Header */}
+      <Header />
+
+      {/* Main Content */}
+      <div className="flex flex-1">
+        {/* Sidebar */}
+        <Sidebar  
           onSelectHomestay={setSelectedHomestayId} 
           refresh={refreshSidebar}
-      />
-      {/* Main Content */}
-      <div className="w-full md:w-3/4 p-4">
-        {selectedHomestayId ? (
-          <HomestayDetail 
-            id={selectedHomestayId}
-            onDelete={handleDeleteHomestay} 
-          />
-        ) : (
-          <div className="text-center py-10 text-gray-500">
-            Vui lòng chọn Homestay để xem chi tiết.
-          </div>
-        )}
+        />
+
+        {/* Main View */}
+        <div className="flex-1 p-4 overflow-auto">
+          {selectedHomestayId ? (
+            <HomestayUpdateView 
+              id={selectedHomestayId}
+              onDelete={handleDeleteHomestay} 
+            />
+          ) : (
+            <div className="text-center py-10 text-gray-500">
+              Vui lòng chọn Homestay để xem chi tiết.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

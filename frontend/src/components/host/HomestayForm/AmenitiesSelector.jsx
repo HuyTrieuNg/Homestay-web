@@ -1,12 +1,13 @@
 import React from "react";
 
 const AmenitiesSelector = ({ amenities, selectedAmenities, handleAmenityToggle }) => {
+  
   return (
     <div>
       <label className="block text-gray-700 font-medium mb-1">Amenities:</label>
       <div className="grid grid-cols-3 gap-2">
         {amenities.map((a) => {
-          const isSelected = selectedAmenities.includes(String(a.id));
+          const isSelected = selectedAmenities.includes(a.id);
           return (
             <button
               type="button"

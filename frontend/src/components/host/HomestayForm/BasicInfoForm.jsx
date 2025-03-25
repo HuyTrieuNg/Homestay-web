@@ -43,32 +43,6 @@ const BasicInfoForm = ({ formData, handleChange, types }) => {
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-gray-700 font-medium">Kinh độ:</label>
-          <input
-            type="number"
-            step="any"
-            name="longitude"
-            value={formData.longitude}
-            onChange={handleChange}
-            required
-            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-medium">Vĩ độ:</label>
-          <input
-            type="number"
-            step="any"
-            name="latitude"
-            value={formData.latitude}
-            onChange={handleChange}
-            required
-            className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-          />
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
           <label className="block text-gray-700 font-medium">Giá cơ bản:</label>
           <input
             type="number"
@@ -87,20 +61,10 @@ const BasicInfoForm = ({ formData, handleChange, types }) => {
             value={formData.max_guests}
             onChange={handleChange}
             required
+            min="1"
             className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
           />
         </div>
-      </div>
-      <div>
-        <label className="block text-gray-700 font-medium">Địa chỉ:</label>
-        <input
-          type="text"
-          name="address"
-          value={formData.address}
-          onChange={handleChange}
-          required
-          className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-        />
       </div>
     </div>
   );

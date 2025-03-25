@@ -18,8 +18,7 @@ class District(models.Model):
 
 class Commune(models.Model):
     name = models.CharField(max_length=255)
-    district = models.ForeignKey(District, on_delete=models.CASCADE, default=1)
-    district = models.ForeignKey(District, on_delete=models.CASCADE, related_name="wards")
+    district = models.ForeignKey(District, on_delete=models.CASCADE, default=1, related_name="wards")
 
     def __str__(self):
         return self.name
@@ -94,6 +93,7 @@ class HomestayImage(models.Model):
             if os.path.exists(image_path):
                 os.remove(image_path)  # Xóa file ảnh thực tế
         super().delete(*args, **kwargs)
+        
 
 class HomestayAvailability(models.Model):
     STATUS_CHOICES = [
