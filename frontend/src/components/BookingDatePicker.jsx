@@ -1,18 +1,29 @@
 import useBookingLogic from "@/hooks/useBookingLogic";
 import DateRangePicker from "@components/DateRangePicker";
 import PropTypes from "prop-types";
+import { useEffect } from "react";
 
 const BookingDatePicker = ({
+  initialStart,
+  initialEnd,
   isModalOpen,
   setIsModalOpen,
   basePrice,
   setNumNights,
-  setTotalPrice,
+  setSubTotalPrice,
 }) => {
-  const { range, setRange, calculateNights, calculateTotalPrice } =
-    useBookingLogic(basePrice);
-  setNumNights(calculateNights());
-  setTotalPrice(calculateTotalPrice());
+  const { range, setRange, calculateNights, calculateSubTotalPrice } =
+    useBookingLogic(initialStart, initialEnd, basePrice);
+  useEffect(() => {
+    setNumNights(calculateNights());
+    setSubTotalPrice(calculateSubTotalPrice());
+  }, [
+    range,
+    setNumNights,
+    setSubTotalPrice,
+    calculateNights,
+    calculateSubTotalPrice,
+  ]);
 
   return (
     <div>
@@ -69,11 +80,13 @@ const BookingDatePicker = ({
 };
 
 BookingDatePicker.propTypes = {
+  initialStart: PropTypes.instanceOf(Date),
+  initialEnd: PropTypes.instanceOf(Date),
   isModalOpen: PropTypes.bool,
   setIsModalOpen: PropTypes.func,
   basePrice: PropTypes.number,
   setNumNights: PropTypes.func,
-  setTotalPrice: PropTypes.func,
+  setSubTotalPrice: PropTypes.func,
 };
 
 export default BookingDatePicker;

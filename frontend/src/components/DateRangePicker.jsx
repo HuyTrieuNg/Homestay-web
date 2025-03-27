@@ -15,7 +15,10 @@ const DateRangePicker = ({
   unavailableDates,
 }) => {
   const [start, setStart] = useState(initialStart || new Date());
-  const [end, setEnd] = useState(initialEnd || null);
+  const [end, setEnd] = useState(
+    initialEnd ||
+      new Date(new Date(start).setDate(new Date(start).getDate() + 5))
+  );
 
   const parsedUnavailableDates = (unavailableDates || []).map((date) =>
     parseISO(date)

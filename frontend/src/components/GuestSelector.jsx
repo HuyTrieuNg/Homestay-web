@@ -7,7 +7,8 @@ const GuestSelector = ({
   setChildren,
   pets,
   setPets,
-  onClose,
+  onSave,
+  onCancel,
 }) => {
   return (
     <div className="p-4 bg-white shadow-lg rounded-lg w-72">
@@ -82,12 +83,12 @@ const GuestSelector = ({
       </div>
 
       <div className="flex justify-end gap-2 mt-4">
-        <button className="bg-gray-300 px-4 py-2 rounded-lg" onClick={onClose}>
+        <button className="bg-gray-300 px-4 py-2 rounded-lg" onClick={onCancel}>
           Hủy
         </button>
         <button
           className="bg-[#FF385C] text-white px-4 py-2 rounded-lg"
-          onClick={onClose}
+          onClick={onSave}
         >
           Lưu
         </button>
@@ -103,7 +104,8 @@ GuestSelector.propTypes = {
   setChildren: PropTypes.func,
   pets: PropTypes.number,
   setPets: PropTypes.func,
-  onClose: PropTypes.func,
+  onSave: PropTypes.func,
+  onCancel: PropTypes.func,
 };
 
 export default GuestSelector;

@@ -5,17 +5,17 @@ import useBookingLogic from "@/hooks/useBookingLogic";
 import BookingGuestPicker from "./BookingGuestPicker";
 import PropTypes from "prop-types";
 
-const ReserveBox = ({ basePrice }) => {
+const ReserveBox = ({ initialStart, initialEnd, basePrice }) => {
   const {
     range,
     setRange,
     unavailableDates,
     calculateNights,
-    calculateTotalPrice,
-  } = useBookingLogic(basePrice);
+    calculateSubTotalPrice,
+  } = useBookingLogic(initialStart, initialEnd, basePrice);
 
-  const [guests, setGuests] = useState({ adults: 1, children: 0, infants: 0 });
-  const subtotal = calculateTotalPrice();
+  const [guests, setGuests] = useState({ adults: 1, children: 0, pets: 0 });
+  const subtotal = calculateSubTotalPrice();
   const serviceFee = 200;
   const total = subtotal + serviceFee;
 
@@ -30,7 +30,7 @@ const ReserveBox = ({ basePrice }) => {
     }).format(amount);
   };
 
-  const id = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const handleBooking = () => {
@@ -38,14 +38,24 @@ const ReserveBox = ({ basePrice }) => {
       alert("Vui lòng chọn ngày trước khi đặt phòng!");
       return;
     }
+    console.log("start", range.start);
+    console.log("end", range.end);
+    const formatDate = (date) => {
+      return date.toLocaleDateString("vn-VI");
+    };
 
-    const startDate = range.start.toISOString().split("T")[0];
-    const endDate = range.end.toISOString().split("T")[0];
-
+    const checkInDate = formatDate(range.start);
+    const checkOutDate = formatDate(range.end);
+    console.log("Booking:", {
+      id,
+      checkInDate,
+      checkOutDate,
+      ...guests,
+    });
     navigate(
-      `/booking?id=${id}&startDate=${startDate}&endDate=${endDate}&guests=${
-        guests.adults + guests.children
-      }`
+      `/booking?id=${id.toString()}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&numberOfAdults=${
+        guests.adults
+      }&numberOfChildren=${guests.children}&numberOfPets=${guests.pets ?? 0}`
     );
   };
 
@@ -55,16 +65,18 @@ const ReserveBox = ({ basePrice }) => {
         Giá: {formatCurrency(basePrice)} / đêm
       </h2>
       <div className="mb-4 border rounded-lg p-2">
+        {/* Chọn ngày */}
         <DateRangePicker
           onSelectRange={setRange}
           unavailableDates={unavailableDates}
         />
       </div>
       <div className="mb-4">
+        {/* Chọn khách */}
         <BookingGuestPicker
           isDropdown={true}
           guests={guests}
-          setGuests={setGuests}
+          onGuestsChange={setGuests}
         />
       </div>
 
@@ -99,6 +111,8 @@ ReserveBox.defaultProps = {
 };
 
 ReserveBox.propTypes = {
+  initialStart: PropTypes.instanceOf(Date),
+  initialEnd: PropTypes.instanceOf(Date),
   basePrice: PropTypes.number,
 };
 

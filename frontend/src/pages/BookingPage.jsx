@@ -1,20 +1,50 @@
-import { Star, ShieldCheck, Clock, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { Clock, ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import axiosInstance from "@/utils/axiosInstance";
 import BookingGuestPicker from "@/components/BookingGuestPicker";
 import BookingDatePicker from "@/components/BookingDatePicker";
+import { useSearchParams } from "react-router-dom";
+import BookingSideBox from "@/components/BookingSideBox";
 
 function BookingPage() {
+  //Lấy ngày checkin và checkout từ URL
+  const [searchParams] = useSearchParams();
+  const id = Number(searchParams.get("id")) || 1;
+  const checkInDate =
+    searchParams.get("checkInDate") || new Date().toISOString().split("T")[0];
+  const checkOutDate =
+    searchParams.get("checkOutDate") || new Date().toISOString().split("T")[0];
+
+  //Lấy số khách từ URL
+  const numberOfAdults = Number(searchParams.get("numberOfAdults")) || 1;
+  const numberOfChildren = Number(searchParams.get("numberOfChildren")) || 0;
+  const numberOfPets = Number(searchParams.get("numberOfPets")) || 0;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const pricePerNight = 697429;
-  const serviceFee = 492305;
   const [numNights, setNumNights] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
 
   const [isModalGuestOpen, setIsModalGuestOpen] = useState(false);
-  const [guests, setGuests] = useState({ adults: 1, children: 0, pets: 0 });
   const [isOpen, setIsOpen] = useState(false);
-  const totalGuests = guests.adults + guests.children;
-  const totalPets = guests.pets;
+
+  const [homestay, setHomestay] = useState(null);
+  useEffect(() => {
+    if (id) {
+      axiosInstance
+        .get(`homestays/${id}`)
+        .then((response) => {
+          console.log("Homestay data:", response.data);
+          setHomestay(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching homestay details:", error);
+        });
+    }
+  }, [id]);
+
+  if (!homestay) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div className="min-h-screen bg-white-100">
@@ -40,34 +70,24 @@ function BookingPage() {
             <div>
               {/* Chọn ngày */}
               <BookingDatePicker
+                initialStart={checkInDate}
+                initialEnd={checkOutDate}
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
-                basePrice={pricePerNight}
+                basePrice={Number(homestay.base_price)}
                 setNumNights={setNumNights}
-                setTotalPrice={setTotalPrice}
+                setSubTotalPrice={setTotalPrice}
               />
-
               {/* Số người ở */}
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <p className="font-semibold">Khách</p>
-                  <p className="text-gray-700">
-                    {totalGuests} Khách
-                    {totalPets ? `, ${totalPets} thú cưng` : ""}
-                  </p>
-                </div>
-                <button
-                  className="bg-white text-black px-4 py-2 rounded-lg border cursor-pointer"
-                  onClick={() => setIsModalGuestOpen(true)}
-                >
-                  Chỉnh sửa
-                </button>
-              </div>
-              {/* chọn số lượng người ở (đang là không được quá 6 ng)*/}
               <BookingGuestPicker
+                initialGuests={{
+                  adults: numberOfAdults,
+                  children: numberOfChildren,
+                  pets: numberOfPets,
+                }}
                 isDropdown={false}
-                guests={guests}
-                setGuests={setGuests}
+                // guests={guests}
+                // setGuests={setGuests}
                 isModalGuestOpen={isModalGuestOpen}
                 setIsModalGuestOpen={setIsModalGuestOpen}
               />
@@ -258,54 +278,11 @@ function BookingPage() {
               Yêu cầu đặt phòng
             </button>
           </div>
-
-          {/* phần bên phải*/}
-          <div className="p-4 rounded-lg sticky top-10 h-fit bg-white text-black border border-gray-300">
-            {/* thông tin phòng */}
-            <div className="flex items-center gap-4">
-              <img
-                src="https://a0.muscache.com/im/pictures/miso/Hosting-5004250/original/ec5908f9-4361-4213-a158-09d108fec9f3.jpeg?aki_policy=large"
-                alt="Phòng"
-                className="w-20 h-20 rounded-lg object-cover"
-              />
-              <div>
-                <p className="text-lg font-semibold">
-                  O Remoinho - Cối xay gió
-                </p>
-                <p className="text-gray-500">Cối xay gió</p>
-                <p className="text-gray-500 flex items-center gap-2">
-                  <Star className="w-3 h-3 text-black" />
-                  4,97 (147 đánh giá) ·
-                  <ShieldCheck className="w-3 h-3 text-gray-700" />
-                  Chủ nhà siêu cấp
-                </p>
-              </div>
-            </div>
-            <hr className="border-t border-gray-300 my-4" />
-
-            {/* giá tiền */}
-            <h1 className="text-2xl font-semibold mb-4">Chi tiết giá</h1>
-            <div className="flex justify-between mb-4">
-              <p>
-                ₫{pricePerNight.toLocaleString()} x {numNights} đêm
-              </p>
-              <p>₫{(numNights * pricePerNight).toLocaleString()}</p>
-            </div>
-
-            <div className="flex justify-between mb-4">
-              <a href="#" className="text-black underline">
-                Phí dịch vụ Airbnb:
-              </a>
-              <p>₫{serviceFee.toLocaleString()}</p>
-            </div>
-
-            <hr className="border-t border-gray-300 my-4" />
-
-            <div className="flex justify-between text-lg font-bold">
-              <p>Tổng(VND):</p>
-              <p>₫{totalPrice.toLocaleString()}</p>
-            </div>
-          </div>
+          <BookingSideBox
+            homestay={homestay}
+            numNights={numNights}
+            subTotalPrice={totalPrice}
+          />
         </div>
       </div>
     </div>
