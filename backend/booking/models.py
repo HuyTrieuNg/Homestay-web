@@ -8,7 +8,7 @@ class Booking(models.Model):
     checkin_date = models.DateField()
     checkout_date = models.DateField()
     guests = models.IntegerField()
-    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')])
+    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled'), ('rejected', 'Rejected')])
     currency = models.CharField(max_length=10)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
     fee = models.DecimalField(max_digits=10, decimal_places=2)

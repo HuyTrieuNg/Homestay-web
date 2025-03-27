@@ -11,18 +11,22 @@ class DistrictSerializer(serializers.ModelSerializer):
         model = District
         fields = ['id', 'name']
 
+
 class CommuneSerializer(serializers.ModelSerializer):
+    district_id = serializers.IntegerField(source="district.id", read_only=True)
+    province_id = serializers.IntegerField(source="district.province.id", read_only=True)
+
     class Meta:
         model = Commune
-        fields = ['id', 'name']
+        fields = ["id", "name", "district_id", "province_id"]  # THÊM district_id, province_id
+
 
 class AmenitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Amenity
-        # fields = ['id', 'name', 'icon']
         fields = ['id', 'name']
 
-class HomestayImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = HomestayImage
-        fields = ['id', 'image']
+# class HomestayImageSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = HomestayImage
+#         fields = ['id', 'image']
