@@ -35,6 +35,26 @@ class HomestaySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_images(self, obj):
+        print("Hàm get_images được gọi!")
+        request = self.context.get("request")
+        if request:
+            return [request.build_absolute_uri(img.image.url) for img in obj.images.all()]
+        return [img.image.url for img in obj.images.all()]
+    
+class HomestayDetailSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField()
+    amenities = AmenitySerializer(many=True)
+    type = PropertyTypeSerializer()
+    commune = CommuneSerializer()
+    district = DistrictSerializer()
+    province = ProvinceSerializer()
+
+    class Meta:
+        model = Homestay
+        fields = '__all__'
+
+    def get_images(self, obj):
+        print("Hàm get_images được gọi!")
         request = self.context.get("request")
         if request:
             return [request.build_absolute_uri(img.image.url) for img in obj.images.all()]

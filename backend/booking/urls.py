@@ -11,4 +11,6 @@ urlpatterns = [
     # path('update/<int:pk>', BookingUpdateView.as_view(), name='update_booking'),
     # path('delete/<int:pk>', BookingDeleteView.as_view(), name='delete_booking'),
     # path('homestay/<int:pk>', BookingHomestayView.as_view(), name='get_homestay_bookings'),
+    path('mybookings', UserBookingView.as_view(), name='get_user_bookings'),
+    path('bookinghistory/<int:pk>', BookingDetailView.as_view(), name='get_booking_detail'),
 ]

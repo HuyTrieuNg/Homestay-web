@@ -1,11 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics
 from django.shortcuts import get_object_or_404
 
 from homestays.models import Homestay
-from booking.models import HomestayAvailability
-from .serializers import HomestayAvailabilitySerializer
+from booking.models import Booking, HomestayAvailability
+from .serializers import BookingSerializer, HomestayAvailabilitySerializer
 
 class BookingAvailabilityView(APIView):
     permission_classes = [AllowAny]
@@ -46,3 +48,16 @@ class PricesView(APIView):
         return Response({
             "price_map": price_map
         })
+    
+class UserBookingView(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        bookings = Booking.objects.filter(user=request.user).order_by('-checkin_date')
+        serializer = BookingSerializer(bookings, many=True, context={"request": request})
+        return Response(serializer.data)
+
+class BookingDetailView(generics.RetrieveAPIView):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+    # permission_classes = [IsAuthenticated]
