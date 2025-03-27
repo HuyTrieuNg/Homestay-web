@@ -14,10 +14,17 @@ const DateRangePicker = ({
   initialEnd,
   unavailableDates,
 }) => {
-  const [start, setStart] = useState(initialStart || new Date());
+  const normalizeDate = (date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  const [start, setStart] = useState(normalizeDate(initialStart || new Date()));
   const [end, setEnd] = useState(
-    initialEnd ||
-      new Date(new Date(start).setDate(new Date(start).getDate() + 5))
+    initialEnd
+      ? normalizeDate(initialEnd)
+      : normalizeDate(new Date(start.getTime() + 5 * 24 * 60 * 60 * 1000))
   );
 
   const parsedUnavailableDates = (unavailableDates || []).map((date) =>
@@ -49,13 +56,13 @@ const DateRangePicker = ({
   };
 
   const getNextUnavailableDate = (startDate) => {
-    return parsedUnavailableDates.find((date) => date > startDate);
+    return parsedUnavailableDates.find((date) => date > startDate) || null;
   };
 
   const handleStartSelect = (date) => {
     setStart(date);
     const nextUnavailable = getNextUnavailableDate(date);
-    if (end && (date > end || (nextUnavailable && end > nextUnavailable))) {
+    if (end && (date >= end || (nextUnavailable && end >= nextUnavailable))) {
       setEnd(null);
       onSelectRange && onSelectRange({ start: date, end: null });
     } else {

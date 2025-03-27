@@ -1,9 +1,9 @@
 import { Clock, ArrowLeft } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "@/utils/axiosInstance";
 import BookingGuestPicker from "@/components/BookingGuestPicker";
 import BookingDatePicker from "@/components/BookingDatePicker";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import BookingSideBox from "@/components/BookingSideBox";
 import useAuth from "@/hooks/useAuth";
 import LoginForm from "@/components/LoginForm";
@@ -11,14 +11,59 @@ import LoginForm from "@/components/LoginForm";
 function BookingPage() {
   //Lấy ngày checkin và checkout từ URL
   const [searchParams] = useSearchParams();
-  const id = Number(searchParams.get("id")) || 1;
-  const checkInDate = searchParams.get("checkInDate") || null;
-  const checkOutDate = searchParams.get("checkOutDate") || null;
+  const navigate = useNavigate();
 
-  //Lấy số khách từ URL
-  const numberOfAdults = Number(searchParams.get("numberOfAdults")) || 1;
-  const numberOfChildren = Number(searchParams.get("numberOfChildren")) || 0;
-  const numberOfPets = Number(searchParams.get("numberOfPets")) || 0;
+  const [bookingData, setBookingData] = useState({
+    id: Number(searchParams.get("id")) || 1,
+    checkInDate: searchParams.get("checkInDate") || null,
+    checkOutDate: searchParams.get("checkOutDate") || null,
+    numberOfAdults: Number(searchParams.get("numberOfAdults")) || 1,
+    numberOfChildren: Number(searchParams.get("numberOfChildren")) || 0,
+    numberOfPets: Number(searchParams.get("numberOfPets")) || 0,
+  });
+
+  const updateCheckInOutDate = useCallback((newCheckIn, newCheckOut) => {
+    setBookingData((prev) => {
+      if (
+        prev.checkInDate === newCheckIn &&
+        prev.checkOutDate === newCheckOut
+      ) {
+        return prev; // Không cập nhật nếu không có thay đổi
+      }
+      return { ...prev, checkInDate: newCheckIn, checkOutDate: newCheckOut };
+    });
+  }, []);
+
+  const updateGuests = useCallback((newGuests) => {
+    setBookingData((prev) => {
+      if (
+        prev.numberOfAdults === newGuests.adults &&
+        prev.numberOfChildren === newGuests.children &&
+        prev.numberOfPets === newGuests.pets
+      ) {
+        return prev;
+      }
+      return {
+        ...prev,
+        numberOfAdults: newGuests.adults,
+        numberOfChildren: newGuests.children,
+        numberOfPets: newGuests.pets,
+      };
+    });
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams({
+      id: bookingData.id,
+      checkInDate: bookingData.checkInDate,
+      checkOutDate: bookingData.checkOutDate,
+      numberOfAdults: bookingData.numberOfAdults,
+      numberOfChildren: bookingData.numberOfChildren,
+      numberOfPets: bookingData.numberOfPets,
+    });
+
+    navigate(`/booking?${params.toString()}`, { replace: true });
+  }, [bookingData, navigate]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [numNights, setNumNights] = useState(1);
@@ -31,14 +76,15 @@ function BookingPage() {
 
   //Kiểm tra đăng nhập
   const isAuthenticated = useAuth();
+
   useEffect(() => {
     console.log("isAuthenticated", isAuthenticated);
   }, [isAuthenticated]);
 
   useEffect(() => {
-    if (id) {
+    if (bookingData.id && !homestay) {
       axiosInstance
-        .get(`homestays/${id}`)
+        .get(`homestays/${bookingData.id}`)
         .then((response) => {
           console.log("Homestay data:", response.data);
           setHomestay(response.data);
@@ -47,11 +93,32 @@ function BookingPage() {
           console.error("Error fetching homestay details:", error);
         });
     }
-  }, [id]);
+  }, [bookingData.id, homestay]);
 
   if (!homestay) {
     return <p>Loading...</p>;
   }
+
+  const handleBooking = async () => {
+    try {
+      const response = await axiosInstance.post(
+        `/api/bookings/${bookingData.id}/`,
+        {
+          checkin_date: bookingData.checkInDate,
+          checkout_date: bookingData.checkOutDate,
+          adults: bookingData.numberOfAdults,
+          children: bookingData.numberOfChildren,
+          currency: "USD",
+          note: "Yêu cầu phòng gần hồ bơi",
+        }
+      );
+
+      alert(`Đặt phòng thành công! Tổng tiền: ${response.data.total_amount}`);
+    } catch (error) {
+      console.error("Lỗi đặt phòng:", error.response.data);
+      alert(error.response.data.error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white-100">
@@ -76,26 +143,26 @@ function BookingPage() {
             <div>
               {/* Chọn ngày */}
               <BookingDatePicker
-                initialStart={checkInDate}
-                initialEnd={checkOutDate}
+                initialStart={bookingData.checkInDate}
+                initialEnd={bookingData.checkOutDate}
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
                 basePrice={Number(homestay.base_price)}
                 setNumNights={setNumNights}
                 setSubTotalPrice={setTotalPrice}
+                onDateChange={updateCheckInOutDate}
               />
               {/* Số người ở */}
               <BookingGuestPicker
                 initialGuests={{
-                  adults: numberOfAdults,
-                  children: numberOfChildren,
-                  pets: numberOfPets,
+                  adults: bookingData.numberOfAdults,
+                  children: bookingData.numberOfChildren,
+                  pets: bookingData.numberOfPets,
                 }}
                 isDropdown={false}
-                // guests={guests}
-                // setGuests={setGuests}
                 isModalGuestOpen={isModalGuestOpen}
                 setIsModalGuestOpen={setIsModalGuestOpen}
+                onGuestsChange={updateGuests}
               />
             </div>
             <hr className="border-t border-gray-300 my-4" />
@@ -290,7 +357,10 @@ function BookingPage() {
                     Chủ nhà chấp nhận yêu cầu đặt phòng của tôi.
                   </p>
                 </div>
-                <button className="bg-[#FF385C] text-white font-semibold px-4 py-2 rounded-lg text-xl cursor-pointer">
+                <button
+                  className="bg-[#FF385C] text-white font-semibold px-4 py-2 rounded-lg text-xl cursor-pointer"
+                  onClick={handleBooking}
+                >
                   Yêu cầu đặt phòng
                 </button>
               </div>

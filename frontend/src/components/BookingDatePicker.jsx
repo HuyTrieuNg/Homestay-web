@@ -1,5 +1,6 @@
 import useBookingLogic from "@/hooks/useBookingLogic";
 import DateRangePicker from "@components/DateRangePicker";
+import { format } from "date-fns";
 import PropTypes from "prop-types";
 import { useEffect } from "react";
 
@@ -11,18 +12,24 @@ const BookingDatePicker = ({
   basePrice,
   setNumNights,
   setSubTotalPrice,
+  onDateChange,
 }) => {
   const { range, setRange, calculateNights, calculateSubTotalPrice } =
     useBookingLogic(initialStart, initialEnd, basePrice);
   useEffect(() => {
     setNumNights(calculateNights());
     setSubTotalPrice(calculateSubTotalPrice());
+
+    if (onDateChange) {
+      onDateChange(range.start, range.end);
+    }
   }, [
     range,
     setNumNights,
     setSubTotalPrice,
     calculateNights,
     calculateSubTotalPrice,
+    onDateChange,
   ]);
 
   return (
@@ -33,10 +40,8 @@ const BookingDatePicker = ({
           <div>
             <p className="font-semibold">Ngày</p>
             <p className="text-gray-700">
-              {range.start
-                ? range.start.toLocaleDateString("vi-VN")
-                : "Chưa chọn"}{" "}
-              -{range.end ? range.end.toLocaleDateString("vi-VN") : "Chưa chọn"}
+              {range.start ? format(range.start, "dd/MM/yyyy") : "Chưa chọn"} -{" "}
+              {range.end ? format(range.end, "dd/MM/yyyy") : "Chưa chọn"}
             </p>
           </div>
           <button
@@ -87,6 +92,7 @@ BookingDatePicker.propTypes = {
   basePrice: PropTypes.number,
   setNumNights: PropTypes.func,
   setSubTotalPrice: PropTypes.func,
+  onDateChange: PropTypes.func,
 };
 
 export default BookingDatePicker;

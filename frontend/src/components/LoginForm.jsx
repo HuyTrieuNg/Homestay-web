@@ -18,7 +18,7 @@ function LoginForm({ fullWidth = false }) {
       const errorMsg = loginUser(username, password);
 
       if (errorMsg !== true) {
-        setLoginError(errorMsg); // ✅ Cập nhật lỗi vào UI
+        setLoginError(errorMsg);
       }
     }
   };

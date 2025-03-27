@@ -52,7 +52,12 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("authTokens", JSON.stringify(data));
         setAuthTokens(data);
         setUser(jwtDecode(data.access));
-        navigate("/profile");
+        const currentPath = location.pathname;
+        if (currentPath.startsWith("/booking")) {
+          window.location.reload();
+        } else {
+          navigate("/profile");
+        }
       } else {
         console.error("Login failed:", response.status, data);
         alert(

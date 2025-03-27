@@ -5,19 +5,27 @@ const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("authTokens");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        const isExpired = decoded.exp * 1000 < Date.now();
-        setIsAuthenticated(!isExpired);
-      } catch (error) {
-        console.error("Error decoding token:", error.message || error);
+    const checkAuth = () => {
+      const token = localStorage.getItem("authTokens");
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          const isExpired = decoded.exp * 1000 < Date.now();
+          setIsAuthenticated(!isExpired);
+        } catch (error) {
+          console.error("Error decoding token:", error);
+          setIsAuthenticated(false);
+        }
+      } else {
         setIsAuthenticated(false);
       }
-    } else {
-      setIsAuthenticated(false);
-    }
+    };
+
+    checkAuth();
+
+    // Nghe sự thay đổi của localStorage (khi login)
+    window.addEventListener("storage", checkAuth);
+    return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
   return isAuthenticated;

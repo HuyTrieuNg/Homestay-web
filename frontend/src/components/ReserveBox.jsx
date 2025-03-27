@@ -40,12 +40,9 @@ const ReserveBox = ({ initialStart, initialEnd, basePrice }) => {
     }
     console.log("start", range.start);
     console.log("end", range.end);
-    const formatDate = (date) => {
-      return date.toLocaleDateString("vn-VI");
-    };
 
-    const checkInDate = formatDate(range.start);
-    const checkOutDate = formatDate(range.end);
+    const checkInDate = range.start;
+    const checkOutDate = range.end;
     console.log("Booking:", {
       id,
       checkInDate,

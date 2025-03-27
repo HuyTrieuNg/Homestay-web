@@ -4,10 +4,15 @@ import { format } from "date-fns";
 import { useParams } from "react-router-dom";
 
 const useBookingLogic = (initialStart, initialEnd, basePrice) => {
-  const startDate = initialStart ? new Date(initialStart) : new Date();
+  const normalizeDate = (date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+  const startDate = normalizeDate(initialStart || new Date());
   const endDate = initialEnd
-    ? new Date(initialEnd)
-    : new Date(new Date(startDate).setDate(new Date(startDate).getDate() + 5));
+    ? normalizeDate(initialEnd)
+    : normalizeDate(new Date(startDate.getTime() + 5 * 24 * 60 * 60 * 1000));
 
   const [range, setRange] = useState({
     start: startDate,
