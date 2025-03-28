@@ -16,10 +16,15 @@ function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
+    if (password !== password2) {
+      setErrors({ password2: ["Mật khẩu không trùng khớp"] });
+      return;
+    }
     // registerUser(phone, username, password, password2);
     const result = await registerUser(phone, username, password, password2);
     if (!result.success) {
       setErrors(result.errors);
+      console.log(result.errors);
     }
   };
 
@@ -44,10 +49,10 @@ function RegisterPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               required
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
             />
             {errors.phone && (
-              <p className="text-sm text-red-500">{errors.phone.join(", ")}</p>
+              <div className="mt-4 text-sm text-red-500 bg-red-100 p-2 rounded-md text-center">{errors.phone.join(" ")}</div>
             )}
           </div>
 
@@ -64,12 +69,12 @@ function RegisterPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
             />
             {errors.username && (
-              <p className="text-sm text-red-500">
-                {errors.username.join(", ")}
-              </p>
+              <div className="mt-4 text-sm text-red-500 bg-red-100 p-2 rounded-md text-center">
+                {errors.username.join(" ")}
+              </div>
             )}
           </div>
 
@@ -86,12 +91,12 @@ function RegisterPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
             />
             {errors.password && (
-              <p className="text-sm text-red-500">
-                {errors.password.join(", ")}
-              </p>
+              <div className="mt-4 text-sm text-red-500 bg-red-100 p-2 rounded-md text-center">
+                {errors.password.join(" ")}
+              </div>
             )}
           </div>
 
@@ -108,12 +113,12 @@ function RegisterPage() {
               value={password2}
               onChange={(e) => setPassword2(e.target.value)}
               required
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
             />
             {errors.password2 && (
-              <p className="text-sm text-red-500">
-                {errors.password2.join(", ")}
-              </p>
+              <div className="mt-4 text-sm text-red-500 bg-red-100 p-2 rounded-md text-center">
+                {errors.password2.join(" ")}
+              </div>
             )}
           </div>
           {/* {registerError && (
@@ -123,7 +128,7 @@ function RegisterPage() {
           )} */}
           <button
             type="submit"
-            className="w-full px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 text-white bg-[#FF385C] rounded-md hover:bg-[#FF384C] focus:outline-none focus:ring-2 focus:ring-black cursor-pointer"
           >
             Register
           </button>
@@ -132,7 +137,7 @@ function RegisterPage() {
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
             Already have an account?{" "}
-            <a href="/login" className="text-blue-500 hover:underline">
+            <a href="/login" className="text-[#FF385C] hover:underline">
               Login Now
             </a>
           </p>

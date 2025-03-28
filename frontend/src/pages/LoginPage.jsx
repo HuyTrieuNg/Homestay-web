@@ -41,7 +41,7 @@ function LoginPage() {
               id="username"
               name="username"
               required
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
             />
           </div>
 
@@ -57,7 +57,7 @@ function LoginPage() {
               id="password"
               name="password"
               required
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
             />
           </div>
           {loginError && (
@@ -67,7 +67,7 @@ function LoginPage() {
           )}
           <button
             type="submit"
-            className="w-full px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 text-white bg-[#FF385C] rounded-md hover:bg-[#FF384C] focus:outline-none focus:ring-2 focus:bg-black cursor-pointer"
           >
             Login
           </button>
@@ -76,13 +76,13 @@ function LoginPage() {
         <div className="mt-4 text-center">
           <a
             href="/forgot-password"
-            className="text-sm text-blue-500 hover:underline"
+            className="text-sm text-[#FF385C] hover:underline"
           >
             Forgot password?
           </a>
           <p className="mt-2 text-sm text-gray-600">
             Don&apos;t have an account?{" "}
-            <a href="/register" className="text-blue-500 hover:underline">
+            <a href="/register" className="text-[#FF385C] hover:underline">
               Register Now
             </a>
           </p>
