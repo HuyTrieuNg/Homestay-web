@@ -122,7 +122,7 @@ function BookingList({ bookings, onUpdateBookings }) {
                                 <td className="p-2 w-[6%]">{booking.subtotal}</td>
                                 <td className="p-2 w-[6%]">{booking.fee}</td>
                                 <td className="p-2 w-[6%]">{booking.total_amount}</td>
-                                <td className="p-2 w-[3%] relative">
+                                <td className="p-2 w-[3%]">
                                     <button onClick={() => handleToggleNote(booking.id)}>
                                         {booking.note ? (
                                             <span className="relative flex justify-center items-center cursor-pointer hover:text-blue-500">
@@ -133,7 +133,7 @@ function BookingList({ bookings, onUpdateBookings }) {
                                         )}
                                     </button>
 
-                                    {/* 🔥 Popup hiển thị khi mở */}
+                                    {/* Popup hiển thị khi mở */}
                                     {openNoteId === booking.id && (
                                         <div ref={popupRef} className="absolute right-0 mt-2 w-64 max-w-xs bg-white shadow-lg rounded-lg p-3 border border-gray-200 z-50 text-left break-words">
                                             <h3 className="text-sm font-semibold text-gray-700">Ghi chú</h3>
