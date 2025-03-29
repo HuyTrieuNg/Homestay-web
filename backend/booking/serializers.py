@@ -16,20 +16,17 @@ class BookingSerializer(serializers.ModelSerializer):
     homestay = serializers.SerializerMethodField()
     class Meta:
         model = Booking
-        fields = [
-            'id', 'user', 'homestay', 'checkin_date', 'checkout_date', 
-            'guests', 'status', 'currency', 'subtotal', 'fee', 'total_amount', 'note'
-        ]
+        fields = '__all__'
     def get_user(self, obj):
         return {
             "id": obj.user.id,
-            "name": obj.user.name  # Truy cập trực tiếp từ model User
+            "name": obj.user.name  
         }
 
     def get_homestay(self, obj):
         return {
             "id": obj.homestay.id,
-            "name": obj.homestay.name  # Truy cập trực tiếp từ model Homestay
+            "name": obj.homestay.name 
         }
 
 class BookingLineSerializer(serializers.ModelSerializer):

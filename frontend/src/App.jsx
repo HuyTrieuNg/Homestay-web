@@ -10,6 +10,7 @@ import HomestayForm from "./pages/AddNewHomestay";
 // import HomestayPage from "./pages/HomestayPage";
 // import BookingPage from "./pages/BookingPage";
 import HostBooking from "./pages/HostBooking";
+import HostCalendarPage from "./pages/HostCalenderPage";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="/host" element={<HostDashboard />} />
             <Route path="/host/newHomestay" element={<HomestayForm />} />
             <Route path="/host/booking" element={<HostBooking/>}/>
+            <Route path="/host/calendar" element={<HostCalendarPage/>}/>
             {/* <Route path="/booking" element={<BookingPage/>}/> */}
           </Route>
         </Routes>

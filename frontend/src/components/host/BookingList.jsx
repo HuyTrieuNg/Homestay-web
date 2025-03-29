@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@utils/axiosInstance";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faNoteSticky } from "@fortawesome/free-regular-svg-icons";
+import { faCheckCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
 function BookingList({ bookings, onUpdateBookings }) {
     const [bookingLines, setBookingLines] = useState({});
@@ -35,7 +38,7 @@ function BookingList({ bookings, onUpdateBookings }) {
             return;
         }
         axiosInstance
-            .post(`host/bookings/${id}/`, { action: "confirmed" })
+            .post(`host/bookings/${id}/process/`, { action: "confirmed" })
             .then(() => {
                 alert(`Đã xác nhận booking ${id}`);
                 onUpdateBookings(id, "confirmed");
@@ -51,7 +54,7 @@ function BookingList({ bookings, onUpdateBookings }) {
             return;
         }
         axiosInstance
-            .post(`host/bookings/${id}/`, { action: "rejected" })
+            .post(`host/bookings/${id}/process/`, { action: "rejected" })
             .then(() => {
             alert(`Đã từ chối booking ${id}`);
             onUpdateBookings(id, "rejected");
@@ -88,13 +91,14 @@ function BookingList({ bookings, onUpdateBookings }) {
                                                 className="text-green-500 hover:text-green-700"
                                                 onClick={() => handleconfirm(booking.id)}
                                             >
-                                                <i className="fa-solid fa-check-circle text-lg"></i>
+                                                <FontAwesomeIcon icon={faCheckCircle} className="text-green-500 text-lg" />
+                                                
                                             </button>
                                             <button
                                                 className="text-red-500 hover:text-red-700"
                                                 onClick={() => handleReject(booking.id)}
                                             >
-                                                <i className="fa-solid fa-times-circle text-lg"></i>
+                                                <FontAwesomeIcon icon={faTimesCircle} className="text-red-500 text-lg" />
                                             </button>
                                         </div>
                                     )}
@@ -126,10 +130,11 @@ function BookingList({ bookings, onUpdateBookings }) {
                                     <button onClick={() => handleToggleNote(booking.id)}>
                                         {booking.note ? (
                                             <span className="relative flex justify-center items-center cursor-pointer hover:text-blue-500">
-                                                <i className="fa-regular fa-note-sticky text-xl text-red-500">⁺</i>
+                                                {/* <i className="fa-regular fa-note-sticky text-xl text-red-500">⁺</i> */}
+                                                <FontAwesomeIcon icon={faNoteSticky} className="text-xl text-red-500" />
                                             </span>
                                         ) : (
-                                            <i className="fa-regular fa-note-sticky text-xl"></i>
+                                            <FontAwesomeIcon icon={faNoteSticky} className="text-xl" />
                                         )}
                                     </button>
 
