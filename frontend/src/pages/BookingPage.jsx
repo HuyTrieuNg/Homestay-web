@@ -1,9 +1,11 @@
 import { Clock, ArrowLeft } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 import axiosInstance from "@/utils/axiosInstance";
+
 import BookingGuestPicker from "@/components/BookingGuestPicker";
 import BookingDatePicker from "@/components/BookingDatePicker";
-import { useSearchParams, useNavigate } from "react-router-dom";
 import BookingSideBox from "@/components/BookingSideBox";
 import useAuth from "@/hooks/useAuth";
 import LoginForm from "@/components/LoginForm";
@@ -102,10 +104,10 @@ function BookingPage() {
   const handleBooking = async () => {
     try {
       const response = await axiosInstance.post(
-        `/api/bookings/${bookingData.id}/`,
+        `homestays/booking/${bookingData.id}/`,
         {
-          checkin_date: bookingData.checkInDate,
-          checkout_date: bookingData.checkOutDate,
+          checkin_date: format(bookingData.checkInDate, "yyyy-MM-dd"),
+          checkout_date: format(bookingData.checkOutDate, "yyyy-MM-dd"),
           adults: bookingData.numberOfAdults,
           children: bookingData.numberOfChildren,
           currency: "USD",

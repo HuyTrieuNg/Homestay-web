@@ -16,7 +16,7 @@ const ReserveBox = ({ initialStart, initialEnd, basePrice }) => {
 
   const [guests, setGuests] = useState({ adults: 1, children: 0, pets: 0 });
   const subtotal = calculateSubTotalPrice();
-  const serviceFee = 200;
+  const serviceFee = subtotal * 0.1;
   const total = subtotal + serviceFee;
 
   // Hàm format tiền tệ

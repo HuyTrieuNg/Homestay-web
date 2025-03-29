@@ -40,7 +40,7 @@ const BookingGuestPicker = ({
       {isDropdown ? (
         // Trường hợp Dropdown
         <div>
-          <p className="text-sm text-gray-500">Khách</p>
+          <p className="text-xs font-semibold text-gray-800">Khách</p>
           <div
             className="w-full bg-transparent outline-none text-gray-800 border rounded-lg p-2 cursor-pointer"
             onClick={() => setIsOpened(!isOpened)}
@@ -58,6 +58,7 @@ const BookingGuestPicker = ({
                 setPets={setPets}
                 onSave={handleSave}
                 onCancel={handleCancel}
+                haveMaxGuests={true}
               />
             </div>
           )}
@@ -91,6 +92,7 @@ const BookingGuestPicker = ({
                 setPets={setPets}
                 onSave={handleSave}
                 onCancel={handleCancel}
+                haveMaxGuests={true}
               />
             </div>
           )}

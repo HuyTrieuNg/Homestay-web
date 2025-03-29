@@ -2,7 +2,7 @@ import { Star, ShieldCheck } from "lucide-react";
 import PropTypes from "prop-types";
 
 const BookingSideBox = ({ homestay, numNights, subTotalPrice }) => {
-  const serviceFee = 200;
+  const serviceFee = subTotalPrice * 0.1;
   const imageUrl = homestay.images[0];
 
   const formatCurrency = (amount) => {

@@ -42,7 +42,7 @@ const AddressSearch = ({ onSelectAddress }) => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative border rounded-lg w-full p-2 text-gray-800">
       <input
         type="text"
         value={query}
