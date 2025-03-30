@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import axiosInstance from "@utils/axiosInstance";
-import PopupDetai from "./DayDetail";
+import DayDetail from "./DayDetail";
 
 const Calendar = ({ id }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [availabilities, setAvailabilities] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-  const [newPrice, setNewPrice] = useState("");
   const [basePrice, setBasePrice] = useState("");
 
   const popupRef = useRef(null);
@@ -108,9 +107,9 @@ const Calendar = ({ id }) => {
           if (!day) return <div key={index} className="p-4 border bg-gray-100"></div>;
 
           const availability = getAvailability(day);
-          console.log(availability);
           const status = availability ? availability.status : "available";
           const price = availability ? availability.price : basePrice;
+          const booking = availability ?.booking;
 
           let bgColor = "bg-gray-200";
           let textColor = "text-black";
@@ -132,8 +131,7 @@ const Calendar = ({ id }) => {
               key={index}
               className={`p-4 text-center cursor-pointer rounded ${bgColor} ${borderStyle} ${textColor} ${opacity}`}
               onClick={() => {
-                setSelectedDate(availability || { date: day.toLocaleDateString("en-CA"), price, status });
-                setNewPrice(price);
+                setSelectedDate(availability || { date: day.toLocaleDateString("en-CA"), price, status, booking });
                 setShowPopup(true);
               }}
             >
@@ -146,11 +144,10 @@ const Calendar = ({ id }) => {
 
       {showPopup && (
         <div ref={popupRef}>
-          <PopupDetai
+          <DayDetail
           id = {id}
-          selectedDate={selectedDate}
+          Date={selectedDate}
           setShowPopup={setShowPopup}
-          setSelectedDate={setSelectedDate}
           setAvailabilities={setAvailabilities}
         />
         </div>

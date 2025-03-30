@@ -22,8 +22,8 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("❌ Không có User hoặc Homestay trong database!"))
             return
 
-        checkin_date = date(2024, 4, 1)
-        checkout_date = date(2024, 4, 4)
+        checkin_date = date(2025, 4, 1)
+        checkout_date = date(2025, 4, 4)
         status = "pending"
         currency = "VND"
 

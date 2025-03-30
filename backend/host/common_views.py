@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from homestays.models import Homestay, Province, District, Commune, Amenity
+from homestays.models import Homestay, Province, District, Commune, Amenity, PropertyType
 from .common_serializers import ProvinceSerializer, DistrictSerializer, CommuneSerializer, AmenitySerializer
 
 # Endpoint trả về danh sách loại homestay dựa vào Homestay.HOMESTAY_TYPES
@@ -11,8 +11,8 @@ class HomestayTypeListAPIView(APIView):
     authentication_classes = []  # Tắt authentication cho view này
 
     def get(self, request):
-        types = Homestay.HOMESTAY_TYPES
-        data = [{"value": t[0], "label": t[1]} for t in types]
+        types = PropertyType.objects.all()
+        data = [{"value": t.id, "label": t.name} for t in types]
         return Response(data, status=status.HTTP_200_OK)
 
 # Endpoint trả về danh sách provinces

@@ -2,7 +2,6 @@ from rest_framework import serializers
 from homestays.models import Homestay, Amenity, HomestayImage
 from .common_serializers import AmenitySerializer
 
-
 class HomestaySerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()    
     
