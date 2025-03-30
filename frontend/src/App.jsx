@@ -9,6 +9,8 @@ import HostDashboard from "./pages/HostDashboard";
 import HomestayForm from "./pages/AddNewHomestay";
 import HomestayPage from "./pages/HomestayPage";
 import BookingPage from "./pages/BookingPage";
+import BookingHistoryPage from "./pages/BookingHistoryPage";
+import BookingHistoryDetailPage from "./pages/BookingHistoryDetailPage";
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/host" element={<HostDashboard />} />
             <Route path="/host/newHomestay" element={<HomestayForm />} />
+            <Route path="/bookinghistory" element={<BookingHistoryPage/>}/>
+            <Route path="/booking/:bookingId" element={<BookingHistoryDetailPage/>}/>
           </Route>
         </Routes>
       </AuthProvider>

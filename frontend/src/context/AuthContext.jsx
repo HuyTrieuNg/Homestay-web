@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
         if (currentPath.startsWith("/booking")) {
           window.location.reload();
         } else {
-          navigate("/profile");
+          navigate("/");
         }
       } else {
         console.error("Login failed:", response.status, data);
@@ -64,9 +64,20 @@ export const AuthProvider = ({ children }) => {
           "Check login credentials: Something went wrong while logging in!"
         );
       }
+      //  else {
+      //   console.error("Login failed:", response.status, data);
+      //   alert(
+      //     "Check login credentials: Something went wrong while logging in!"
+      //   );
+      // }
     } catch (error) {
       console.error("Login failed:", error);
-      alert("Check login credentials: Something went wrong while logging in!");
+      if (error.response && error.response.status === 401) {
+        return "Tên đăng nhập hoặc mật khẩu không đúng";
+      }
+
+      return "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.";
+      // alert("Check login credentials: Something went wrong while logging in!");
     }
   };
 
@@ -96,38 +107,54 @@ export const AuthProvider = ({ children }) => {
             showConfirmButton: false,
           });
         });
-      } else {
-        console.error("Lỗi server:", response.status, data);
 
-        import("sweetalert2").then((Swal) => {
-          Swal.default.fire({
-            title: `Lỗi ${response.status}: ${
-              data.detail || "Đăng ký thất bại!"
-            }`,
-            icon: "error",
-            toast: true,
-            timer: 6000,
-            position: "top-right",
-            timerProgressBar: true,
-            showConfirmButton: false,
-          });
-        });
+        return { success: true };
       }
+      // else {
+      //   console.error("Lỗi server:", response.status, data);
+
+      //   import("sweetalert2").then((Swal) => {
+      //     Swal.default.fire({
+      //       title: `Lỗi ${response.status}: ${
+      //         data.detail || "Đăng ký thất bại!"
+      //       }`,
+      //       icon: "error",
+      //       toast: true,
+      //       timer: 6000,
+      //       position: "top-right",
+      //       timerProgressBar: true,
+      //       showConfirmButton: false,
+      //     });
+      //   });
+      // }
     } catch (error) {
       console.error("Lỗi đăng ký:", error);
+      let errorMessage = "Đăng ký thất bại! Vui lòng thử lại.";
 
-      import("sweetalert2").then((Swal) => {
-        Swal.default.fire({
-          title: "Lỗi đăng ký",
-          text: error.response?.data?.detail || error.message,
-          icon: "error",
-          toast: true,
-          timer: 6000,
-          position: "top-right",
-          timerProgressBar: true,
-          showConfirmButton: false,
-        });
-      });
+      if (error.response) {
+        const errorData = error.response.data;
+        let errors = {};
+
+        // Xử lý từng lỗi cụ thể từ API
+        if (errorData.username) {
+          errors.username = errorData.username;
+        }
+        if (errorData.phone) {
+          errors.phone = errorData.phone;
+        }
+        if (errorData.password) {
+          errors.password = errorData.password;
+        }
+        if (errorData.password2) {
+          errors.password2 = errorData.password2;
+        }
+
+        return { success: false, errors };
+      }
+
+      // Nếu lỗi không đến từ API (lỗi mạng, lỗi server)
+      return { success: false, errors: { general: ["Đăng ký thất bại! Vui lòng thử lại."] } };
+
     }
   };
 

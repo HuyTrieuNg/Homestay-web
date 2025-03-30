@@ -99,115 +99,126 @@ const ProfilePage = () => {
   if (!user) return <p>Loading...</p>;
 
   return (
-    <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div className="max-w-6xl mx-auto p-6">
       <button
+        onClick={() => window.history.back()}
+        className="text-black mb-4 flex items-center text-3xl font-semibold cursor-pointer"
+      >
+        <svg className="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <span>Thông tin cá nhân</span>
+      </button>
+      <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg">
+        {/* <button
         onClick={handleLogout}
         className="bg-red-500 px-4 py-2 rounded-lg"
       >
         Logout
-      </button>
+      </button> */}
 
-      <div className="flex flex-col items-center mb-4">
-        <div className="relative w-32 h-32">
-          {formData.avatarPreview ? (
-            <img
-              src={formData.avatarPreview}
-              alt="Avatar Preview"
-              className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-lg object-cover"
-            />
-          ) : (
-            <img
-              src={formData.avatar || "/default-avatar.png"}
-              alt="Avatar"
-              className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-lg object-cover"
-            />
-          )}
+        <div className="flex flex-col items-center mb-4">
+          <div className="relative w-32 h-32">
+            {formData.avatarPreview ? (
+              <img
+                src={formData.avatarPreview}
+                alt="Avatar Preview"
+                className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-lg object-cover"
+              />
+            ) : (
+              <img
+                src={formData.avatar || "/default-avatar.png"}
+                alt="Avatar"
+                className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-lg object-cover"
+              />
+            )}
 
-          <label
-            htmlFor="avatar-upload"
-            className="absolute bottom-0 right-0 bg-blue-500 text-white p-2 rounded-full shadow-md cursor-pointer hover:bg-blue-600 transition"
+            <label
+              htmlFor="avatar-upload"
+              className="absolute bottom-0 right-0 bg-white text-white p-2 rounded-full shadow-md cursor-pointer hover:bg-gray-200 transition"
+            >
+              📷
+            </label>
+            <input
+              id="avatar-upload"
+              type="file"
+              name="avatar"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-m font-medium text-gray-600">Username</label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+              disabled
+            />
+          </div>
+          <div>
+            <label className="block text-m font-medium text-gray-600">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+          <div>
+            <label className="block text-m font-medium text-gray-600">Phone</label>
+            <input
+              type="text"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+          <div>
+            <label className="block text-m font-medium text-gray-600">Work</label>
+            <input
+              type="text"
+              name="work"
+              value={formData.work}
+              onChange={handleChange}
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+          <div>
+            <label className="block text-m font-medium text-gray-600">About</label>
+            <textarea
+              name="about"
+              value={formData.about}
+              onChange={handleChange}
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+            ></textarea>
+          </div>
+          <div>
+            <label className="block text-m font-medium text-gray-600">Interests</label>
+            <textarea
+              name="interests"
+              value={formData.interests}
+              onChange={handleChange}
+              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+            ></textarea>
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-[#FF385C] hover:bg-[#FF384C] text-white p-2 rounded-md cursor-pointer"
           >
-            📷
-          </label>
-          <input
-            id="avatar-upload"
-            type="file"
-            name="avatar"
-            onChange={handleFileChange}
-            className="hidden"
-          />
-        </div>
+            Update Profile
+          </button>
+        </form>
       </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block">Username</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-            disabled
-          />
-        </div>
-        <div>
-          <label className="block">Name</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full p-2 border rounded"
-          />
-        </div>
-        <div>
-          <label className="block">Phone</label>
-          <input
-            type="text"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-            className="w-full p-2 border rounded"
-          />
-        </div>
-        <div>
-          <label className="block">Work</label>
-          <input
-            type="text"
-            name="work"
-            value={formData.work}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-        </div>
-        <div>
-          <label className="block">About</label>
-          <textarea
-            name="about"
-            value={formData.about}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          ></textarea>
-        </div>
-        <div>
-          <label className="block">Interests</label>
-          <textarea
-            name="interests"
-            value={formData.interests}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          ></textarea>
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded"
-        >
-          Update Profile
-        </button>
-      </form>
     </div>
   );
 };

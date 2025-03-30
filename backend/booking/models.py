@@ -17,8 +17,8 @@ class Booking(models.Model):
     note = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Booking {self.booking_id} - {self.user.username}"
-    
+        return f"Booking {self.id} - {self.user.username}"
+      
     def calculate_booking_price(homestay, checkin_date, checkout_date):
         num_nights = (checkout_date - checkin_date).days
         subtotal = num_nights * homestay.base_price
@@ -34,7 +34,7 @@ class BookingLine(models.Model):
     sub_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f"Line {self.line_id} - Booking {self.booking.booking_id}"
+        return f"Line {self.id} - Booking {self.booking.id}"
 
 class HomestayAvailability(models.Model):
     homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE)
