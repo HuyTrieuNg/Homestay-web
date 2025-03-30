@@ -52,8 +52,17 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("authTokens", JSON.stringify(data));
         setAuthTokens(data);
         setUser(jwtDecode(data.access));
-        navigate("/");
-        return true;
+        const currentPath = location.pathname;
+        if (currentPath.startsWith("/booking")) {
+          window.location.reload();
+        } else {
+          navigate("/");
+        }
+      } else {
+        console.error("Login failed:", response.status, data);
+        alert(
+          "Check login credentials: Something went wrong while logging in!"
+        );
       }
       //  else {
       //   console.error("Login failed:", response.status, data);

@@ -12,7 +12,7 @@ class HomestayAvailabilitySerializer(serializers.ModelSerializer):
     
     def get_homestay(self, obj):
         return obj.homestay.name
-    
+   
 class BookingLineSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookingLine
@@ -28,10 +28,15 @@ class BookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        # fields = ['id', 'homestay_name', 'checkin_date', 'checkout_date', 'status', 'total_amount']
+#         fields = [
+#             'id', 'user', 'homestay', 'checkin_date', 'checkout_date', 
+#             'guests', 'status', 'currency', 'subtotal', 'fee', 'total_amount', 'note'
+#         ]
         fields = '__all__'
+        read_only_fields = ['id', 'user', 'subtotal', 'fee', 'total_amount', 'status']
     
     # def get_homestay_images(self, obj):
     #     # return [image.image.url for image in obj.homestay.images.all()]
     #     first_image = obj.homestay.images.first()  # Lấy ảnh đầu tiên (nếu có)
     #     return first_image.image.url if first_image else None
+
