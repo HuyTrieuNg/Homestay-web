@@ -67,6 +67,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         # These are claims, you can add custom claims
         token['name'] = user.name
         token['phone'] = user.phone
+        token['type'] = user.type
         token['avatar'] = str(user.profile.avatar)
         token['work'] = user.profile.work
         token['about'] = user.profile.about

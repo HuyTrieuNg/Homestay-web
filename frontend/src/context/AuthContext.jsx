@@ -52,6 +52,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("authTokens", JSON.stringify(data));
         setAuthTokens(data);
         setUser(jwtDecode(data.access));
+        console.log("Login successful:", jwtDecode(data.access));
         const currentPath = location.pathname;
         if (currentPath.startsWith("/booking")) {
           window.location.reload();
@@ -109,27 +110,26 @@ export const AuthProvider = ({ children }) => {
         });
 
         return { success: true };
-      }
-      // else {
-      //   console.error("Lỗi server:", response.status, data);
+      } else {
+        console.error("Lỗi server:", response.status, data);
 
-      //   import("sweetalert2").then((Swal) => {
-      //     Swal.default.fire({
-      //       title: `Lỗi ${response.status}: ${
-      //         data.detail || "Đăng ký thất bại!"
-      //       }`,
-      //       icon: "error",
-      //       toast: true,
-      //       timer: 6000,
-      //       position: "top-right",
-      //       timerProgressBar: true,
-      //       showConfirmButton: false,
-      //     });
-      //   });
-      // }
+        import("sweetalert2").then((Swal) => {
+          Swal.default.fire({
+            title: `Lỗi ${response.status}: ${
+              data.detail || "Đăng ký thất bại!"
+            }`,
+            icon: "error",
+            toast: true,
+            timer: 6000,
+            position: "top-right",
+            timerProgressBar: true,
+            showConfirmButton: false,
+          });
+        });
+      }
     } catch (error) {
       console.error("Lỗi đăng ký:", error);
-      let errorMessage = "Đăng ký thất bại! Vui lòng thử lại.";
+      // let errorMessage = "Đăng ký thất bại! Vui lòng thử lại.";
 
       if (error.response) {
         const errorData = error.response.data;
@@ -153,8 +153,10 @@ export const AuthProvider = ({ children }) => {
       }
 
       // Nếu lỗi không đến từ API (lỗi mạng, lỗi server)
-      return { success: false, errors: { general: ["Đăng ký thất bại! Vui lòng thử lại."] } };
-
+      return {
+        success: false,
+        errors: { general: ["Đăng ký thất bại! Vui lòng thử lại."] },
+      };
     }
   };
 

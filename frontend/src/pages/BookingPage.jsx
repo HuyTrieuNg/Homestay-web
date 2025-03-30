@@ -118,7 +118,7 @@ function BookingPage() {
       alert(`Đặt phòng thành công! Tổng tiền: ${response.data.total_amount}`);
     } catch (error) {
       console.error("Lỗi đặt phòng:", error.response.data);
-      alert(error.response.data.error);
+      alert("Lỗi đặt phòng. Vui lòng thử lại sau.");
     }
   };
 

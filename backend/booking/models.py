@@ -18,6 +18,13 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"Booking {self.id} - {self.user.username}"
+    
+    def calculate_booking_price(homestay, checkin_date, checkout_date):
+        num_nights = (checkout_date - checkin_date).days
+        subtotal = num_nights * homestay.base_price
+        fee = (subtotal * Decimal("0.1")).quantize(Decimal("0.01"))
+        total_amount = subtotal + fee
+        return subtotal, fee, total_amount
 
 class BookingLine(models.Model):
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='booking_lines')

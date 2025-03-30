@@ -6,9 +6,15 @@ class IsHost(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        # Kiểm tra nếu người dùng đã đăng nhập và có quyền 'host'
-        return bool(request.user and request.user.is_authenticated and request.user.type == 'host')
+        if not request.user or not request.user.is_authenticated:
+            return False
+        if request.user.type != 'host':
+            self.message = "Bạn không có quyền truy cập trang này."
+            return False
+        return True
 
     def has_object_permission(self, request, view, obj):
-        # Kiểm tra nếu object (homestay) thuộc về host hiện tại
-        return obj.host == request.user
+        if obj.host != request.user:
+            self.message = "Bạn không có quyền truy cập homestay này."
+            return False
+        return True

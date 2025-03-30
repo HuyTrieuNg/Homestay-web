@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Globe, Menu, User } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/utils/axiosInstance";
+import AuthContext from "@/context/AuthContext";
 
 const Navbar = () => {
   const [avatar, setAvatar] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const isAuthenticated = useAuth();
   const navigate = useNavigate();
+  const { logoutUser } = useContext(AuthContext);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -26,6 +28,17 @@ const Navbar = () => {
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
+  };
+
+  const handleLogout = () => {
+    setDropdownOpen(false);
+    logoutUser();
+    navigate("/login");
+  };
+
+  const handleNavigateOnDropdown = (path) => {
+    setDropdownOpen(false);
+    navigate(path);
   };
 
   return (
@@ -59,7 +72,10 @@ const Navbar = () => {
               Đặt phòng
             </button>
             <div className="h-5 border-r border-gray-300 mx-1"></div>
-            <button className="px-4 py-2 text-gray-800 hover:bg-gray-100 rounded-full font-medium">
+            <button
+              className="px-4 py-2 text-gray-800 hover:bg-gray-100 rounded-full font-medium"
+              onClick={() => navigate("/host")}
+            >
               Cho thuê
             </button>
           </div>
@@ -99,39 +115,48 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <button
-                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  onClick={() => navigate("/profile")}
+                  className="w-full text-left px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  onClick={() => handleNavigateOnDropdown("/profile")}
                 >
                   Thông tin tài khoản
                 </button>
                 <button
-                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  onClick={() => navigate("/bookinghistory")}
+                  className="w-full text-left px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  onClick={() => handleNavigateOnDropdown("/bookinghistory")}
                 >
                   Lịch sử đặt phòng
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  onClick={handleLogout}
+                >
+                  Đăng xuất
                 </button>
               </>
             ) : (
               <>
                 <button
-                  className="w-full text-left px-4 py-2 text-gray-900 hover:bg-gray-100 font-semibold"
-                  onClick={() => navigate("/login")}
+                  className="w-full text-left px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  onClick={() => handleNavigateOnDropdown("/login")}
                 >
                   Đăng nhập
                 </button>
                 <button
-                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  onClick={() => navigate("/register")}
+                  className="w-full text-left px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  onClick={() => handleNavigateOnDropdown("/register")}
                 >
                   Đăng ký
                 </button>
               </>
             )}
             <div className="border-t border-gray-200 my-1"></div>
-            <button className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+            <button
+              className="w-full text-left px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+              onClick={() => handleNavigateOnDropdown("/host")}
+            >
               Cho thuê chỗ ở
             </button>
-            <button className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+            <button className="w-full text-left px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100">
               Trung tâm trợ giúp
             </button>
           </div>

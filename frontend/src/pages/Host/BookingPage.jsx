@@ -3,41 +3,38 @@ import BookingList from "@components/host/BookingList";
 import axiosInstance from "@utils/axiosInstance";
 import Header from "@/components/host/Header";
 
-
 function HostBookingPage() {
   const [bookings, setBookings] = useState();
   const [typeView, setTypeView] = useState("all");
 
-
   const updateBookingStatus = (id, status) => {
     setBookings((prevBookings) =>
-        prevBookings.map((b) => (b.id === id ? { ...b, status } : b))
+      prevBookings.map((b) => (b.id === id ? { ...b, status } : b))
     );
-};
+  };
   useEffect(() => {
-  axiosInstance
+    axiosInstance
       .get(`host/bookings/?type=${typeView}`)
       .then((response) => {
-      setBookings(response.data);
-      console.log("Bookings:", response.data);
+        setBookings(response.data);
+        console.log("Bookings:", response.data);
       })
       .catch((err) => {
-      console.error("Error fetching addresses:", err);
+        console.error("Error fetching addresses:", err);
       });
   }, [typeView]);
-
-
-
 
   return (
     <div className="min-h-screen">
       {/* Header */}
       <div className="fixed top-0 left-0 w-full h-16 z-50">
-          <Header />
+        <Header />
       </div>
       <div className="mt-16">
         <div className="flex flex-col items-center gap-4 py-4">
-          <h1 className="text-2xl font-semibold text-gray-800">Danh sách booking</h1>
+          <h1 className="text-2xl font-semibold text-gray-800">
+            Danh sách booking
+          </h1>
           <div className="flex bg-white px-4 py-2 rounded-lg shadow-md">
             {[
               { type: "all", label: "Tất cả" },
@@ -63,7 +60,10 @@ function HostBookingPage() {
           {/* Danh sách booking */}
           <div className="w-full  p-4">
             {bookings ? (
-              <BookingList bookings={bookings} onUpdateBookings={updateBookingStatus} />
+              <BookingList
+                bookings={bookings}
+                onUpdateBookings={updateBookingStatus}
+              />
             ) : (
               <div className="text-center py-10 text-gray-500">
                 Không có bookings nào
@@ -72,10 +72,7 @@ function HostBookingPage() {
           </div>
         </div>
       </div>
-
-    
-    
-  </div>
+    </div>
   );
 }
 
