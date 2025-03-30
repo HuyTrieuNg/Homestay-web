@@ -19,12 +19,12 @@ function App() {
           <Route path="/homestays/:id" element={<HomestayPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/booking" element={<BookingPage />} />
 
           <Route element={<PrivateRoute />}>
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/host" element={<HostDashboard />} />
             <Route path="/host/newHomestay" element={<HomestayForm />} />
-            <Route path="/booking" element={<BookingPage/>}/>
           </Route>
         </Routes>
       </AuthProvider>

@@ -4,7 +4,8 @@ from .views import *
 urlpatterns = [
     path('<int:pk>/availability', BookingAvailabilityView.as_view(), name='get_available_bookings'),
     path('<int:pk>/unavailable-dates', UnavailableDatesView.as_view(), name='get_available_bookings'),
-    path('<int:pk>/prices', PricesView.as_view(), name='get_available_bookings'),
+    path('<int:pk>/prices', PricesView.as_view(), name='get_prices'),
+    path('<int:homestay_id>/', CreateBookingView.as_view(), name='create-booking'),
     # path('', BookingListView.as_view(), name='get_bookings'),
     # path('<int:pk>', BookingDetailView.as_view(), name='get_booking_detail'),
     # path('create', BookingCreateView.as_view(), name='create_booking'),

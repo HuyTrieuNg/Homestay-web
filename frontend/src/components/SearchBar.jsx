@@ -1,14 +1,14 @@
 import AddressSearch from "./AddressSearch";
 import DateRangePicker from "./DateRangePicker";
 import PropTypes from "prop-types";
+import BookingGuestPicker from "./BookingGuestPicker";
 
-const SearchBar = ({ onSelectAddress }) => {
+const SearchBar = ({ onSelectAddress, onGuestsChange }) => {
   const handleSelectAddress = (address) => {
     console.log("Selected address:", address);
     onSelectAddress(address);
   };
 
-  // Nếu cần, có thể bắt sự thay đổi của ngày nhận/trả phòng tại đây
   const handleDateRangeChange = ({ start, end }) => {
     console.log("Date Range:", { start, end });
   };
@@ -17,7 +17,7 @@ const SearchBar = ({ onSelectAddress }) => {
     <div className="flex items-center bg-white rounded-full shadow-md p-2 mt-5 w-full max-w-3xl">
       {/* Địa điểm */}
       <div className="flex-1 px-4">
-        <p className="text-xs font-semibold text-gray-600">Địa điểm</p>
+        <p className="text-xs font-semibold text-gray-800">Địa điểm</p>
         <AddressSearch onSelectAddress={handleSelectAddress} />
       </div>
       <div className="border-l h-8" />
@@ -29,14 +29,15 @@ const SearchBar = ({ onSelectAddress }) => {
       <div className="border-l h-8" />
 
       {/* Số khách */}
-      <div className="flex-1 px-4">
-        <p className="text-xs font-semibold text-gray-600">Khách</p>
+      <div className="flex-1 px-4 z-10">
+        {/* <p className="text-xs font-semibold text-gray-600">Khách</p>
         <input
           type="number"
           min="1"
           placeholder="Thêm khách"
           className="w-full bg-transparent outline-none text-gray-800"
-        />
+        /> */}
+        <BookingGuestPicker isDropdown={true} onGuestsChange={onGuestsChange} />
       </div>
 
       {/* Nút tìm kiếm */}
@@ -49,6 +50,7 @@ const SearchBar = ({ onSelectAddress }) => {
 
 SearchBar.propTypes = {
   onSelectAddress: PropTypes.func,
+  onGuestsChange: PropTypes.func,
 };
 
 export default SearchBar;

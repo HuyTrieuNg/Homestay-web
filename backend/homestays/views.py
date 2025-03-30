@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.generics import RetrieveAPIView
 from .models import Homestay, PropertyType, Amenity, Province, District, Commune
 from .serializers import *
@@ -11,7 +12,8 @@ class HomestayListView(APIView):
     def get(self, request):
         property_type_id = request.query_params.get('property_type_id', None)
         province = request.query_params.get('province', None)
-        
+        max_guests = request.query_params.get('max_guest_lte', None)  # Lấy giá trị max_guest từ query
+
         homestays = Homestay.objects.select_related(
             'type', 'commune__district__province'
         ).prefetch_related('images', 'amenities')
@@ -22,9 +24,17 @@ class HomestayListView(APIView):
         if province:
             print("Province filter value:", province)
             homestays = homestays.filter(commune__district__province__name__icontains=province)
-        
+
+        if max_guests:
+            try:
+                max_guests = int(max_guests)
+                homestays = homestays.filter(max_guests__gte=max_guests)
+            except ValueError:
+                return Response({"error": "Invalid max_guest value"}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = HomestaySerializer(homestays, many=True, context={'request': self.request})
         return Response(serializer.data)
+
     
 class HomestayDetailView(RetrieveAPIView):
     permission_classes = [AllowAny]
@@ -70,3 +80,11 @@ class CommunesListView(APIView):
         communes = Commune.objects.all()
         serializer = CommuneSerializer(communes, many=True)
         return Response(serializer.data)
+        
+class MaxGuestView(APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request, pk):
+        homestay = Homestay.objects.get(pk=pk)
+        max_guests = homestay.max_guests
+        return Response({"max_guests": max_guests})

@@ -1,11 +1,13 @@
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import status
+from datetime import datetime
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 
 from homestays.models import Homestay
-from booking.models import HomestayAvailability
-from .serializers import HomestayAvailabilitySerializer
+from booking.models import HomestayAvailability, Booking
+from .serializers import HomestayAvailabilitySerializer, BookingSerializer
 
 class BookingAvailabilityView(APIView):
     permission_classes = [AllowAny]
@@ -46,3 +48,46 @@ class PricesView(APIView):
         return Response({
             "price_map": price_map
         })
+    
+class CreateBookingView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, homestay_id):
+        homestay = get_object_or_404(Homestay, id=homestay_id)
+        user = request.user
+        
+        checkin_date = request.data.get('checkin_date')
+        checkout_date = request.data.get('checkout_date')
+        adults = request.data.get('adults', 1)
+        children = request.data.get('children', 0)
+        currency = request.data.get('currency', 'USD')
+        note = request.data.get('note', '')
+        
+        try:
+            checkin_date = datetime.strptime(checkin_date, "%Y-%m-%d").date()
+            checkout_date = datetime.strptime(checkout_date, "%Y-%m-%d").date()
+        except ValueError:
+            return Response({'error': 'Invalid date format. Use YYYY-MM-DD.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if checkin_date >= checkout_date:
+            return Response({'error': 'Checkout date must be after check-in date.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        total_guests = adults + children
+        subtotal, fee, total_amount = Booking.calculate_booking_price(homestay, checkin_date, checkout_date)
+        
+        booking = Booking.objects.create(
+            user=user,
+            homestay=homestay,
+            checkin_date=checkin_date,
+            checkout_date=checkout_date,
+            guests=total_guests,
+            status='pending',
+            currency=currency,
+            subtotal=subtotal,
+            fee=fee,
+            total_amount=total_amount,
+            note=note
+        )
+        
+        serializer = BookingSerializer(booking)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
