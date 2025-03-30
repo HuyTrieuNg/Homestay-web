@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const HomestayCard = ({ homestay }) => {
@@ -23,7 +24,7 @@ const HomestayCard = ({ homestay }) => {
           />
           {/* Icon yêu thích */}
           <div className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md">
-            ❤️
+            <Heart className="text-red-500" />
           </div>
         </div>
       )}

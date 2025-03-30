@@ -52,7 +52,7 @@ class PricesView(APIView):
         })
   
 class UserBookingView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         bookings = Booking.objects.filter(user=request.user).order_by('-checkin_date')
@@ -60,9 +60,10 @@ class UserBookingView(APIView):
         return Response(serializer.data)
 
 class BookingDetailView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
-    # permission_classes = [IsAuthenticated]
 
 class CreateBookingView(APIView):
     permission_classes = [IsAuthenticated]

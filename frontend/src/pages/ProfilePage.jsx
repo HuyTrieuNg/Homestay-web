@@ -104,18 +104,28 @@ const ProfilePage = () => {
         onClick={() => window.history.back()}
         className="text-black mb-4 flex items-center text-3xl font-semibold cursor-pointer"
       >
-        <svg className="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+        <svg
+          className="w-6 h-6 mr-3 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
         <span>Thông tin cá nhân</span>
       </button>
       <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg">
-        {/* <button
-        onClick={handleLogout}
-        className="bg-red-500 px-4 py-2 rounded-lg"
-      >
-        Logout
-      </button> */}
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 px-4 py-2 rounded-lg"
+        >
+          Logout
+        </button>
 
         <div className="flex flex-col items-center mb-4">
           <div className="relative w-32 h-32">
@@ -151,7 +161,9 @@ const ProfilePage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-m font-medium text-gray-600">Username</label>
+            <label className="block text-m font-medium text-gray-600">
+              Username
+            </label>
             <input
               type="text"
               name="username"
@@ -162,7 +174,9 @@ const ProfilePage = () => {
             />
           </div>
           <div>
-            <label className="block text-m font-medium text-gray-600">Name</label>
+            <label className="block text-m font-medium text-gray-600">
+              Name
+            </label>
             <input
               type="text"
               name="name"
@@ -173,7 +187,9 @@ const ProfilePage = () => {
             />
           </div>
           <div>
-            <label className="block text-m font-medium text-gray-600">Phone</label>
+            <label className="block text-m font-medium text-gray-600">
+              Phone
+            </label>
             <input
               type="text"
               name="phone"
@@ -184,7 +200,9 @@ const ProfilePage = () => {
             />
           </div>
           <div>
-            <label className="block text-m font-medium text-gray-600">Work</label>
+            <label className="block text-m font-medium text-gray-600">
+              Work
+            </label>
             <input
               type="text"
               name="work"
@@ -194,7 +212,9 @@ const ProfilePage = () => {
             />
           </div>
           <div>
-            <label className="block text-m font-medium text-gray-600">About</label>
+            <label className="block text-m font-medium text-gray-600">
+              About
+            </label>
             <textarea
               name="about"
               value={formData.about}
@@ -203,7 +223,9 @@ const ProfilePage = () => {
             ></textarea>
           </div>
           <div>
-            <label className="block text-m font-medium text-gray-600">Interests</label>
+            <label className="block text-m font-medium text-gray-600">
+              Interests
+            </label>
             <textarea
               name="interests"
               value={formData.interests}

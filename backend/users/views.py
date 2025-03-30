@@ -3,7 +3,7 @@
 #     return JsonResponse({"message": "Hello from Django API!"})
 from django.shortcuts import render
 from django.http import JsonResponse
-from users.models import User
+from users.models import User, Profile
 
 from users.serializer import MyTokenObtainPairSerializer, RegisterSerializer, UserSerializer
 
@@ -14,6 +14,7 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.views import APIView
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -32,6 +33,15 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user  # Lấy user đang đăng nhập
 
+class UserAvatarView(APIView):
+    permission_classes = [IsAuthenticated]  # Chỉ cho phép user đã đăng nhập
+
+    def get(self, request):
+        user = request.user  # Lấy user hiện tại
+        serializer = UserSerializer(user, context={'request': request})
+        avatar_url = serializer.get_avatar_url(user)
+
+        return Response({"avatar_url": avatar_url})
 
 # Get All Routes
 

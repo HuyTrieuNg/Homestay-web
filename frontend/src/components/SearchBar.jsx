@@ -1,3 +1,4 @@
+import { Search } from "lucide-react";
 import AddressSearch from "./AddressSearch";
 import DateRangePicker from "./DateRangePicker";
 import PropTypes from "prop-types";
@@ -14,7 +15,7 @@ const SearchBar = ({ onSelectAddress, onGuestsChange }) => {
   };
 
   return (
-    <div className="flex items-center bg-white rounded-full shadow-md p-2 mt-5 w-full max-w-3xl">
+    <div className="flex items-center bg-white border-2 rounded-full shadow-md p-2 mt-5 w-full max-w-3xl">
       {/* Địa điểm */}
       <div className="flex-1 px-4">
         <p className="text-xs font-semibold text-gray-800">Địa điểm</p>
@@ -37,12 +38,16 @@ const SearchBar = ({ onSelectAddress, onGuestsChange }) => {
           placeholder="Thêm khách"
           className="w-full bg-transparent outline-none text-gray-800"
         /> */}
-        <BookingGuestPicker isDropdown={true} onGuestsChange={onGuestsChange} />
+        <BookingGuestPicker
+          isDropdown={true}
+          noBorder={true}
+          onGuestsChange={onGuestsChange}
+        />
       </div>
 
       {/* Nút tìm kiếm */}
       <button className="bg-red-500 text-white rounded-full p-3 ml-2 hover:bg-red-600">
-        🔍
+        <Search></Search>
       </button>
     </div>
   );

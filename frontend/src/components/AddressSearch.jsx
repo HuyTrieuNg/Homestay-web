@@ -42,13 +42,13 @@ const AddressSearch = ({ onSelectAddress }) => {
   };
 
   return (
-    <div className="relative border rounded-lg w-full p-2 text-gray-800">
+    <div className="relative w-full text-gray-800">
       <input
         type="text"
         value={query}
         onChange={handleChange}
         placeholder="Tìm kiếm điểm đến"
-        className="w-full bg-transparent outline-none text-gray-800 placeholder-gray-500 px-3"
+        className="w-full bg-transparent outline-none text-gray-800 placeholder-gray-500"
       />
       {suggestions.length > 0 && (
         <ul className="absolute left-0 right-0 bg-white border border-gray-300 rounded-md mt-1 shadow-md z-10">

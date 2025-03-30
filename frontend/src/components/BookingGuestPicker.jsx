@@ -3,6 +3,7 @@ import { PropTypes } from "prop-types";
 import GuestSelector from "./GuestSelector";
 const BookingGuestPicker = ({
   isDropdown = false,
+  noBorder = false,
   initialGuests,
   isModalGuestOpen,
   setIsModalGuestOpen,
@@ -42,7 +43,9 @@ const BookingGuestPicker = ({
         <div>
           <p className="text-xs font-semibold text-gray-800">Khách</p>
           <div
-            className="w-full bg-transparent outline-none text-gray-800 border rounded-lg p-2 cursor-pointer"
+            className={`w-full bg-transparent outline-none text-gray-800
+              ${noBorder ? "" : "border rounded-lg p-2 "} 
+            cursor-pointer`}
             onClick={() => setIsOpened(!isOpened)}
           >
             {totalGuests} Khách{totalPets ? `, ${totalPets} thú cưng` : ""}
@@ -104,6 +107,7 @@ const BookingGuestPicker = ({
 
 BookingGuestPicker.propTypes = {
   isDropdown: PropTypes.bool,
+  noBorder: PropTypes.bool,
   setIsDropdown: PropTypes.func,
   initialGuests: PropTypes.object,
   isModalGuestOpen: PropTypes.bool,
