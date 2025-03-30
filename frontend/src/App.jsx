@@ -5,12 +5,12 @@ import PrivateRoute from "./utils/PrivateRoute";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
-import HostDashboard from "./pages/HostDashboard";
-import HomestayForm from "./pages/AddNewHomestay";
 // import HomestayPage from "./pages/HomestayPage";
 // import BookingPage from "./pages/BookingPage";
-import HostBooking from "./pages/HostBooking";
-import HostCalendarPage from "./pages/HostCalenderPage";
+import HostBookingPage from "./pages/Host/BookingPage";
+import HostCalendarPage from "./pages/Host/CalenderPage";
+import HostMyHomestaysPage from "./pages/Host/MyHomestaysPage";
+import HostCreateHomestayPage from "./pages/Host/CreateHomestayPage";
 
 function App() {
   return (
@@ -24,9 +24,9 @@ function App() {
 
           <Route element={<PrivateRoute />}>
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/host" element={<HostDashboard />} />
-            <Route path="/host/newHomestay" element={<HomestayForm />} />
-            <Route path="/host/booking" element={<HostBooking/>}/>
+            <Route path="/host" element={<HostMyHomestaysPage />} />
+            <Route path="/host/newHomestay" element={<HostCreateHomestayPage />} />
+            <Route path="/host/booking" element={<HostBookingPage/>}/>
             <Route path="/host/calendar" element={<HostCalendarPage/>}/>
             {/* <Route path="/booking" element={<BookingPage/>}/> */}
           </Route>

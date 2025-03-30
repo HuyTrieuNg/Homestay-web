@@ -5,7 +5,7 @@ from rest_framework import generics
 from rest_framework import status
 from .permissions import IsHost
 from homestays.models import Homestay, HomestayImage
-from .serializers import HomestaySerializer
+from .serializers import *
 from booking.serializers import BookingSerializer, HomestayAvailabilitySerializer, BookingLineSerializer
 from booking.models import Booking, HomestayAvailability
 from django.shortcuts import get_object_or_404
@@ -24,7 +24,78 @@ class HomestayListCreateAPIView(generics.ListCreateAPIView):
     
     def get_queryset(self):
         return Homestay.objects.filter(host=self.request.user)
-    
+
+# class HomestayListView(APIView):
+#     permission_classes = [IsHost]
+
+#     def get(self, request):
+#         """Lấy danh sách tất cả Homestay của user"""
+#         homestays = Homestay.objects.filter(host=request.user)
+#         serializer = HomestaySerializer(homestays, many=True, context={"request": request})
+#         return Response(serializer.data)
+
+#     def post(self, request):
+#         """Tạo mới một Homestay"""
+#         serializer = HomestaySerializer(data=request.data, context={"request": request})
+#         if serializer.is_valid():
+#             serializer.save(host=request.user)
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class HomestayDetailView(APIView):
+#     permission_classes = [IsHost]
+
+#     def get_object(self, pk, user):
+#         """Lấy Homestay theo ID của user"""
+#         try:
+#             return Homestay.objects.get(id=pk, host=user)
+#         except Homestay.DoesNotExist:
+#             return None
+
+#     def get(self, request, pk):
+#         """Lấy chi tiết Homestay"""
+#         homestay = self.get_object(pk, request.user)
+#         if not homestay:
+#             return Response({"error": "Không tìm thấy Homestay"}, status=status.HTTP_404_NOT_FOUND)
+        
+#         serializer = HomestaySerializer(homestay, context={"request": request})
+#         return Response(serializer.data)
+
+#     def patch(self, request, pk):
+#         """Cập nhật Homestay"""
+#         homestay = self.get_object(pk, request.user)
+#         if not homestay:
+#             return Response({"error": "Không tìm thấy Homestay"}, status=status.HTTP_404_NOT_FOUND)
+
+#         serializer = HomestaySerializer(homestay, data=request.data, partial=True, context={"request": request})
+#         if serializer.is_valid():
+#             homestay = serializer.save()
+
+#             # Xử lý ảnh
+#             uploaded_images = request.FILES.getlist("uploaded_images")
+#             if uploaded_images:
+#                 images_data = [{"homestay": homestay.id, "image": img} for img in uploaded_images]
+#                 image_serializer = HomestayImageSerializer(data=images_data, many=True)
+#                 if image_serializer.is_valid():
+#                     image_serializer.save()
+
+#             deleted_images = request.data.get("deleted_images", [])
+#             if deleted_images:
+#                 HomestayImage.objects.filter(homestay=homestay, id__in=deleted_images).delete()
+
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     def delete(self, request, pk):
+#         """Xóa Homestay"""
+#         homestay = self.get_object(pk, request.user)
+#         if not homestay:
+#             return Response({"error": "Không tìm thấy Homestay"}, status=status.HTTP_404_NOT_FOUND)
+
+#         homestay.delete()
+#         return Response({"message": "Đã xóa Homestay"}, status=status.HTTP_204_NO_CONTENT)
+
+
 class HostBookingListView(APIView):
     permission_classes = [IsHost]
     

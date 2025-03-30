@@ -1,10 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import AuthContext from "@context/AuthContext";
 
 const Header = () => {
   const navigate = useNavigate();
-  const [isLoggedIn] = useState(false); // TODO: Cập nhật trạng thái đăng nhập sau
-  const [userName] = useState(""); // TODO: Cập nhật tên người dùng sau
+  const { authTokens, logoutUser, user } = useContext(AuthContext);
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  
+  const handleLogout = () => {
+    logoutUser();
+    navigate("/login");
+  };
 
   return (
     <header className="bg-white border-b shadow-md">
@@ -13,7 +19,7 @@ const Header = () => {
           {/* Logo */}
           <a href="#" className="flex items-center">
             <img
-              src="https://flowbite.com/docs/images/logo.svg"
+              src="https://i.pravatar.cc/200"
               alt="Logo"
               className="h-8 mr-3"
             />
@@ -29,10 +35,10 @@ const Header = () => {
               Homestay của tôi
             </button>
             <button
-              onClick={() => navigate("/host/newhomestay")}
+              onClick={() => navigate("/host/calendar")}
               className="text-gray-700 hover:text-blue-600"
             >
-              Thêm Homestay
+              Lịch
             </button>
             <button
               onClick={() => navigate("/host/booking")}
@@ -41,27 +47,48 @@ const Header = () => {
               Yêu cầu thuê
             </button>
             <button
-              onClick={() => navigate("/host/calendar")}
+              onClick={() => navigate("/host/newHomestay")}
               className="text-gray-700 hover:text-blue-600"
             >
-              Lịch
+              Homestay mới
             </button>
+            
+            
           </div>
+
 
           {/* User Menu */}
           <div className="relative">
-            {isLoggedIn ? (
-              <button
-                onClick={() => navigate("/profile")}
-                className="flex items-center text-gray-700 hover:text-blue-600"
-              >
-                <img
-                  src="https://i.pravatar.cc/40"
-                  alt="User Avatar"
-                  className="w-8 h-8 rounded-full mr-2"
-                />
-                <span>{userName || "Người dùng"}</span>
-              </button>
+            {authTokens ? (
+              <div className="relative">
+                <button
+                  onClick={() => setDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center text-gray-700 hover:text-blue-600 focus:outline-none"
+                >
+                  <img
+                    src={user?.avatar || "https://i.pravatar.cc/40"}
+                    alt="User Avatar"
+                    className="w-8 h-8 rounded-full mr-2"
+                  />
+                  <span>{user?.name || "Người dùng"}</span>
+                </button>
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md">
+                    <button
+                      onClick={() => navigate("/profile")}
+                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      Hồ sơ
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                    >
+                      Đăng xuất
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <button
                 onClick={() => navigate("/login")}
@@ -78,3 +105,4 @@ const Header = () => {
 };
 
 export default Header;
+

@@ -71,3 +71,29 @@ class HomestaySerializer(serializers.ModelSerializer):
             instance.amenities.set(amenities)
             
         return instance
+
+
+
+# from rest_framework import serializers
+# from homestays.models import Homestay, HomestayImage, Amenity
+
+# class AmenitySerializer(serializers.ModelSerializer):
+#     """Serializer cho tiện ích (amenity)"""
+#     class Meta:
+#         model = Amenity
+#         fields = ["id", "name"]
+
+# class HomestayImageSerializer(serializers.ModelSerializer):
+#     """Serializer cho ảnh homestay"""
+#     class Meta:
+#         model = HomestayImage
+#         fields = ["id", "image"]
+
+# class HomestaySerializer(serializers.ModelSerializer):
+#     """Serializer chính cho Homestay"""
+#     images = HomestayImageSerializer(many=True, read_only=True)
+#     amenities = AmenitySerializer(many=True, read_only=True)
+
+#     class Meta:
+#         model = Homestay
+#         fields = "__all__"

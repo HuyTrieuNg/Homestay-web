@@ -20,7 +20,7 @@ function Sidebar({ onSelectHomestay, selectedHomestay, refresh }) {
   }, [refresh]);
 
   return (
-    <div className="bg-gray-100 h-screen w-full md:w-1/4 border-r shadow-lg p-6">
+    <div className="bg-gray-100 h-screen w-full border-r shadow-lg p-6">
       <h2 className="text-2xl font-bold mb-5 text-gray-900">Homestays Của bạn </h2>
 
       <ul className="space-y-2">
