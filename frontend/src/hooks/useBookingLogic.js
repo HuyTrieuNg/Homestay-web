@@ -1,10 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "@/utils/axiosInstance";
 import { format } from "date-fns";
 import { useParams } from "react-router-dom";
 
-const useBookingLogic = (basePrice) => {
-  const [range, setRange] = useState({ start: null, end: null });
+const useBookingLogic = (initialStart, initialEnd, basePrice) => {
+  const normalizeDate = (date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+  const startDate = normalizeDate(initialStart || new Date());
+  const endDate = initialEnd
+    ? normalizeDate(initialEnd)
+    : normalizeDate(new Date(startDate.getTime() + 5 * 24 * 60 * 60 * 1000));
+
+  const [range, setRange] = useState({
+    start: startDate,
+    end: endDate,
+  });
+
   const [unavailableDates, setUnavailableDates] = useState([]);
   const [datePrices, setDatePrices] = useState({});
   const { id } = useParams();
@@ -27,33 +41,33 @@ const useBookingLogic = (basePrice) => {
       .catch(console.error);
   }, [id]);
 
-  const calculateNights = () => {
+  const calculateNights = useCallback(() => {
     const { start, end } = range;
     if (!start || !end) return 0;
     return Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24));
-  };
+  }, [range]);
 
-  const calculateTotalPrice = () => {
+  const calculateSubTotalPrice = useCallback(() => {
     const { start, end } = range;
-    if (!start || !end) return 0;
+    if (!start || !end || start >= end) return 0;
 
     let total = 0;
     let currentDate = new Date(start);
 
-    while (currentDate <= end) {
+    while (currentDate < end) {
       const formattedDate = format(currentDate, "yyyy-MM-dd");
       total += datePrices[formattedDate] || basePrice;
-      currentDate.setDate(currentDate.getDate() + 1);
+      currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
     }
     return total;
-  };
+  }, [range, datePrices, basePrice]);
 
   return {
     range,
     setRange,
     unavailableDates,
     calculateNights,
-    calculateTotalPrice,
+    calculateSubTotalPrice,
   };
 };
 

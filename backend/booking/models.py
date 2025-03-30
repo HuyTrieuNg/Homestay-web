@@ -1,6 +1,7 @@
 from django.db import models
 from users.models import User
 from homestays.models import Homestay
+from decimal import Decimal
 
 class Booking(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

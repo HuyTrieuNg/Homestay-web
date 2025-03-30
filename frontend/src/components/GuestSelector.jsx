@@ -1,4 +1,7 @@
 import { PropTypes } from "prop-types";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import axiosInstance from "@utils/axiosInstance";
 
 const GuestSelector = ({
   adults,
@@ -7,15 +10,39 @@ const GuestSelector = ({
   setChildren,
   pets,
   setPets,
-  onClose,
+  onSave,
+  onCancel,
+  haveMaxGuests = false,
 }) => {
+  const [maxGuests, setMaxGuests] = useState(6);
+  const { id } = useParams("id");
+
+  useEffect(() => {
+    if (haveMaxGuests) {
+      axiosInstance
+        .get(`homestays/${id}/maxGuests`)
+        .then((response) => {
+          setMaxGuests(response.data.max_guests);
+          console.log("Max guests:", response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching homestays:", error);
+        });
+    }
+  }, [haveMaxGuests, id]);
+
+  const totalGuests = adults + numChildren;
+  const canIncrease = totalGuests < maxGuests;
+
   return (
     <div className="p-4 bg-white shadow-lg rounded-lg w-72">
       <h2 className="text-lg font-semibold mb-2">Khách</h2>
-      <p className="text-sm text-gray-500 mb-3">
-        Tối đa <span className="font-semibold">6 khách</span>, không tính thú
-        cưng.
-      </p>
+      {haveMaxGuests && maxGuests !== null ? (
+        <p className="text-sm text-gray-500 mb-3">
+          Tối đa <span className="font-semibold">{maxGuests} khách</span>, không
+          tính thú cưng.
+        </p>
+      ) : null}
 
       {/* Người lớn */}
       <div className="flex justify-between items-center mb-2">
@@ -29,9 +56,11 @@ const GuestSelector = ({
           </button>
           <span>{adults}</span>
           <button
-            onClick={() => adults + numChildren < 6 && setAdults(adults + 1)}
-            className="px-3 py-1 bg-gray-200 rounded-lg"
-            disabled={adults + numChildren >= 6}
+            onClick={() => canIncrease && setAdults(adults + 1)}
+            className={`px-3 py-1 bg-gray-200 rounded-lg ${
+              !canIncrease ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={!canIncrease}
           >
             +
           </button>
@@ -50,11 +79,11 @@ const GuestSelector = ({
           </button>
           <span>{numChildren}</span>
           <button
-            onClick={() =>
-              adults + numChildren < 6 && setChildren(numChildren + 1)
-            }
-            className="px-3 py-1 bg-gray-200 rounded-lg"
-            disabled={adults + numChildren >= 6}
+            onClick={() => canIncrease && setChildren(numChildren + 1)}
+            className={`px-3 py-1 bg-gray-200 rounded-lg ${
+              !canIncrease ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={!canIncrease}
           >
             +
           </button>
@@ -82,12 +111,12 @@ const GuestSelector = ({
       </div>
 
       <div className="flex justify-end gap-2 mt-4">
-        <button className="bg-gray-300 px-4 py-2 rounded-lg" onClick={onClose}>
+        <button className="bg-gray-300 px-4 py-2 rounded-lg" onClick={onCancel}>
           Hủy
         </button>
         <button
           className="bg-[#FF385C] text-white px-4 py-2 rounded-lg"
-          onClick={onClose}
+          onClick={onSave}
         >
           Lưu
         </button>
@@ -103,7 +132,9 @@ GuestSelector.propTypes = {
   setChildren: PropTypes.func,
   pets: PropTypes.number,
   setPets: PropTypes.func,
-  onClose: PropTypes.func,
+  onSave: PropTypes.func,
+  onCancel: PropTypes.func,
+  haveMaxGuests: PropTypes.bool,
 };
 
 export default GuestSelector;

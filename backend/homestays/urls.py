@@ -9,4 +9,5 @@ urlpatterns = [
     path('communes', CommunesListView.as_view(), name='get_communes'),
     path('districts', DistrictsListView.as_view(), name='get_districts'),
     path('provinces', ProvincesListView.as_view(), name='get_provinces'),
+    path('<int:pk>/maxGuests', MaxGuestView.as_view(), name='get_max_guests'),
 ]

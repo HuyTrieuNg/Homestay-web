@@ -11,6 +11,12 @@ import HostBookingPage from "./pages/Host/BookingPage";
 import HostCalendarPage from "./pages/Host/CalenderPage";
 import HostMyHomestaysPage from "./pages/Host/MyHomestaysPage";
 import HostCreateHomestayPage from "./pages/Host/CreateHomestayPage";
+import HostDashboard from "./pages/HostDashboard";
+import HomestayForm from "./pages/AddNewHomestay";
+import HomestayPage from "./pages/HomestayPage";
+import BookingPage from "./pages/BookingPage";
+import BookingHistoryPage from "./pages/BookingHistoryPage";
+import BookingHistoryDetailPage from "./pages/BookingHistoryDetailPage";
 
 function App() {
   return (
@@ -18,17 +24,27 @@ function App() {
       <AuthProvider>
         <Routes>
           {/* <Route path="/" element={<HomePage />} /> */}
-          {/* <Route path="/homestays/:id" element={<HomestayPage />} /> */}
+          <Route path="/homestays/:id" element={<HomestayPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/booking" element={<BookingPage />} />
 
           <Route element={<PrivateRoute />}>
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/host" element={<HostMyHomestaysPage />} />
-            <Route path="/host/newHomestay" element={<HostCreateHomestayPage />} />
-            <Route path="/host/booking" element={<HostBookingPage/>}/>
-            <Route path="/host/calendar" element={<HostCalendarPage/>}/>
-            {/* <Route path="/booking" element={<BookingPage/>}/> */}
+            <Route
+              path="/host/newHomestay"
+              element={<HostCreateHomestayPage />}
+            />
+            <Route path="/host/booking" element={<HostBookingPage />} />
+            <Route path="/host/calendar" element={<HostCalendarPage />} />
+            <Route path="/host" element={<HostDashboard />} />
+            <Route path="/host/newHomestay" element={<HomestayForm />} />
+            <Route path="/bookinghistory" element={<BookingHistoryPage />} />
+            <Route
+              path="/booking/:bookingId"
+              element={<BookingHistoryDetailPage />}
+            />
           </Route>
         </Routes>
       </AuthProvider>
