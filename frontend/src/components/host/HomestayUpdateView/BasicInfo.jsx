@@ -95,7 +95,7 @@ return (
                         </div>
                         <div>
                             <p className="text-lg font-medium text-gray-700">Giá</p>
-                            <p className="text-lg text-gray-900">{homestay.base_price} VND</p>
+                            <p className="text-lg text-gray-900">{homestay.base_price} USD</p>
                         </div>
                         <div>
                             <p className="text-lg font-medium text-gray-700">Số khách tối đa</p>
