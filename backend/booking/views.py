@@ -26,8 +26,13 @@ class UnavailableDatesView(APIView):
     def get(self, request, pk):
         homestay = get_object_or_404(Homestay, pk=pk)
 
+        # booked_dates = HomestayAvailability.objects.filter(
+        #     homestay=homestay, status='booked'
+        # ).values_list('date', flat=True)
+
         booked_dates = HomestayAvailability.objects.filter(
-            homestay=homestay, status='booked'
+            homestay=homestay,
+            status__in=['booked', 'blocked']  # Lọc những status thuộc danh sách này
         ).values_list('date', flat=True)
 
         return Response({"unavailable_dates": list(booked_dates)})

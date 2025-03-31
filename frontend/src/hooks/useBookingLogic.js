@@ -53,10 +53,12 @@ const useBookingLogic = (initialStart, initialEnd, basePrice) => {
 
     let total = 0;
     let currentDate = new Date(start);
-
+    
     while (currentDate < end) {
       const formattedDate = format(currentDate, "yyyy-MM-dd");
-      total += datePrices[formattedDate] || basePrice;
+      total += Number(datePrices[formattedDate] || basePrice);
+
+
       currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
     }
     return total;

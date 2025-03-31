@@ -82,9 +82,9 @@ class HostBookingListView(APIView):
     def get(self, request):
         type_view = request.query_params.get('type')
         if type_view in ['pending', 'confirmed', 'cancelled', 'rejected']:
-            bookings = Booking.objects.filter(homestay__host=request.user, status=type_view)
+            bookings = Booking.objects.filter(homestay__host=request.user, status=type_view).order_by('checkin_date')
         else:
-            bookings = Booking.objects.filter(homestay__host=request.user)
+            bookings = Booking.objects.filter(homestay__host=request.user).order_by('checkin_date')
         serializer = BookingSerializer(bookings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
