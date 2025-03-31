@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, addDays, isSameDay } from "date-fns";
 import { PropTypes } from "prop-types";
 
 const DateRangePicker = ({
@@ -20,6 +20,10 @@ const DateRangePicker = ({
     return d;
   };
 
+  const parsedUnavailableDates = (unavailableDates || []).map((date) =>
+    parseISO(date)
+  );
+
   const [start, setStart] = useState(normalizeDate(initialStart || new Date()));
   const [end, setEnd] = useState(
     initialEnd
@@ -27,9 +31,22 @@ const DateRangePicker = ({
       : normalizeDate(new Date(start.getTime() + 5 * 24 * 60 * 60 * 1000))
   );
 
-  const parsedUnavailableDates = (unavailableDates || []).map((date) =>
-    parseISO(date)
+  const findNextAvailableDate = useCallback(
+    (date) => {
+      let newDate = normalizeDate(date);
+      while (
+        parsedUnavailableDates.some((d) => d.getTime() === newDate.getTime())
+      ) {
+        newDate = addDays(newDate, 1);
+      }
+      return newDate;
+    },
+    [parsedUnavailableDates]
   );
+
+  const getNextUnavailableDate = (startDate) => {
+    return parsedUnavailableDates.find((date) => date > startDate) || null;
+  };
 
   const inRangeModifier = (date) => {
     if (!start || !end) return false;
@@ -55,33 +72,64 @@ const DateRangePicker = ({
     unavailable: "line-through text-gray-400",
   };
 
-  const getNextUnavailableDate = (startDate) => {
-    return parsedUnavailableDates.find((date) => date > startDate) || null;
-  };
+  const [startPopoverOpen, setStartPopoverOpen] = useState(false);
+  const [endPopoverOpen, setEndPopoverOpen] = useState(false);
 
   const handleStartSelect = (date) => {
-    setStart(date);
-    const nextUnavailable = getNextUnavailableDate(date);
-    if (end && (date >= end || (nextUnavailable && end >= nextUnavailable))) {
-      setEnd(null);
-      onSelectRange && onSelectRange({ start: date, end: null });
-    } else {
-      onSelectRange && onSelectRange({ start: date, end });
+    if (!date) return;
+
+    const normalizedDate = normalizeDate(date);
+    const normalizedEnd = normalizeDate(end);
+
+    setStart(normalizedDate);
+
+    let newEnd = normalizedEnd;
+    const nextUnavailable = getNextUnavailableDate(normalizedDate);
+
+    if (
+      !normalizedEnd ||
+      isSameDay(normalizedDate, normalizedEnd) ||
+      normalizedDate > normalizedEnd ||
+      (nextUnavailable && normalizedEnd >= nextUnavailable)
+    ) {
+      newEnd = findNextAvailableDate(addDays(normalizedDate, 1));
+      setEnd(newEnd);
+    }
+
+    setStartPopoverOpen(false);
+    setEndPopoverOpen(true);
+
+    if (normalizedDate && newEnd) {
+      onSelectRange && onSelectRange({ start: normalizedDate, end: newEnd });
+    }
+  };
+
+  const handleEndSelect = (date) => {
+    if (!date || !start) return;
+
+    const normalizedDate = normalizeDate(date);
+    const normalizedStart = normalizeDate(start);
+
+    if (normalizedDate > normalizedStart) {
+      setEnd(normalizedDate);
+      setEndPopoverOpen(false);
+      onSelectRange &&
+        onSelectRange({ start: normalizedStart, end: normalizedDate });
     }
   };
 
   const isDisabledEnd = (date) => {
     if (!start) return false;
 
-    const nextUnavailable = getNextUnavailableDate(start);
-    return date < start || (nextUnavailable && date > nextUnavailable);
-  };
+    const normalizedDate = normalizeDate(date);
+    const normalizedStart = normalizeDate(start);
 
-  const handleEndSelect = (date) => {
-    if (start && date > start) {
-      setEnd(date);
-      onSelectRange && onSelectRange({ start, end: date });
-    }
+    const nextUnavailable = getNextUnavailableDate(normalizedStart);
+
+    return (
+      normalizedDate <= normalizedStart ||
+      (nextUnavailable && normalizedDate > nextUnavailable)
+    );
   };
 
   return (
@@ -89,7 +137,7 @@ const DateRangePicker = ({
       {/* Popover cho ngày nhận phòng */}
       <div className="flex-1">
         <p className="text-xs font-semibold text-gray-600">Nhận phòng</p>
-        <Popover>
+        <Popover open={startPopoverOpen} onOpenChange={setStartPopoverOpen}>
           <PopoverTrigger className="w-full text-left bg-transparent outline-none text-gray-800">
             {start ? format(start, "dd/MM/yyyy") : "Chọn ngày"}
           </PopoverTrigger>
@@ -101,6 +149,8 @@ const DateRangePicker = ({
               disabled={isDateDisabled}
               modifiers={modifiers}
               modifiersClassNames={modifiersClassNames}
+              month={start}
+              onMonthChange={() => {}}
             />
           </PopoverContent>
         </Popover>
@@ -109,7 +159,7 @@ const DateRangePicker = ({
       {/* Popover cho ngày trả phòng */}
       <div className="flex-1">
         <p className="text-xs font-semibold text-gray-600">Trả phòng</p>
-        <Popover>
+        <Popover open={endPopoverOpen} onOpenChange={setEndPopoverOpen}>
           <PopoverTrigger className="w-full text-left bg-transparent outline-none text-gray-800">
             {end ? format(end, "dd/MM/yyyy") : "Chọn ngày"}
           </PopoverTrigger>
@@ -121,6 +171,8 @@ const DateRangePicker = ({
               disabled={(date) => isDateDisabled(date) || isDisabledEnd(date)}
               modifiers={modifiers}
               modifiersClassNames={modifiersClassNames}
+              month={end}
+              onMonthChange={() => {}}
             />
           </PopoverContent>
         </Popover>
