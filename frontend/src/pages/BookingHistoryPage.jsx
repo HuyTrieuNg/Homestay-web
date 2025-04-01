@@ -111,6 +111,10 @@ const BookingHistoryPage = () => {
                       ? "bg-green-100 text-green-800"
                       : booking.status === "pending"
                       ? "bg-yellow-100 text-yellow-800"
+                      : booking.status === "cancel"
+                      ? "bg-gray-100 text-gray-800"
+                      : booking.status === "reject"
+                      ? "bg-purple-100 text-purple-800"
                       : "bg-red-100 text-red-800"
                   }`}
                 >
