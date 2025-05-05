@@ -120,7 +120,10 @@ const HomestayCreate = ({ onSubmit }) => {
 
   // General input field handler
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData(prevState => ({
+      ...prevState,
+      [e.target.name]: e.target.value, // Giữ lại các trường dữ liệu còn lại
+    }));
   };
 
   // Amenity toggle handler

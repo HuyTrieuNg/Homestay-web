@@ -36,11 +36,16 @@ const Header = () => {
         <div className="flex justify-between items-center max-w-screen-xl mx-auto">
           {/* Logo */}
           <a href="#" className="flex items-center">
-            <img
-              src="https://sdmntpreastus2.oaiusercontent.com/files/00000000-a32c-51f6-933a-d944ea1017ab/raw?se=2025-04-01T05%3A50%3A01Z&sp=r&sv=2024-08-04&sr=b&scid=54846a39-6dc6-58fe-95bd-b8e2dd5da4c7&skoid=a47cd303-16a2-427e-8efb-2ce406116005&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-03-31T06%3A33%3A26Z&ske=2025-04-01T06%3A33%3A26Z&sks=b&skv=2024-08-04&sig=ctyQd4PG3yhG%2BjSEaBOlRyVuyn5VVjWM0w4PWIeggSE%3D"
+            {/* <img
+              src="https://logosmarcas.net/wp-content/uploads/2020/07/Airbnb-Emblema.jpg" 
               alt="Logo"
               className="h-10 mr-3 rounded-full scale-150"
 
+            /> */}
+            <img
+              src="https://logodix.com/logo/6346.jpg" 
+              alt="Logo"
+              className="h-10 w-10 mr-3 rounded-full scale-150"
             />
             <span className="text-xl font-semibold text-red-500">Homestay App</span>
           </a>

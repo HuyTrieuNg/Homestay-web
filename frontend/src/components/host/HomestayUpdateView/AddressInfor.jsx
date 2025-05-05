@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import AddressSelector from "../HomestayForm/AddressSelector";
 import axiosInstance from "@utils/axiosInstance";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,6 +19,10 @@ const AddressInfo = ({ homestay, onUpdate }) => {
     const [selectedProvinceName, setSelectedProvinceName] = useState("Đang tải...");
     const [selectedDistrictName, setSelectedDistrictName] = useState("Đang tải...");
     const [selectedCommuneName, setSelectedCommuneName] = useState("Đang tải...");
+
+    const mapRef = useRef(null);
+    const mapInstanceRef = useRef(null);
+    const leafletLoadedRef = useRef(false);
 
     useEffect(() => {
         const fetchLocationData = async () => {
@@ -75,9 +79,86 @@ const AddressInfo = ({ homestay, onUpdate }) => {
         fetchCommunes();
     }, [selectedDistrict]);
 
+    
+    
+    useEffect(() => {
+        // Skip map initialization when editing or if map already exists
+        if (isEditing || !formData?.latitude || !formData?.longitude) {
+            return;
+        }
+
+        // Cleanup function to remove any existing map
+        const cleanupMap = () => {
+            if (mapInstanceRef.current) {
+                mapInstanceRef.current.remove();
+                mapInstanceRef.current = null;
+            }
+        };
+
+        // Dynamically load Leaflet CSS if not already loaded
+        if (!document.querySelector('link[href*="leaflet.css"]')) {
+            const leafletCSS = document.createElement('link');
+            leafletCSS.rel = 'stylesheet';
+            leafletCSS.href = 'https://unpkg.com/leaflet/dist/leaflet.css';
+            document.head.appendChild(leafletCSS);
+        }
+
+        // Function to initialize map
+        const initializeMap = () => {
+            if (!mapRef.current) return;
+            
+            // Clean up any existing map first
+            cleanupMap();
+
+            // Get coordinates
+            const lat = parseFloat(formData.latitude);
+            const lng = parseFloat(formData.longitude);
+            
+            if (isNaN(lat) || isNaN(lng)) {
+                console.error("Invalid coordinates:", { lat, lng });
+                return;
+            }
+
+            // Create new map instance
+            mapInstanceRef.current = L.map(mapRef.current).setView([lat, lng], 20);
+
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            }).addTo(mapInstanceRef.current);
+
+            L.marker([lat, lng])
+                .addTo(mapInstanceRef.current)
+                .bindPopup(`Vĩ độ ${lat}, Kinh độ ${lng}`)
+                .openPopup();
+        };
+
+        // Load Leaflet script if not already loaded
+        if (!window.L && !leafletLoadedRef.current) {
+            leafletLoadedRef.current = true;
+            const leafletScript = document.createElement('script');
+            leafletScript.src = 'https://unpkg.com/leaflet/dist/leaflet.js';
+            leafletScript.async = true;
+            
+            leafletScript.onload = () => {
+                initializeMap();
+            };
+            
+            document.body.appendChild(leafletScript);
+        } else if (window.L) {
+            // Leaflet is already loaded, initialize map
+            initializeMap();
+        }
+
+        // Cleanup on component unmount
+        return cleanupMap;
+    }, [formData.latitude, formData.longitude, isEditing]);
+
 
     const handleFormDataChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+        setFormData(prevState => ({
+            ...prevState,
+            [e.target.name]: e.target.value, // Giữ lại các trường dữ liệu còn lại
+          }));
     };
 
 
@@ -156,19 +237,28 @@ return (
                     <span className="flex-grow block border-t border-black"></span>
                 </h2>
 
-                <div className="space-y-2">
+                <div className="space-y-2 mt-5">
                     <p className="text-gray-700 text-center">
                         <span className="font-semibold">Địa chỉ chi tiết:</span> {homestay?.address || "Đang tải..."}
                     </p>
-                    <div className="grid grid-cols-2 gap-4 text-gray-700">
-                        <p className="text-center"><span className="font-semibold">Kinh độ:</span> {homestay?.longitude || "N/A"}</p>
-                        <p className="text-center"><span className="font-semibold">Vĩ độ:</span> {homestay?.latitude || "N/A"}</p>
-                    </div>
                     <div className="grid grid-cols-3 gap-4 text-gray-700">
                         <p className="text-center"><span className="font-semibold">Tỉnh/Thành phố::</span> {selectedProvinceName}</p>
                         <p className="text-center"><span className="font-semibold">Quận/Huyện:</span> {selectedDistrictName}</p>
                         <p className="text-center"><span className="font-semibold">Phường/Xã:</span> {selectedCommuneName}</p>
                     </div> 
+                    
+                    <div
+                        ref={mapRef}
+                        style={{
+                            position: 'relative',
+                            height: '500px',
+                            border: '1px solid #ccc',
+                            borderRadius: '10px',
+                            zIndex: 0,
+                        }}
+                        className="mt-5"
+                    />
+                    
                 </div>
 
 

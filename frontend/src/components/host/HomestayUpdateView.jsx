@@ -106,7 +106,7 @@ const HomestayUpdateView = ({ id, onDelete }) => {
 
         
       <div className="flex flex-col md:flex-row justify-between items-center pt-6 border-t border-gray-200">
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 ml-auto">
           <button
             onClick={() => {
               if (
