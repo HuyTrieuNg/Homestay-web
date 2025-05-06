@@ -14,5 +14,6 @@ urlpatterns = [
     path('', views.getRoutes),
     # path('login/', LoginView.as_view(), name='login'),
     path('profile/', views.UserProfileView.as_view(), name='user-profile'),
-    path('profile/avatar', views.UserAvatarView.as_view(), name='user-avatar')
+    path('profile/avatar', views.UserAvatarView.as_view(), name='user-avatar'),
+    path('statistics/', views.UserStatisticsView.as_view(), name='user-statistics'),
 ]

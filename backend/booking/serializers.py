@@ -52,3 +52,28 @@ class BookingSerializer(serializers.ModelSerializer):
     #     first_image = obj.homestay.images.first()  # Lấy ảnh đầu tiên (nếu có)
     #     return first_image.image.url if first_image else None
 
+
+
+# Cho phần thống kê doanh thu của admin
+
+class RevenueByHomestaySerializer(serializers.Serializer):
+    homestay_id = serializers.IntegerField(source='homestay__id')
+    name = serializers.CharField(source='homestay__name')
+    total_revenue = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+class RevenueByTypeSerializer(serializers.Serializer):
+    type = serializers.CharField(source='homestay__type__name')
+    total_revenue = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+class RevenueByDateSerializer(serializers.Serializer):
+    checkout_date = serializers.DateField()
+    total_revenue = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+class BookingStatusRatioSerializer(serializers.Serializer):
+    status = serializers.CharField()
+    count = serializers.IntegerField()
+
+class BookingCountByHomestaySerializer(serializers.Serializer):
+    homestay_id = serializers.IntegerField(source='homestay__id')
+    name = serializers.CharField(source='homestay__name')
+    count = serializers.IntegerField()

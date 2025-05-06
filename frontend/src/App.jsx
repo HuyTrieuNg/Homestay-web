@@ -18,6 +18,7 @@ import BookingPage from "./pages/BookingPage";
 import BookingHistoryPage from "./pages/BookingHistoryPage";
 import BookingHistoryDetailPage from "./pages/BookingHistoryDetailPage";
 import UnauthorizedPage from "./pages/UnAuthorizedPage";
+import AdminDashboard from "./pages/Admin/Dashboard";
 
 function App() {
   return (
@@ -42,14 +43,17 @@ function App() {
           <Route element={<PrivateRoute requiredRole="host" />}>
             <Route path="/host" element={<HostMyHomestaysPage />} />
             <Route
-              path="/host/newHomestay"
-              element={<HostCreateHomestayPage />}
-            />
+              path="/host/newHomestay" element={<HostCreateHomestayPage />}/>
             <Route path="/host/booking" element={<HostBookingPage />} />
             <Route path="/host/calendar" element={<HostCalendarPage />} />
-            {/* <Route path="/host" element={<HostDashboard />} /> */}
             <Route path="/host/newHomestay" element={<HomestayForm />} />
           </Route>
+
+          <Route element={<PrivateRoute requiredRole="admin" />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Route>
+
+
         </Routes>
       </AuthProvider>
     </Router>

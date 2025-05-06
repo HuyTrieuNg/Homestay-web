@@ -16,7 +16,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 
-
+from .permissions import IsAdmin
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
@@ -104,3 +104,16 @@ def testEndPoint(request):
 #         else:
 #             return Response({"error": "Sai tài khoản hoặc mật khẩu"}, status=status.HTTP_401_UNAUTHORIZED)
         
+class UserStatisticsView(APIView):
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+        total_users = User.objects.count()
+        total_hosts = User.objects.filter(type='host').count()
+        total_guests = User.objects.filter(type='guest').count()
+
+        return Response({
+            "total_users": total_users,
+            "total_hosts": total_hosts,
+            "total_guests": total_guests,
+        })

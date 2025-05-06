@@ -8,6 +8,7 @@ class User(AbstractUser):
     USE_TYPE_CHOICES = [
         ('host', 'Host'),
         ('guest', 'Guest'),
+        ('admin', 'Admin'),
     ]
     type = models.CharField(max_length=10, choices=USE_TYPE_CHOICES, default='guest')
     status = models.BooleanField(default=True)

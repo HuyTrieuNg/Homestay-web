@@ -5,6 +5,8 @@ from rest_framework import status
 from rest_framework.generics import RetrieveAPIView
 from .models import Homestay, PropertyType, Amenity, Province, District, Commune
 from .serializers import *
+from django.db.models import Count
+from users.permissions import IsAdmin
 
 class HomestayListView(APIView):
     permission_classes = [AllowAny]
@@ -88,3 +90,20 @@ class MaxGuestView(APIView):
         homestay = Homestay.objects.get(pk=pk)
         max_guests = homestay.max_guests
         return Response({"max_guests": max_guests})
+    
+
+class HomestayStatisticsView(APIView):
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+        # Tổng số homestay
+        total_homestays = Homestay.objects.count()
+
+        # Thống kê theo loại phòng
+        homestay_by_type = Homestay.objects.values('type__name').annotate(count=Count('id')).order_by('type__name')
+
+        # Trả về kết quả
+        return Response({
+            "total_homestays": total_homestays,
+            "homestays_by_type": [{"type": item['type__name'], "count": item['count']} for item in homestay_by_type]
+        })
