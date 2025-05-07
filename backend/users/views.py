@@ -16,6 +16,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 
+from django.db.models import Q
 from .permissions import IsAdmin
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
@@ -117,3 +118,83 @@ class UserStatisticsView(APIView):
             "total_hosts": total_hosts,
             "total_guests": total_guests,
         })
+
+# 1. Danh sách người dùng (có tìm kiếm từ khóa)
+class UserListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAdmin]
+
+    def get_queryset(self):
+        keyword = self.request.query_params.get('keyword', '')
+        return User.objects.filter(
+            Q(type__in=["guest", "host"]) &
+            (
+                Q(username__icontains=keyword) |
+                Q(email__icontains=keyword) |
+                Q(name__icontains=keyword)
+            )
+        )
+
+
+# 2. Cấp quyền host
+class PromoteToHostView(APIView):
+    permission_classes = [IsAdmin]
+
+    def post(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+            if user.type == 'host':
+                return Response({'message': 'User is already a host'}, status=400)
+            user.type = 'host'
+            user.save()
+            return Response({'message': 'User promoted to host successfully'})
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+
+
+# 3. Hạ quyền về guest
+class DemoteToGuestView(APIView):
+    permission_classes = [IsAdmin]
+
+    def post(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+            if user.type == 'guest':
+                return Response({'message': 'User is already a guest'}, status=400)
+            user.type = 'guest'
+            user.save()
+            return Response({'message': 'User demoted to guest successfully'})
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+
+
+# 4. Ban tài khoản (status = False)
+class BanUserView(APIView):
+    permission_classes = [IsAdmin]
+
+    def post(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+            if not user.status:
+                return Response({'message': 'User is already banned'}, status=400)
+            user.status = False
+            user.save()
+            return Response({'message': 'User has been banned'})
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)
+
+
+# 5. Unban tài khoản (status = True)
+class UnbanUserView(APIView):
+    permission_classes = [IsAdmin]
+
+    def post(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+            if user.status:
+                return Response({'message': 'User is already active'}, status=400)
+            user.status = True
+            user.save()
+            return Response({'message': 'User has been unbanned'})
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)

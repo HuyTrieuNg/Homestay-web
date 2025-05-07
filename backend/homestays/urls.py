@@ -11,4 +11,9 @@ urlpatterns = [
     path('provinces', ProvincesListView.as_view(), name='get_provinces'),
     path('<int:pk>/maxGuests', MaxGuestView.as_view(), name='get_max_guests'),
     path('statistics/', HomestayStatisticsView.as_view(), name='homestay-statistics'),
+    path('admin/<int:pk>/delete/', HomestayDeleteView.as_view()),
+    path('admin/property-types/', PropertyTypeView.as_view()),  # POST
+    path('admin/property-types/<int:pk>/', PropertyTypeView.as_view()),  # PUT
+    path('admin/amenities/', AmenityView.as_view()),  # POST
+    path('admin/amenities/<int:pk>/', AmenityView.as_view()),  # PUT
 ]

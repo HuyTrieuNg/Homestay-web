@@ -53,11 +53,21 @@ export const AuthProvider = ({ children }) => {
         setAuthTokens(data);
         setUser(jwtDecode(data.access));
         console.log("Login successful:", jwtDecode(data.access));
+        // Xử lý chuyển hướng dựa trên role
+        const userRole = jwtDecode(data.access).type;
         const currentPath = location.pathname;
         if (currentPath.startsWith("/booking")) {
           window.location.reload();
         } else {
-          navigate("/");
+          // Chuyển hướng theo role
+          if (userRole === 'admin') {
+            navigate("/admin");
+          } else if (userRole === 'host') {
+            navigate("/host");
+          } else {
+            // Mặc định (guest) chuyển về trang chủ
+            navigate("/");
+          }
         }
       } else {
         console.error("Login failed:", response.status, data);
@@ -77,6 +87,12 @@ export const AuthProvider = ({ children }) => {
         return "Tên đăng nhập hoặc mật khẩu không đúng";
       }
 
+      if (error.response && error.response.data) {
+        if (error.response.data.error) {
+          return error.response.data.error;
+        }
+        return error.response.data.detail || "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.";
+      }
       return "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.";
       // alert("Check login credentials: Something went wrong while logging in!");
     }

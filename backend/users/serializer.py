@@ -22,8 +22,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'name', 'phone', 'avatar', 'avatar_url', 'work', 'about', 'interests')
-
+        # fields = ('id', 'username', 'name', 'phone', 'avatar', 'avatar_url', 'work', 'about', 'interests')
+        fields = ('id', 'username', 'email', 'name', 'phone', 'type', 'status', 'avatar', 'avatar_url', 'work', 'about', 'interests')
+        read_only_fields = ('username', 'type', 'status') 
     def get_avatar_url(self, obj):
         request = self.context.get('request')
         print("Hàm get_avatar được gọi!")
@@ -62,6 +63,11 @@ class UserSerializer(serializers.ModelSerializer):
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
+        # Kiểm tra trạng thái tài khoản có bị ban
+        if not user.status:
+            raise serializers.ValidationError(
+                {"error": "Tài khoản của bạn đã bị khóa hoặc vô hiệu hóa."}
+            )
         token = super().get_token(user)
         
         # These are claims, you can add custom claims
@@ -111,4 +117,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         # Profile.objects.create(user=user)
         return user
+    
+
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ['id', 'username', 'email', 'name', 'type', 'status']
     

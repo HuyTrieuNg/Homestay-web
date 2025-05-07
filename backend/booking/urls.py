@@ -14,6 +14,5 @@ urlpatterns = [
     # path('homestay/<int:pk>', BookingHomestayView.as_view(), name='get_homestay_bookings'),
     path('mybookings', UserBookingView.as_view(), name='get_user_bookings'),
     path('bookinghistory/<int:pk>', BookingDetailView.as_view(), name='get_booking_detail'),
-    path('revesnue/<int:pk>', BookingStatisticsView.as_view(), name='revenue_by_homestay'),
     path("statistics/", BookingStatisticsView.as_view(), name="booking-statistics"),
 ]

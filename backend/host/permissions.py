@@ -11,6 +11,9 @@ class IsHost(permissions.BasePermission):
         if request.user.type != 'host':
             self.message = "Bạn không có quyền truy cập trang này."
             return False
+        if not request.user.status:
+            self.message = "Tài khoản bị khóa."
+            return False
         return True
 
     def has_object_permission(self, request, view, obj):

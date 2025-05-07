@@ -16,9 +16,10 @@ function HostCalendarPage() {
           {/* Main Content */}
           <div className="flex mt-16 h-[calc(100vh-64px)]">
             {/* Sidebar - Cố định bên trái */}
-            <div className="fixed top-16 left-0 w-1/4 h-[calc(100vh-64px)] bg-gray-100 border-r shadow-lg overflow-auto">
+            <div className="fixed top-16 left-0 w-1/4  bg-gray-100 border-r shadow-lg overflow-auto">
               <Sidebar 
                 onSelectHomestay={setSelectedHomestayId} 
+                selectedHomestay={selectedHomestayId}
               />
             </div>
     

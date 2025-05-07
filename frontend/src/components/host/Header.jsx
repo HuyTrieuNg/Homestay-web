@@ -10,6 +10,7 @@ const Header = () => {
   const isAuthenticated = useAuth();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [avatar, setAvatar] = useState(null);
+  const PRIMARY_COLOR = "#ff5a5f";
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -31,55 +32,58 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white border-b shadow-md">
-      <nav className="px-6 py-3">
+    <header className="bg-white shadow-md sticky top-0 z-50 transition-shadow duration-300 hover:shadow-lg">
+      <nav className="container mx-auto p-4">
         <div className="flex justify-between items-center max-w-screen-xl mx-auto">
           {/* Logo */}
-          <a href="#" className="flex items-center">
-            {/* <img
-              src="https://logosmarcas.net/wp-content/uploads/2020/07/Airbnb-Emblema.jpg" 
-              alt="Logo"
-              className="h-10 mr-3 rounded-full scale-150"
-
-            /> */}
+          <a href="/" className="flex items-center">
             <img
               src="https://logodix.com/logo/6346.jpg" 
               alt="Logo"
               className="h-10 w-10 mr-3 rounded-full scale-150"
             />
-            <span className="text-xl font-semibold text-red-500">Homestay App</span>
+            <span className="text-2xl font-bold transition-colors duration-300" style={{ color: PRIMARY_COLOR }}>Homestay App</span>
           </a>
 
           {/* Menu Desktop */}
-          <div className="flex space-x-6">
+          <div className="hidden md:flex items-center space-x-6">
             <button
               onClick={() => navigate("/host")}
-              className="text-gray-700 hover:text-blue-600"
+              className="text-gray-700 hover:text-pink-600 transition-colors duration-300 relative group"
+              style={{ hover: { color: PRIMARY_COLOR } }}
             >
-              Homestay của tôi
+              <span>Homestay của tôi</span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" 
+                  style={{ backgroundColor: PRIMARY_COLOR }}></span>
             </button>
             <button
               onClick={() => navigate("/host/calendar")}
-              className="text-gray-700 hover:text-blue-600"
+              className="text-gray-700 hover:text-pink-600 transition-colors duration-300 relative group"
+              style={{ hover: { color: PRIMARY_COLOR } }}
             >
-              Lịch
+              <span>Lịch</span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" 
+                  style={{ backgroundColor: PRIMARY_COLOR }}></span>
             </button>
             <button
               onClick={() => navigate("/host/booking")}
-              className="text-gray-700 hover:text-blue-600"
+              className="text-gray-700 hover:text-pink-600 transition-colors duration-300 relative group"
+              style={{ hover: { color: PRIMARY_COLOR } }}
             >
-              Yêu cầu thuê
+              <span>Yêu cầu thuê</span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" 
+                  style={{ backgroundColor: PRIMARY_COLOR }}></span>
             </button>
             <button
               onClick={() => navigate("/host/newHomestay")}
-              className="text-gray-700 hover:text-blue-600"
+              className="text-gray-700 hover:text-pink-600 transition-colors duration-300 relative group"
+              style={{ hover: { color: PRIMARY_COLOR } }}
             >
-              Homestay mới
+              <span>Homestay mới</span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full" 
+                  style={{ backgroundColor: PRIMARY_COLOR }}></span>
             </button>
-            
-            
           </div>
-
 
           {/* User Menu */}
           <div className="relative">
@@ -87,7 +91,7 @@ const Header = () => {
               <div className="relative">
                 <button
                   onClick={() => setDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center text-gray-700 hover:text-blue-600 focus:outline-none"
+                  className="flex items-center text-gray-700 hover:text-pink-600 transition-colors duration-300 focus:outline-none"
                 >
                   <img
                     src={avatar || "https://i.pravatar.cc/40"}
@@ -97,16 +101,16 @@ const Header = () => {
                   <span>{user?.name || "Người dùng"}</span>
                 </button>
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md">
+                  <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md transition-opacity duration-200">
                     <button
                       onClick={() => navigate("/profile")}
-                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                     >
                       Hồ sơ
                     </button>
                     <button
                       onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                      className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 transition-colors duration-200"
                     >
                       Đăng xuất
                     </button>
@@ -116,7 +120,7 @@ const Header = () => {
             ) : (
               <button
                 onClick={() => navigate("/login")}
-                className="text-gray-700 hover:text-blue-600 font-medium"
+                className="text-gray-700 hover:text-pink-600 transition-colors duration-300 font-medium"
               >
                 Đăng nhập
               </button>

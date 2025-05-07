@@ -11,4 +11,6 @@ class IsAdmin(permissions.BasePermission):
         if request.user.type != 'admin':
             self.message = "Bạn không có quyền truy cập trang này."
             return False
+        if not request.user.status:
+            return False
         return True

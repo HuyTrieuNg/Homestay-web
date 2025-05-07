@@ -107,3 +107,58 @@ class HomestayStatisticsView(APIView):
             "total_homestays": total_homestays,
             "homestays_by_type": [{"type": item['type__name'], "count": item['count']} for item in homestay_by_type]
         })
+    
+class HomestayDeleteView(APIView):
+    permission_classes = [IsAdmin]
+
+    def delete(self, request, pk):
+        try:
+            homestay = Homestay.objects.get(pk=pk)
+            homestay.delete()
+            return Response({'detail': 'Homestay deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+        except Homestay.DoesNotExist:
+            return Response({'error': 'Homestay not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+class PropertyTypeView(APIView):
+    permission_classes = [IsAdmin]
+
+    def post(self, request):
+        serializer = PropertyTypeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+        try:
+            property_type = PropertyType.objects.get(pk=pk)
+        except PropertyType.DoesNotExist:
+            return Response({'error': 'Property type not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = PropertyTypeSerializer(property_type, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class AmenityView(APIView):
+    permission_classes = [IsAdmin]
+
+    def post(self, request):
+        serializer = AmenitySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+        try:
+            amenity = Amenity.objects.get(pk=pk)
+        except Amenity.DoesNotExist:
+            return Response({'error': 'Amenity not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = AmenitySerializer(amenity, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

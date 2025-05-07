@@ -346,7 +346,11 @@ const BookingStatistics = () => {
                                             fill={PRIMARY_COLOR} 
                                             radius={[0, 4, 4, 0]}
                                         />
-                                        <Tooltip content={<CustomTooltip valuePrefix="$" />} />
+                                        <Tooltip 
+                                            wrapperStyle={{ zIndex: 10 }} 
+                                            cursor={{ fill: 'rgba(0, 0, 0, 0.2)' }} 
+                                            formatter={(value, name) => [`$${value}`, name]} 
+                                        />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
@@ -379,7 +383,12 @@ const BookingStatistics = () => {
                                             fill="#00C49F" 
                                             radius={[0, 4, 4, 0]}
                                         />
-                                        <Tooltip content={<CustomTooltip valueSuffix=" đặt phòng" />} />
+                                        <Tooltip 
+                                            wrapperStyle={{ zIndex: 10 }} 
+                                            cursor={{ fill: 'rgba(0, 0, 0, 0.2)' }} 
+                                            formatter={(value, name) => [`${value} đặt phòng`, name]} 
+                                        />
+
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>

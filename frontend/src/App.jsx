@@ -18,7 +18,11 @@ import BookingPage from "./pages/BookingPage";
 import BookingHistoryPage from "./pages/BookingHistoryPage";
 import BookingHistoryDetailPage from "./pages/BookingHistoryDetailPage";
 import UnauthorizedPage from "./pages/UnAuthorizedPage";
+
 import AdminDashboard from "./pages/Admin/Dashboard";
+import UserManagementPage from "./pages/Admin/UserManagementPage";
+import HomestayManagementPage from "./pages/Admin/HomestayManagementPage";
+import FeatureSettingsPage from "./pages/Admin/FeatureSettingsPage";
 
 function App() {
   return (
@@ -51,6 +55,9 @@ function App() {
 
           <Route element={<PrivateRoute requiredRole="admin" />}>
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/users" element={<UserManagementPage />} />
+            <Route path="/admin/homestays" element={<HomestayManagementPage />} />
+            <Route path="/admin/feature-settings" element={<FeatureSettingsPage />} />
           </Route>
 
 
