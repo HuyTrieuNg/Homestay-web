@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "@/utils/axiosInstance";
 import { useParams } from "react-router-dom";
+import StarRating from "@/components/StartRating";
 
 function BookingHistoryDetailPage() {
   const { bookingId } = useParams();
@@ -9,6 +10,22 @@ function BookingHistoryDetailPage() {
   const [error, setError] = useState(null);
   const [showAll, setShowAll] = useState(false); // Trạng thái ẩn/hiện danh sách đầy đủ
 
+  const [review, setReview] = useState({
+    overall_rating: 5,
+    cleanliness_rating: 5,
+    accuracy_rating: 5,
+    checkin_rating: 5,
+    communication_rating: 5,
+    location_rating: 5,
+    value_rating: 5,
+    comment: "",
+  });
+  const [reviewError, setReviewError] = useState(null);
+  const [reviewSuccess, setReviewSuccess] = useState(null);
+  const [hasReviewed, setHasReviewed] = useState(false);
+  const [canReview, setCanReview] = useState(false); // New state for review eligibility
+  const [reviewMessage, setReviewMessage] = useState("");
+
   useEffect(() => {
     axiosInstance
       .get(`/homestays/booking/bookinghistory/${bookingId}`)
@@ -16,6 +33,37 @@ function BookingHistoryDetailPage() {
         setBooking(res.data);
         console.log(res.data);
         setLoading(false);
+
+        // Check review eligibility
+        const checkoutDate = new Date(res.data.checkout_date);
+        const currentDate = new Date();
+        const reviewDeadline = new Date(checkoutDate);
+        reviewDeadline.setDate(checkoutDate.getDate() + 14);
+
+        if (res.data.status !== "confirmed") {
+          setReviewMessage("Chỉ có thể đánh giá các booking đã được xác nhận.");
+          setCanReview(false);
+        } else if (currentDate < checkoutDate) {
+          setReviewMessage("Chỉ có thể đánh giá sau khi bạn checkout.");
+          setCanReview(false);
+        } else if (currentDate > reviewDeadline) {
+          setReviewMessage("Thời hạn đánh giá đã hết (14 ngày sau checkout).");
+          setCanReview(false);
+        } else {
+          setCanReview(true);
+        }
+        axiosInstance
+          .get(`/homestays/reviews/${res.data.homestay.id}/?booking=${res.data.id}`)
+          .then((reviewRes) => {
+            if (reviewRes.data.length > 0) {
+              setHasReviewed(true);
+              setReviewMessage("Bạn đã gửi đánh giá cho chuyến đi này.");
+              setReview(reviewRes.data[0]); // Load review lên nếu muốn hiển thị
+            }
+          })
+          .catch((err) => {
+            console.error("Error checking reviews:", err);
+          });
       })
       .catch((err) => {
         console.error("Error loading booking details:", err);
@@ -23,6 +71,47 @@ function BookingHistoryDetailPage() {
         setLoading(false);
       });
   }, [bookingId]);
+
+  const handleReviewChange = (e) => {
+    const { name, value } = e.target;
+    setReview((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleReviewSubmit = (e) => {
+    e.preventDefault();
+    setReviewError(null);
+    setReviewSuccess(null);
+
+    const reviewData = {
+
+      booking: booking.id,
+      overall_rating: parseInt(review.overall_rating),
+      cleanliness_rating: parseInt(review.cleanliness_rating),
+      accuracy_rating: parseInt(review.accuracy_rating),
+      checkin_rating: parseInt(review.checkin_rating),
+      communication_rating: parseInt(review.communication_rating),
+      location_rating: parseInt(review.location_rating),
+      value_rating: parseInt(review.value_rating),
+      comment: review.comment,
+    };
+
+    axiosInstance
+      .post(`/homestays/reviews/${booking.homestay.id}/`, reviewData)
+      .then((res) => {
+        setReviewSuccess("Đánh giá của bạn đã được gửi thành công!");
+        setHasReviewed(true);
+      })
+      .catch((err) => {
+        console.error("Error submitting review2:", err.response?.data);
+        console.error("Error submitting review:", err);
+        setReviewError(
+          err.response?.data?.error || "Không thể gửi đánh giá. Vui lòng thử lại."
+        );
+      });
+  };
 
   if (loading)
     return (
@@ -182,6 +271,182 @@ function BookingHistoryDetailPage() {
                 </p>
               </div>
             </div>
+          </section>
+
+
+          {/* Review Section */}
+          <section className="pb-6 mb-6">
+            <h2 className="text-2xl font-semibold mb-4">Đánh giá của bạn</h2>
+            {reviewSuccess && (
+              <p className="text-green-500 mb-4">{reviewSuccess}</p>
+            )}
+            {reviewError && (
+              <p className="text-red-500 mb-4">{reviewError}</p>
+            )}
+            {
+              hasReviewed ? (
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="flex items-center gap-4">
+                    <label className="w-40 text-sm font-medium">
+                      Đánh giá tổng thể
+                    </label>
+                    {Array(Math.round(review.overall_rating))
+                      .fill("★")
+                      .join("")}
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <label className="w-40 text-sm font-medium">
+                      Mức độ sạch sẽ
+                    </label>
+                    {Array(Math.round(review.cleanliness_rating))
+                      .fill("★")
+                      .join("")}
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <label className="w-40 text-sm font-medium">
+                      Độ chính xác
+                    </label>
+                    {Array(Math.round(review.accuracy_rating))
+                      .fill("★")
+                      .join("")}
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <label className="w-40 text-sm font-medium">
+                      Nhận phòng
+                    </label>
+                    {Array(Math.round(review.checkin_rating))
+                      .fill("★")
+                      .join("")}
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <label className="w-40 text-sm font-medium">
+                      Giao tiếp
+                    </label>
+                    {Array(Math.round(review.communication_rating))
+                      .fill("★")
+                      .join("")}
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <label className="w-40 text-sm font-medium">
+                      Vị trí
+                    </label>
+                    {Array(Math.round(review.location_rating))
+                      .fill("★")
+                      .join("")}
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <label className="w-40 text-sm font-medium">
+                      Giá trị
+                    </label>
+                    {Array(Math.round(review.value_rating))
+                      .fill("★")
+                      .join("")}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-5">Nhận xét</label>
+                    <textarea
+                      name="comment"
+                      value={review.comment}
+                      className="w-full border rounded-lg p-2"
+                      rows="4"
+                    ></textarea>
+                  </div>
+                </div>
+              )
+                : !canReview ? (
+                  <p className="text-black">{reviewMessage}</p>
+                ) : (
+                  <form onSubmit={handleReviewSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="flex items-center gap-4">
+                        <label className="w-40 text-sm font-medium">
+                          Đánh giá tổng thể
+                        </label>
+                        <StarRating
+                          name="overall_rating"
+                          value={review.overall_rating}
+                          onChange={handleReviewChange}
+                        />
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <label className="w-40 text-sm font-medium">
+                          Mức độ sạch sẽ
+                        </label>
+                        <StarRating
+                          name="cleanliness_rating"
+                          value={review.cleanliness_rating}
+                          onChange={handleReviewChange}
+                        />
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <label className="w-40 text-sm font-medium">
+                          Độ chính xác
+                        </label>
+                        <StarRating
+                          name="accuracy_rating"
+                          value={review.accuracy_rating}
+                          onChange={handleReviewChange}
+                        />
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <label className="w-40 text-sm font-medium">
+                          Nhận phòng
+                        </label>
+                        <StarRating
+                          name="checkin_rating"
+                          value={review.checkin_rating}
+                          onChange={handleReviewChange}
+                        />
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <label className="w-40 text-sm font-medium">
+                          Giao tiếp
+                        </label>
+                        <StarRating
+                          name="communication_rating"
+                          value={review.communication_rating}
+                          onChange={handleReviewChange}
+                        />
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <label className="w-40 text-sm font-medium">
+                          Vị trí
+                        </label>
+                        <StarRating
+                          name="location_rating"
+                          value={review.location_rating}
+                          onChange={handleReviewChange}
+                        />
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <label className="w-40 text-sm font-medium">
+                          Giá trị
+                        </label>
+                        <StarRating
+                          name="value_rating"
+                          value={review.value_rating}
+                          onChange={handleReviewChange}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium">Nhận xét</label>
+                      <textarea
+                        name="comment"
+                        value={review.comment}
+                        onChange={handleReviewChange}
+                        className="w-full border rounded-lg p-2"
+                        rows="4"
+                      ></textarea>
+                    </div>
+                    <button
+                      type="submit"
+                      className="bg-[#FF385C] text-white px-4 py-2 rounded-lg cursor-pointer"
+                    >
+                      Gửi đánh giá
+                    </button>
+                  </form>
+                )}
           </section>
         </div>
 

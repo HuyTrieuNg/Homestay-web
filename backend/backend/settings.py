@@ -82,6 +82,7 @@ INSTALLED_APPS = [
     'homestays',
     'host',
     'booking',
+    'reviews',
 ]
 
 AUTH_USER_MODEL = 'users.User'

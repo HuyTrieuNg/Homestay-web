@@ -96,7 +96,22 @@ function BookingPage() {
         });
     }
   }, [bookingData.id, homestay]);
-
+  
+  const [reviews, setReviews] = useState([]);
+  useEffect(() => {
+      if (Number(searchParams.get("id"))) {
+        axiosInstance
+          .get(`/homestays/reviews/${Number(searchParams.get("id"))}/`)
+          .then((response) => {
+            setReviews(response.data);
+            console.log("Reviews data:", response.data);
+          })
+          .catch((error) => {
+            console.error("Error fetching reviews:", error);
+          });
+      }
+    }, [Number(searchParams.get("id"))]);
+  
   if (!homestay) {
     return <p>Loading...</p>;
   }
@@ -127,11 +142,29 @@ function BookingPage() {
       <div className="flex justify-center">
         <div className="max-w-6xl w-full grid grid-cols-2 gap-15 p-6">
           <div className="col-span-2 text-3xl font-semibold bg-white flex items-center">
-            <ArrowLeft
+            {/* <ArrowLeft
               className="cursor-pointer text-3xl mr-2"
               onClick={() => window.history.back()}
-            />
-            Yêu cầu đặt phòng/đặt chỗ
+            /> */}
+            <button
+              onClick={() => window.history.back()}
+              className="text-black mb-4 flex items-center text-3xl font-semibold cursor-pointer"
+            >
+              <svg
+                className="w-6 h-6 mr-3 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+              Yêu cầu đặt phòng/đặt chỗ
+            </button>
           </div>
           {/* phần bên trái */}
           <div className="space-y-4">
@@ -335,7 +368,7 @@ function BookingPage() {
                 {/* chính sách và nút thanh toán */}
                 <hr className="border-t border-gray-300 my-4" />
                 <div className="mt-6">
-                  <p className="text-xs">
+                  <p className="text-xs mb-4">
                     Bằng việc chọn nút bên dưới, tôi đồng ý với{" "}
                     <a href="#" className="text-black font-semibold underline">
                       {" "}
@@ -378,6 +411,7 @@ function BookingPage() {
             homestay={homestay}
             numNights={numNights}
             subTotalPrice={totalPrice}
+            reviews={reviews}
           />
         </div>
       </div>
