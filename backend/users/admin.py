@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from reviews.models import Review
 from homestays.models import *
 from users.models import *
 from booking.models import *
@@ -55,3 +56,4 @@ admin.site.register(Booking)
 admin.site.register(BookingLine)
 admin.site.register(PropertyType)
 admin.site.register(HomestayImage)
+admin.site.register(Review)
