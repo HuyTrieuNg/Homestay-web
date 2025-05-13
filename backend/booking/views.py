@@ -11,6 +11,11 @@ from homestays.models import Homestay
 from booking.models import *
 from .serializers import *
 
+from users.permissions import IsAdmin
+from django.utils.dateparse import parse_date
+from django.db.models import Sum, Count
+
+
 class BookingAvailabilityView(APIView):
     permission_classes = [AllowAny]
     
@@ -113,3 +118,52 @@ class CreateBookingView(APIView):
         serializer = BookingSerializer(booking)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
+
+class BookingStatisticsView(APIView):
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+        # Lấy khoảng thời gian từ query param, mặc định 30 ngày gần nhất
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+
+        if not start_date or not end_date:
+            from datetime import date, timedelta
+            end_date = date.today()
+            start_date = end_date - timedelta(days=30)
+        else:
+            start_date = parse_date(start_date)
+            end_date = parse_date(end_date)
+
+        bookings = Booking.objects.filter(checkout_date__range=[start_date, end_date])
+        confirmed = bookings.filter(status='confirmed')
+
+        # Tổng doanh thu
+        total_revenue_all = confirmed.aggregate(total=Sum('total_amount'))['total'] or 0
+
+        # Top homestay theo doanh thu
+        top_homestays = confirmed.values('homestay__id', 'homestay__name') .annotate(total_revenue=Sum('total_amount')).order_by('-total_revenue')[:20]
+
+        # Doanh thu theo loại phòng
+        by_type = confirmed.values('homestay__type__name') .annotate(total_revenue=Sum('total_amount'))
+
+        # Doanh thu theo ngày checkout
+        by_date = confirmed.values('checkout_date') .annotate(total_revenue=Sum('total_amount')) .order_by('checkout_date')
+
+        # Tỉ lệ trạng thái booking
+        status_ratio = bookings.values('status').annotate(count=Count('id'))
+
+        top_booked_homestays = confirmed.values('homestay__id', 'homestay__name').annotate(count=Count('id')) .order_by('-count')[:20]
+
+        return Response({
+            "start_date": start_date,
+            "end_date": end_date,
+            "total_revenue": total_revenue_all,
+            "top_homestays": RevenueByHomestaySerializer(top_homestays, many=True).data,
+            "by_type": RevenueByTypeSerializer(by_type, many=True).data,
+            "by_date": RevenueByDateSerializer(by_date, many=True).data,
+            "status_ratio": BookingStatusRatioSerializer(status_ratio, many=True).data,
+            "top_booked_homestays": BookingCountByHomestaySerializer(top_booked_homestays, many=True).data,
+
+        })
