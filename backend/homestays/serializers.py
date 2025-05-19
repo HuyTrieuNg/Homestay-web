@@ -29,6 +29,8 @@ class PropertyTypeSerializer(serializers.ModelSerializer):
 class HomestaySerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
     amenities = AmenitySerializer(many=True)
+    rating = serializers.FloatField(read_only=True)
+    review_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Homestay
@@ -48,6 +50,8 @@ class HomestayDetailSerializer(serializers.ModelSerializer):
     commune = CommuneSerializer()
     district = DistrictSerializer()
     province = ProvinceSerializer()
+    rating = serializers.FloatField(read_only=True)
+    review_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Homestay
@@ -66,11 +70,14 @@ class HomestayListSerializer(serializers.ModelSerializer):
     commune = CommuneSerializer()
     district = DistrictSerializer()
     province = ProvinceSerializer()
+    rating = serializers.FloatField(read_only=True)
+    review_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Homestay
         fields = ["id", "name", "base_price", "address", "images", 
-                  "type", "commune", "district", "province"]
+                  "type", "commune", "district", "province", 
+                  "rating", "review_count"]
 
     def get_images(self, obj):
         request = self.context.get("request")

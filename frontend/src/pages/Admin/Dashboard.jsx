@@ -1,8 +1,8 @@
 import React from "react";
-import Header from "@components/Admin/Header";
-import UserStatistics from "@components/Admin/UserStatistics";
-import HomestayStatistics from "@components/Admin/HomestayStatistics";
-import BookingStatistics from "@components/Admin/BookingStatistics";
+import Header from "@components/admin/Header";
+import UserStatistics from "@components/admin/UserStatistics";
+import HomestayStatistics from "@components/admin/HomestayStatistics";
+import BookingStatistics from "@components/admin/BookingStatistics";
 
 const AdminDashboard = () => {
   const PRIMARY_COLOR = "#ff5a5f";

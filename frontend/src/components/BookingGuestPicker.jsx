@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { PropTypes } from "prop-types";
 import GuestSelector from "./GuestSelector";
+
 const BookingGuestPicker = ({
   isDropdown = false,
   noBorder = false,
@@ -8,6 +9,7 @@ const BookingGuestPicker = ({
   isModalGuestOpen,
   setIsModalGuestOpen,
   onGuestsChange,
+  haveMaxGuests = false,
 }) => {
   const [adults, setAdults] = useState(initialGuests?.adults ?? 1);
   const [children, setChildren] = useState(initialGuests?.children ?? 0);
@@ -61,7 +63,7 @@ const BookingGuestPicker = ({
                 setPets={setPets}
                 onSave={handleSave}
                 onCancel={handleCancel}
-                haveMaxGuests={true}
+                haveMaxGuests={haveMaxGuests}
               />
             </div>
           )}
@@ -95,7 +97,7 @@ const BookingGuestPicker = ({
                 setPets={setPets}
                 onSave={handleSave}
                 onCancel={handleCancel}
-                haveMaxGuests={true}
+                haveMaxGuests={haveMaxGuests}
               />
             </div>
           )}
@@ -113,6 +115,7 @@ BookingGuestPicker.propTypes = {
   isModalGuestOpen: PropTypes.bool,
   setIsModalGuestOpen: PropTypes.func,
   onGuestsChange: PropTypes.func,
+  haveMaxGuests: PropTypes.bool,
 };
 
 export default BookingGuestPicker;

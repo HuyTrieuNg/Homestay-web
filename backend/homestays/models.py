@@ -71,6 +71,22 @@ class Homestay(models.Model):
     def province(self):
         return self.commune.district.province
 
+    @property
+    def reviews(self):
+        from reviews.models import Review
+        return Review.objects.filter(homestay=self)
+
+    @property
+    def rating(self):
+        reviews = self.reviews
+        if not reviews.exists():
+            return 0
+        return reviews.aggregate(models.Avg('overall_rating'))['overall_rating__avg']
+
+    @property
+    def review_count(self):
+        return self.reviews.count()
+
 class HomestayImage(models.Model):
     homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE, related_name="images")
     image = models.ImageField(upload_to="homestays/images")
