@@ -2,8 +2,9 @@
 # exit on error
 set -o errexit
 
+cd ./backend
 # Cài đặt các gói phụ thuộc
-pip install -r ./backend/requirements.txt
+pip install -r requirements.txt
 
 # Thu thập static files
 python manage.py collectstatic --no-input
