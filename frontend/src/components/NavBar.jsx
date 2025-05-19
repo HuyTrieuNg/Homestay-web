@@ -14,15 +14,12 @@ const Navbar = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      axiosInstance
-        .get("/profile/avatar")
-        .then((response) => {
-          console.log("API Response:", response.data);
-          setAvatar(response.data.avatar_url);
-        })
-        .catch((error) => {
-          console.error("Error fetching profile:", error);
-        });
+      const cachedAvatar = localStorage.getItem("avatar");
+      if (cachedAvatar) {
+        setAvatar(cachedAvatar);
+      }
+    } else {
+      setAvatar(null);
     }
   }, [isAuthenticated]);
 
@@ -32,6 +29,8 @@ const Navbar = () => {
 
   const handleLogout = () => {
     setDropdownOpen(false);
+    localStorage.removeItem("avatar");
+    setAvatar(null);  
     logoutUser();
     navigate("/login");
   };

@@ -173,7 +173,7 @@ const Calendar = ({ id }) => {
               <div className={`text-lg font-medium ${decoration}`}>{day.getDate()}</div>
               {price && (
                 <div className="text-sm font-bold mt-1">
-                  {price !== "N/A" ? `${price}đ` : ""}
+                  {price !== "N/A" ? `${price}$` : ""}
                 </div>
               )}
             </div>
