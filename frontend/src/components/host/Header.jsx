@@ -17,17 +17,16 @@ const Header = () => {
       const cachedAvatar = localStorage.getItem("avatar");
       if (cachedAvatar) {
         setAvatar(cachedAvatar);
-      } else {
-        axiosInstance.get("/profile/avatar").then((res) => {
-          setAvatar(res.data.avatar_url);
-          localStorage.setItem("avatar", res.data.avatar_url);
-        });
       }
+    } else {
+      setAvatar(null);
     }
   }, [isAuthenticated]);
   
   const handleLogout = () => {
     logoutUser();
+    localStorage.removeItem("avatar");
+    setAvatar(null);
     navigate("/login");
   };
 
