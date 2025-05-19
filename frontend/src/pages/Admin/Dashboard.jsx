@@ -12,10 +12,7 @@ const AdminDashboard = () => {
       <Header />
       
       <main className="container mx-auto py-6 px-4">
-        <h1 className="text-3xl font-bold mb-6 text-center transition-colors duration-300"
-            style={{ color: "#333", hover: { color: PRIMARY_COLOR } }}>
-          Tổng Quan Bảng Điều Khiển
-        </h1>
+        
         
         <div className="bg-white rounded-lg shadow-md p-4 mb-8">
           <div className="flex flex-col md:flex-row justify-between gap-4">

@@ -14,15 +14,15 @@ const Header = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      axiosInstance
-        .get("/profile/avatar")
-        .then((response) => {
-          console.log("API Response:", response.data);
-          setAvatar(response.data.avatar_url);
-        })
-        .catch((error) => {
-          console.error("Error fetching profile:", error);
+      const cachedAvatar = localStorage.getItem("avatar");
+      if (cachedAvatar) {
+        setAvatar(cachedAvatar);
+      } else {
+        axiosInstance.get("/profile/avatar").then((res) => {
+          setAvatar(res.data.avatar_url);
+          localStorage.setItem("avatar", res.data.avatar_url);
         });
+      }
     }
   }, [isAuthenticated]);
   
@@ -94,7 +94,7 @@ const Header = () => {
                   className="flex items-center text-gray-700 hover:text-pink-600 transition-colors duration-300 focus:outline-none"
                 >
                   <img
-                    src={avatar || "https://i.pravatar.cc/40"}
+                    src={avatar}
                     alt="User Avatar"
                     className="w-8 h-8 rounded-full mr-2"
                   />
