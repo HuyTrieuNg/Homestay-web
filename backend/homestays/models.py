@@ -1,5 +1,7 @@
 from django.db import models
 from users.models import User
+from cloudinary.models import CloudinaryField
+
 
 class Province(models.Model):
     name = models.CharField(max_length=255)
@@ -73,7 +75,7 @@ class Homestay(models.Model):
 
 class HomestayImage(models.Model):
     homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to="homestays/images")
-
+    # image = models.ImageField(upload_to="homestays/images")
+    image = CloudinaryField('image') 
     def __str__(self):
         return f"Image for {self.homestay.name}"

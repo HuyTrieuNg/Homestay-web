@@ -74,7 +74,12 @@ const ProfilePage = () => {
       await axiosInstance.put("/profile/", updatedData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
+      
+      axiosInstance.get("/profile/avatar").then((res) => {
+        const avatarUrl = res.data.avatar_url;
+        localStorage.setItem("avatar", avatarUrl);
+      });
+      
       alert("Profile updated successfully!");
       fetchProfile();
     } catch (error) {
