@@ -38,11 +38,11 @@ const Header = () => {
           {/* Logo */}
           <a href="/" className="flex items-center">
             <img
-              src="https://logodix.com/logo/6346.jpg" 
+              src="https://res.cloudinary.com/drfwzrqqj/image/upload/v1747688845/create_logo_for_stayhub_with_1_1_ratio_no_text_primary_color_FF5A5F_no_background_eiqhu7.png" 
               alt="Logo"
               className="h-10 w-10 mr-3 rounded-full scale-150"
             />
-            <span className="text-2xl font-bold transition-colors duration-300" style={{ color: PRIMARY_COLOR }}>Homestay App</span>
+            <span className="text-2xl font-bold transition-colors duration-300" style={{ color: PRIMARY_COLOR }}>StayHub Host</span>
           </a>
 
           {/* Menu Desktop */}
