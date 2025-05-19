@@ -11,7 +11,7 @@ const PropertyFilter = ({ onSelectPropertyType }) => {
 
   useEffect(() => {
     axiosInstance
-      .get("homestays/property-types")
+      .get("homestays/property-types/")
       .then((response) => {
         if (Array.isArray(response.data)) {
           setPropertyTypes(response.data);

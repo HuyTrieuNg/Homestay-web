@@ -5,6 +5,7 @@ import axiosInstance from "@utils/axiosInstance";
 import { setupAxiosInterceptors } from "../utils/axiosService";
 
 const ProfilePage = () => {
+  const { setAvatar } = useContext(AuthContext); 
   const { authTokens, setAuthTokens, setUser, logoutUser } =
     useContext(AuthContext);
   const [user, setUserProfile] = useState(null);
@@ -75,13 +76,15 @@ const ProfilePage = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       
-      axiosInstance.get("/profile/avatar").then((res) => {
-        const avatarUrl = res.data.avatar_url;
-        localStorage.setItem("avatar", avatarUrl);
-      });
       
+
       alert("Profile updated successfully!");
-      fetchProfile();
+      await fetchProfile();  // fetch lại profile mới
+
+      // Cập nhật avatar trong context
+      if (user?.avatar_url) {
+        setAvatar(`${user.avatar_url}?t=${Date.now()}`); // bust cache
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
       if (error.response) {

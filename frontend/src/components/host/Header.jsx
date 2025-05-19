@@ -14,19 +14,20 @@ const Header = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      const cachedAvatar = localStorage.getItem("avatar");
-      if (cachedAvatar) {
-        setAvatar(cachedAvatar);
-      }
-    } else {
-      setAvatar(null);
+      axiosInstance
+        .get("/profile/avatar")
+        .then((response) => {
+          console.log("API Response:", response.data);
+          setAvatar(response.data.avatar_url);
+        })
+        .catch((error) => {
+          console.error("Error fetching profile:", error);
+        });
     }
   }, [isAuthenticated]);
   
   const handleLogout = () => {
     logoutUser();
-    localStorage.removeItem("avatar");
-    setAvatar(null);
     navigate("/login");
   };
 
