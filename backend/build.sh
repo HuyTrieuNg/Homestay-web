@@ -3,7 +3,7 @@
 set -o errexit
 
 # Cài đặt các gói phụ thuộc
-pip install -r requirements.txt
+pip install -r ./backend/requirements.txt
 
 # Thu thập static files
 python manage.py collectstatic --no-input
