@@ -15,24 +15,25 @@ const GuestSelector = ({
   haveMaxGuests = false,
 }) => {
   const [maxGuests, setMaxGuests] = useState(6);
-  const { id } = useParams("id");
+  const { id } = useParams();
 
   useEffect(() => {
-    if (haveMaxGuests) {
+    if (haveMaxGuests && id) {
       axiosInstance
         .get(`homestays/${id}/maxGuests`)
         .then((response) => {
           setMaxGuests(response.data.max_guests);
-          console.log("Max guests:", response.data);
         })
         .catch((error) => {
-          console.error("Error fetching homestays:", error);
+          console.error("Error fetching max guests:", error);
+          // Set a default max guests if API call fails
+          setMaxGuests(6);
         });
     }
   }, [haveMaxGuests, id]);
 
   const totalGuests = adults + numChildren;
-  const canIncrease = totalGuests < maxGuests;
+  const canIncrease = !haveMaxGuests || totalGuests < maxGuests;
 
   return (
     <div className="p-4 bg-white shadow-lg rounded-lg w-72">

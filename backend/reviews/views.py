@@ -13,7 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 class ReviewListCreateView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     # def get(self, request, homestay_id, format=None):
     #     reviews = Review.objects.filter(homestay_id=homestay_id)
     #     serializer = ReviewSerializer(reviews, many=True,  context={'request': request})

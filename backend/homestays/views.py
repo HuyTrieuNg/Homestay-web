@@ -4,9 +4,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import RetrieveAPIView
 from .models import Homestay, PropertyType, Amenity, Province, District, Commune
+from booking.models import Booking
 from .serializers import *
-from django.db.models import Count
+from django.db.models import Count, Q, Avg
 from users.permissions import IsAdmin
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from datetime import datetime, timezone
+from django.utils import timezone as django_timezone
 
 class HomestayListView(APIView):
     permission_classes = [AllowAny]
@@ -18,7 +23,10 @@ class HomestayListView(APIView):
 
         homestays = Homestay.objects.select_related(
             'type', 'commune__district__province'
-        ).prefetch_related('images', 'amenities')
+        ).prefetch_related(
+            'images', 
+            'amenities'
+        )
 
         if property_type_id:
             homestays = homestays.filter(type_id=property_type_id)
@@ -162,3 +170,99 @@ class AmenityView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+class HomestaySearchView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            # Get search parameters
+            address = request.query_params.get('address', '')
+            start_date = request.query_params.get('start_date')
+            end_date = request.query_params.get('end_date')
+            guests = request.query_params.get('guests', 1)
+
+            # Validate required parameters
+            if not address:
+                return Response(
+                    {"error": "Địa điểm là bắt buộc"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            if not start_date or not end_date:
+                return Response(
+                    {"error": "Ngày nhận và trả phòng là bắt buộc"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Base queryset
+            queryset = Homestay.objects.select_related(
+                'type', 'commune__district__province'
+            ).prefetch_related('images', 'amenities')
+
+            # Filter by address (search in address field)
+            if address:
+                queryset = queryset.filter(
+                    Q(address__icontains=address) |
+                    Q(commune__name__icontains=address) |
+                    Q(commune__district__name__icontains=address) |
+                    Q(commune__district__province__name__icontains=address)
+                )
+
+            # Filter by max guests
+            if guests:
+                try:
+                    guests = int(guests)
+                    queryset = queryset.filter(max_guests__gte=guests)
+                except ValueError:
+                    return Response(
+                        {"error": "Số khách không hợp lệ"}, 
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+            # Filter by availability
+            if start_date and end_date:
+                try:
+                    # Parse dates
+                    start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                    end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+                    today = django_timezone.now().date()
+
+                    # Kiểm tra ngày hợp lệ
+                    if start_date >= end_date:
+                        return Response(
+                            {"error": "Ngày trả phòng phải sau ngày nhận phòng"}, 
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+                    
+                    if start_date < today:
+                        return Response(
+                            {"error": "Ngày nhận phòng không được trong quá khứ"}, 
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+
+                    # Lấy danh sách homestay đã được đặt trong khoảng thời gian này
+                    booked_homestays = Booking.objects.filter(
+                        Q(checkin_date__lte=end_date, checkout_date__gte=start_date),
+                        status__in=['pending', 'confirmed']  # Chỉ kiểm tra các booking đã xác nhận hoặc đang chờ
+                    ).values_list('homestay_id', flat=True)
+
+                    # Loại bỏ các homestay đã được đặt
+                    queryset = queryset.exclude(id__in=booked_homestays)
+
+                except ValueError:
+                    return Response(
+                        {"error": "Định dạng ngày không hợp lệ. Sử dụng YYYY-MM-DD"}, 
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+            # Serialize and return results
+            serializer = HomestaySerializer(queryset, many=True, context={'request': request})
+            return Response(serializer.data)
+
+        except Exception as e:
+            print(f"Search error: {str(e)}")  # Debug log
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )

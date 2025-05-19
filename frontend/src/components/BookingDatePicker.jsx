@@ -13,9 +13,11 @@ const BookingDatePicker = ({
   setNumNights,
   setSubTotalPrice,
   onDateChange,
+  unavailableDates,
 }) => {
-  const { range, setRange, calculateNights, calculateSubTotalPrice } =
+  const { range, setRange, calculateNights, calculateSubTotalPrice, unavailableDates: bookingUnavailableDates } =
     useBookingLogic(initialStart, initialEnd, basePrice);
+
   useEffect(() => {
     setNumNights(calculateNights());
     setSubTotalPrice(calculateSubTotalPrice());
@@ -61,6 +63,7 @@ const BookingDatePicker = ({
               onSelectRange={setRange}
               initialStart={range.start}
               initialEnd={range.end}
+              unavailableDates={unavailableDates || bookingUnavailableDates}
             />
 
             <div className="flex justify-center gap-7 mt-4">
@@ -93,6 +96,7 @@ BookingDatePicker.propTypes = {
   setNumNights: PropTypes.func,
   setSubTotalPrice: PropTypes.func,
   onDateChange: PropTypes.func,
+  unavailableDates: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default BookingDatePicker;

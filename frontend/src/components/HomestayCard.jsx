@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Heart } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const HomestayCard = ({ homestay }) => {
@@ -31,6 +31,12 @@ const HomestayCard = ({ homestay }) => {
       <div className="p-4">
         <h3 className="text-lg font-semibold">{homestay.name}</h3>
         <p className="text-gray-500">📍 {homestay.address}</p>
+        <div className="flex items-center mt-1">
+          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+          <span className="ml-1 text-gray-700 font-medium">{homestay.rating?.toFixed(1) || 0}</span>
+          <span className="mx-1 text-gray-500">·</span>
+          <span className="text-gray-500">{homestay.review_count || 0} đánh giá</span>
+        </div>
         <p className="text-gray-700 mt-1">
           <span className="font-semibold">💰 {homestay.base_price}</span> / đêm
         </p>
@@ -43,9 +49,11 @@ HomestayCard.propTypes = {
   homestay: PropTypes.shape({
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
-    images: PropTypes.string.isRequired,
+    images: PropTypes.arrayOf(PropTypes.string).isRequired,
     base_price: PropTypes.string.isRequired,
     address: PropTypes.string.isRequired,
+    rating: PropTypes.number,
+    review_count: PropTypes.number,
   }).isRequired,
 };
 

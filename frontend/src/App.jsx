@@ -18,6 +18,7 @@ import BookingPage from "./pages/BookingPage";
 import BookingHistoryPage from "./pages/BookingHistoryPage";
 import BookingHistoryDetailPage from "./pages/BookingHistoryDetailPage";
 import UnauthorizedPage from "./pages/UnAuthorizedPage";
+import SearchResultsPage from "./pages/SearchResultsPage";
 
 import AdminDashboard from "./pages/Admin/Dashboard";
 import UserManagementPage from "./pages/Admin/UserManagementPage";
@@ -35,6 +36,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/booking" element={<BookingPage />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          <Route path="/search-results" element={<SearchResultsPage />} />
 
           <Route element={<PrivateRoute />}>
             <Route path="/profile" element={<ProfilePage />} />

@@ -114,22 +114,46 @@ function HomestayPage() {
         </div>
 
         {homestay.images && homestay.images.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-            {homestay.images.slice(0, 5).map((image, index) => (
-              <div key={index} className="relative">
-                <img
-                  src={image}
-                  alt={homestay.name}
-                  className="w-full h-64 object-cover rounded-lg"
-                />
-                {/* Nút Hiển thị tất cả ảnh (nếu > 5) */}
-                {index === 4 && homestay.images.length > 5 && (
-                  <button className="absolute inset-0 bg-black bg-opacity-30 text-white font-semibold flex items-center justify-center text-lg rounded-lg hover:bg-opacity-40 transition">
-                    Hiển thị tất cả ảnh
-                  </button>
+          <div className={`grid ${homestay.images.length === 1 ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'} gap-2`}>
+            {/* Ảnh chính (lớn) */}
+            <div className={homestay.images.length === 1 ? 'w-full' : 'md:col-span-2 lg:col-span-1'}>
+              <img
+                src={homestay.images[0]}
+                alt={`${homestay.name} - Ảnh chính`}
+                className={`w-full ${homestay.images.length === 1 ? 'h-[500px]' : 'h-[400px]'} object-cover rounded-lg`}
+              />
+            </div>
+            
+            {/* Grid ảnh phụ - chỉ hiển thị khi có nhiều hơn 1 ảnh */}
+            {homestay.images.length > 1 && (
+              <div className="grid grid-cols-2 gap-2">
+                {homestay.images.slice(1, 5).map((image, index) => (
+                  <div key={index} className="relative aspect-square">
+                    <img
+                      src={image}
+                      alt={`${homestay.name} - Ảnh ${index + 2}`}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  </div>
+                ))}
+                {/* Nút hiển thị tất cả ảnh nếu có nhiều hơn 5 ảnh */}
+                {homestay.images.length > 5 && (
+                  <div className="relative aspect-square group">
+                    <img
+                      src={homestay.images[4]}
+                      alt={`${homestay.name} - Ảnh 5`}
+                      className="w-full h-full object-cover rounded-lg brightness-75"
+                    />
+                    <button 
+                      onClick={() => {/* Xử lý hiển thị gallery */}}
+                      className="absolute inset-0 bg-black bg-opacity-40 text-white font-semibold flex items-center justify-center text-lg rounded-lg hover:bg-opacity-50 transition-all duration-200"
+                    >
+                      Hiển thị tất cả {homestay.images.length} ảnh
+                    </button>
+                  </div>
                 )}
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>

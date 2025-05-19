@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "@/utils/axiosInstance";
-import { format } from "date-fns";
-import { useParams } from "react-router-dom";
+import { format, addDays } from "date-fns";
+import { useSearchParams } from "react-router-dom";
 
 const useBookingLogic = (initialStart, initialEnd, basePrice) => {
   const normalizeDate = (date) => {
@@ -9,10 +9,11 @@ const useBookingLogic = (initialStart, initialEnd, basePrice) => {
     d.setHours(0, 0, 0, 0);
     return d;
   };
+
   const startDate = normalizeDate(initialStart || new Date());
   const endDate = initialEnd
     ? normalizeDate(initialEnd)
-    : normalizeDate(new Date(startDate.getTime() + 5 * 24 * 60 * 60 * 1000));
+    : normalizeDate(addDays(startDate, 5));
 
   const [range, setRange] = useState({
     start: startDate,
@@ -21,24 +22,42 @@ const useBookingLogic = (initialStart, initialEnd, basePrice) => {
 
   const [unavailableDates, setUnavailableDates] = useState([]);
   const [datePrices, setDatePrices] = useState({});
-  const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
 
   useEffect(() => {
     if (!id) return;
 
-    axiosInstance
-      .get(`homestays/booking/${id}/unavailable-dates`)
-      .then((response) => {
-        setUnavailableDates(response.data.unavailable_dates || []);
-      })
-      .catch(console.error);
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        const [unavailableDatesResponse, pricesResponse] = await Promise.all([
+          axiosInstance.get(`homestays/booking/${id}/unavailable-dates`),
+          axiosInstance.get(`homestays/booking/${id}/prices`)
+        ]);
 
-    axiosInstance
-      .get(`homestays/booking/${id}/prices`)
-      .then((response) => {
-        setDatePrices(response.data.price_map || {});
-      })
-      .catch(console.error);
+        setUnavailableDates(unavailableDatesResponse.data.unavailable_dates || []);
+        setDatePrices(pricesResponse.data.price_map || {});
+      } catch (err) {
+        console.error('Error fetching booking data:', err);
+        setError(err.response?.data?.message || 'Failed to fetch booking data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+
+    // Cleanup function
+    return () => {
+      setUnavailableDates([]);
+      setDatePrices({});
+      setError(null);
+    };
   }, [id]);
 
   const calculateNights = useCallback(() => {
@@ -57,9 +76,7 @@ const useBookingLogic = (initialStart, initialEnd, basePrice) => {
     while (currentDate < end) {
       const formattedDate = format(currentDate, "yyyy-MM-dd");
       total += Number(datePrices[formattedDate] || basePrice);
-
-
-      currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
+      currentDate = addDays(currentDate, 1);
     }
     return total;
   }, [range, datePrices, basePrice]);
@@ -70,6 +87,8 @@ const useBookingLogic = (initialStart, initialEnd, basePrice) => {
     unavailableDates,
     calculateNights,
     calculateSubTotalPrice,
+    isLoading,
+    error,
   };
 };
 
