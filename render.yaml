@@ -41,5 +41,5 @@ services:
         source: /*
         destination: /index.html
     envVars:
-      - key: VITE_API_URL
-        value: https://stayhub-backend-yb04.onrender.com
+      - key: VITE_BASE_URL
+        value: https://stayhub-backend-yb04.onrender.com/api
