@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "@/utils/axiosInstance";
 import { format, addDays } from "date-fns";
-import { useSearchParams } from "react-router-dom";
 
-const useBookingLogic = (initialStart, initialEnd, basePrice) => {
+const useBookingLogic = (initialStart, initialEnd, basePrice, homestayId) => {
   const normalizeDate = (date) => {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
@@ -24,11 +23,14 @@ const useBookingLogic = (initialStart, initialEnd, basePrice) => {
   const [datePrices, setDatePrices] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [searchParams] = useSearchParams();
-  const id = searchParams.get('id');
 
   useEffect(() => {
-    if (!id) return;
+    if (!homestayId) {
+      console.log('No homestayId provided');
+      return;
+    }
+
+    console.log('Fetching data for homestay:', homestayId);
 
     const fetchData = async () => {
       setIsLoading(true);
@@ -36,9 +38,12 @@ const useBookingLogic = (initialStart, initialEnd, basePrice) => {
       
       try {
         const [unavailableDatesResponse, pricesResponse] = await Promise.all([
-          axiosInstance.get(`homestays/booking/${id}/unavailable-dates`),
-          axiosInstance.get(`homestays/booking/${id}/prices`)
+          axiosInstance.get(`homestays/booking/${homestayId}/unavailable-dates`),
+          axiosInstance.get(`homestays/booking/${homestayId}/prices`)
         ]);
+
+        console.log('Unavailable dates response:', unavailableDatesResponse.data);
+        console.log('Prices response:', pricesResponse.data);
 
         setUnavailableDates(unavailableDatesResponse.data.unavailable_dates || []);
         setDatePrices(pricesResponse.data.price_map || {});
@@ -52,13 +57,12 @@ const useBookingLogic = (initialStart, initialEnd, basePrice) => {
 
     fetchData();
 
-    // Cleanup function
     return () => {
       setUnavailableDates([]);
       setDatePrices({});
       setError(null);
     };
-  }, [id]);
+  }, [homestayId]);
 
   const calculateNights = useCallback(() => {
     const { start, end } = range;

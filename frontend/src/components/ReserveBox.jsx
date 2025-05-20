@@ -5,14 +5,14 @@ import useBookingLogic from "@/hooks/useBookingLogic";
 import BookingGuestPicker from "./BookingGuestPicker";
 import PropTypes from "prop-types";
 
-const ReserveBox = ({ initialStart, initialEnd, basePrice }) => {
+const ReserveBox = ({ initialStart, initialEnd, basePrice, homestayId }) => {
   const {
     range,
     setRange,
     unavailableDates,
     calculateNights,
     calculateSubTotalPrice,
-  } = useBookingLogic(initialStart, initialEnd, basePrice);
+  } = useBookingLogic(initialStart, initialEnd, basePrice, homestayId);
 
   const [guests, setGuests] = useState({ adults: 1, children: 0, pets: 0 });
   const subtotal = calculateSubTotalPrice();
@@ -111,6 +111,7 @@ ReserveBox.propTypes = {
   initialStart: PropTypes.instanceOf(Date),
   initialEnd: PropTypes.instanceOf(Date),
   basePrice: PropTypes.number,
+  homestayId: PropTypes.string,
 };
 
 export default ReserveBox;

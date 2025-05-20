@@ -4,13 +4,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import RetrieveAPIView
 from .models import Homestay, PropertyType, Amenity, Province, District, Commune
-from booking.models import Booking
+from booking.models import Booking, HomestayAvailability
 from .serializers import *
 from django.db.models import Count, Q, Avg
 from users.permissions import IsAdmin
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from django.utils import timezone as django_timezone
 
 class HomestayListView(APIView):
@@ -241,14 +241,21 @@ class HomestaySearchView(APIView):
                             status=status.HTTP_400_BAD_REQUEST
                         )
 
-                    # Lấy danh sách homestay đã được đặt trong khoảng thời gian này
-                    booked_homestays = Booking.objects.filter(
-                        Q(checkin_date__lte=end_date, checkout_date__gte=start_date),
-                        status__in=['pending', 'confirmed']  # Chỉ kiểm tra các booking đã xác nhận hoặc đang chờ
-                    ).values_list('homestay_id', flat=True)
+                    # Tạo danh sách các ngày cần kiểm tra
+                    date_range = []
+                    current_date = start_date
+                    while current_date <= end_date:
+                        date_range.append(current_date)
+                        current_date += timedelta(days=1)
 
-                    # Loại bỏ các homestay đã được đặt
-                    queryset = queryset.exclude(id__in=booked_homestays)
+                    # Lấy danh sách homestay có ngày bận trong khoảng thời gian này
+                    unavailable_homestays = HomestayAvailability.objects.filter(
+                        date__in=date_range,
+                        status__in=['booked', 'blocked']
+                    ).values_list('homestay_id', flat=True).distinct()
+
+                    # Loại bỏ các homestay không khả dụng
+                    queryset = queryset.exclude(id__in=unavailable_homestays)
 
                 except ValueError:
                     return Response(
