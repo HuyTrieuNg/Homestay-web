@@ -26,10 +26,55 @@ const DateRangePicker = ({
     parseISO(date)
   );
 
-  const initialStartDate = normalizeDate(initialStart || new Date());
-  const initialEndDate = initialEnd
-    ? normalizeDate(initialEnd)
-    : normalizeDate(addDays(initialStartDate, minNights));
+  // Tìm ngày bắt đầu hợp lệ đầu tiên
+  const findFirstValidStartDate = useCallback(() => {
+    const today = normalizeDate(new Date());
+    let currentDate = today;
+    
+    // Kiểm tra xem ngày hiện tại có phải là ngày bận không
+    while (parsedUnavailableDates.some(d => isSameDay(d, currentDate))) {
+      currentDate = addDays(currentDate, 1);
+    }
+    return currentDate;
+  }, [parsedUnavailableDates]);
+
+  // Tìm ngày kết thúc hợp lệ đầu tiên sau ngày bắt đầu
+  const findFirstValidEndDate = useCallback((startDate) => {
+    if (!startDate) return null;
+    
+    let currentDate = addDays(startDate, minNights);
+    
+    // Kiểm tra xem ngày kết thúc có phải là ngày bận không
+    while (parsedUnavailableDates.some(d => isSameDay(d, currentDate))) {
+      currentDate = addDays(currentDate, 1);
+    }
+    return currentDate;
+  }, [parsedUnavailableDates, minNights]);
+
+  // Kiểm tra và điều chỉnh ngày khởi tạo
+  const getValidInitialDates = useCallback(() => {
+    let startDate = initialStart ? normalizeDate(initialStart) : findFirstValidStartDate();
+    let endDate = initialEnd ? normalizeDate(initialEnd) : null;
+
+    // Nếu ngày bắt đầu là ngày bận, tìm ngày hợp lệ tiếp theo
+    if (parsedUnavailableDates.some(d => isSameDay(d, startDate))) {
+      startDate = findFirstValidStartDate();
+    }
+
+    // Nếu không có ngày kết thúc hoặc ngày kết thúc là ngày bận
+    if (!endDate || parsedUnavailableDates.some(d => isSameDay(d, endDate))) {
+      endDate = findFirstValidEndDate(startDate);
+    }
+
+    // Đảm bảo khoảng cách tối thiểu giữa ngày bắt đầu và kết thúc
+    if (endDate && differenceInDays(endDate, startDate) < minNights) {
+      endDate = findFirstValidEndDate(startDate);
+    }
+
+    return { startDate, endDate };
+  }, [initialStart, initialEnd, parsedUnavailableDates, minNights, findFirstValidStartDate, findFirstValidEndDate]);
+
+  const { startDate: initialStartDate, endDate: initialEndDate } = getValidInitialDates();
 
   const [start, setStart] = useState(initialStartDate);
   const [end, setEnd] = useState(initialEndDate);
@@ -40,14 +85,16 @@ const DateRangePicker = ({
 
   // Call onSelectRange when component mounts with initial dates
   useEffect(() => {
-    onSelectRange && onSelectRange({ start: initialStartDate, end: initialEndDate });
+    if (initialStartDate && initialEndDate) {
+      onSelectRange && onSelectRange({ start: initialStartDate, end: initialEndDate });
+    }
   }, []);
 
   const findNextAvailableDate = useCallback(
     (date) => {
       let newDate = normalizeDate(date);
       while (
-        parsedUnavailableDates.some((d) => d.getTime() === newDate.getTime())
+        parsedUnavailableDates.some((d) => isSameDay(d, newDate))
       ) {
         newDate = addDays(newDate, 1);
       }
@@ -66,17 +113,14 @@ const DateRangePicker = ({
   };
 
   const isDateDisabled = (date) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const formattedDate = format(date, "yyyy-MM-dd");
-    return date < today || unavailableDates?.includes(formattedDate);
+    const today = normalizeDate(new Date());
+    return date < today || parsedUnavailableDates.some(d => isSameDay(d, date));
   };
 
   const modifiers = {
     selected: [start, end],
     inRange: inRangeModifier,
-    unavailable: (date) =>
-      unavailableDates?.includes(format(date, "yyyy-MM-dd")),
+    unavailable: (date) => parsedUnavailableDates.some(d => isSameDay(d, date)),
   };
 
   const modifiersClassNames = {
@@ -95,16 +139,15 @@ const DateRangePicker = ({
 
     // Reset end date if it's before or same as new start date
     if (!end || normalizedDate >= end) {
-      const newEnd = findNextAvailableDate(addDays(normalizedDate, minNights));
+      const newEnd = findFirstValidEndDate(normalizedDate);
       setEnd(newEnd);
+      onSelectRange && onSelectRange({ start: normalizedDate, end: newEnd });
+    } else {
+      onSelectRange && onSelectRange({ start: normalizedDate, end });
     }
 
     setStartPopoverOpen(false);
     setEndPopoverOpen(true);
-
-    if (normalizedDate && end) {
-      onSelectRange && onSelectRange({ start: normalizedDate, end });
-    }
   };
 
   const handleEndSelect = (date) => {
@@ -116,7 +159,7 @@ const DateRangePicker = ({
 
     // Validate minimum and maximum nights
     if (nights < minNights) {
-      const newEnd = addDays(normalizedStart, minNights);
+      const newEnd = findFirstValidEndDate(normalizedStart);
       setEnd(newEnd);
       onSelectRange && onSelectRange({ start: normalizedStart, end: newEnd });
     } else if (nights > maxNights) {
@@ -144,7 +187,8 @@ const DateRangePicker = ({
       normalizedDate <= normalizedStart ||
       nights < minNights ||
       nights > maxNights ||
-      (nextUnavailable && normalizedDate > nextUnavailable)
+      (nextUnavailable && normalizedDate > nextUnavailable) ||
+      parsedUnavailableDates.some(d => isSameDay(d, normalizedDate))
     );
   };
 

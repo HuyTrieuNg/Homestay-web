@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import axiosInstance from "@/utils/axiosInstance";
+import Navbar from "@/components/NavBar";
 
 import BookingGuestPicker from "@/components/BookingGuestPicker";
 import BookingDatePicker from "@/components/BookingDatePicker";
@@ -22,6 +23,7 @@ function BookingPage() {
     numberOfAdults: Number(searchParams.get("numberOfAdults")) || 1,
     numberOfChildren: Number(searchParams.get("numberOfChildren")) || 0,
     numberOfPets: Number(searchParams.get("numberOfPets")) || 0,
+    note: searchParams.get("note") || '',
   });
 
   const updateCheckInOutDate = useCallback((newCheckIn, newCheckOut) => {
@@ -62,6 +64,7 @@ function BookingPage() {
       numberOfAdults: bookingData.numberOfAdults,
       numberOfChildren: bookingData.numberOfChildren,
       numberOfPets: bookingData.numberOfPets,
+      note: bookingData.note,
     });
 
     navigate(`/booking?${params.toString()}`, { replace: true });
@@ -75,6 +78,7 @@ function BookingPage() {
   const [isOpen, setIsOpen] = useState(false);
 
   const [homestay, setHomestay] = useState(null);
+  const [unavailableDates, setUnavailableDates] = useState([]);
 
   //Kiểm tra đăng nhập
   const isAuthenticated = useAuth();
@@ -96,6 +100,21 @@ function BookingPage() {
         });
     }
   }, [bookingData.id, homestay]);
+
+  // Fetch unavailable dates
+  useEffect(() => {
+    if (bookingData.id) {
+      axiosInstance
+        .get(`homestays/booking/${bookingData.id}/unavailable-dates`)
+        .then((response) => {
+          console.log("Unavailable dates:", response.data.unavailable_dates);
+          setUnavailableDates(response.data.unavailable_dates);
+        })
+        .catch((error) => {
+          console.error("Error fetching unavailable dates:", error);
+        });
+    }
+  }, [bookingData.id]);
   
   const [reviews, setReviews] = useState([]);
   useEffect(() => {
@@ -126,7 +145,7 @@ function BookingPage() {
           adults: bookingData.numberOfAdults,
           children: bookingData.numberOfChildren,
           currency: "USD",
-          note: "Yêu cầu phòng gần hồ bơi",
+          note: bookingData.note,
         }
       );
 
@@ -139,6 +158,7 @@ function BookingPage() {
 
   return (
     <div className="min-h-screen bg-white-100">
+      <Navbar />
       <div className="flex justify-center">
         <div className="max-w-6xl w-full grid grid-cols-2 gap-15 p-6">
           <div className="col-span-2 text-3xl font-semibold bg-white flex items-center">
@@ -186,6 +206,7 @@ function BookingPage() {
                 setNumNights={setNumNights}
                 setSubTotalPrice={setTotalPrice}
                 onDateChange={updateCheckInOutDate}
+                unavailableDates={unavailableDates}
               />
               {/* Số người ở */}
               <BookingGuestPicker
@@ -202,6 +223,20 @@ function BookingPage() {
             </div>
             <hr className="border-t border-gray-300 my-4" />
             {/* thông tin thanh toán */}
+            <div className="w-full">
+              <div className="w-full mb-4">
+                <h1 className="text-2xl font-semibold mb-4">
+                  Ghi chú cho chủ nhà
+                </h1>
+                <textarea
+                  placeholder="Hãy cho chủ nhà biết về chuyến đi của bạn và bất kỳ yêu cầu đặc biệt nào"
+                  className="w-full p-4 border rounded-lg hover:border-gray-500 focus:border-black transition-all duration-200 min-h-[150px] resize-none"
+                  value={bookingData.note || ''}
+                  onChange={(e) => setBookingData(prev => ({ ...prev, note: e.target.value }))}
+                />
+              </div>
+            </div>
+            <hr className="border-t border-gray-300 my-4" />
             <div>
               <div className="flex justify-between items-start mb-4">
                 <div>
