@@ -31,14 +31,26 @@ class UnavailableDatesView(APIView):
     def get(self, request, pk):
         homestay = get_object_or_404(Homestay, pk=pk)
 
-        # booked_dates = HomestayAvailability.objects.filter(
-        #     homestay=homestay, status='booked'
-        # ).values_list('date', flat=True)
-
+        # Add logging
+        print(f"Fetching unavailable dates for homestay {pk}")
+        
+        # Log all availabilities for debugging
+        all_availabilities = HomestayAvailability.objects.filter(homestay=homestay)
+        print(f"Total availabilities found: {all_availabilities.count()}")
+        
         booked_dates = HomestayAvailability.objects.filter(
             homestay=homestay,
             status__in=['booked', 'blocked']  # Lọc những status thuộc danh sách này
         ).values_list('date', flat=True)
+        
+        # Log the results
+        print(f"Found {booked_dates.count()} unavailable dates")
+        print(f"Unavailable dates: {list(booked_dates)}")
+
+        # Return empty array if no dates are found
+        if not booked_dates:
+            print("No unavailable dates found, returning empty array")
+            return Response({"unavailable_dates": []})
 
         return Response({"unavailable_dates": list(booked_dates)})
     
@@ -118,8 +130,6 @@ class CreateBookingView(APIView):
         serializer = BookingSerializer(booking)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-
-
 class BookingStatisticsView(APIView):
     permission_classes = [IsAdmin]
 
@@ -167,3 +177,26 @@ class BookingStatisticsView(APIView):
             "top_booked_homestays": BookingCountByHomestaySerializer(top_booked_homestays, many=True).data,
 
         })
+
+class CancelBookingView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, pk):
+        booking = get_object_or_404(Booking, id=pk)
+        
+        # Check if the booking belongs to the user
+        if booking.user != request.user:
+            return Response({'error': 'You do not have permission to cancel this booking.'}, 
+                          status=status.HTTP_403_FORBIDDEN)
+        
+        # Check if the booking is in pending status
+        if booking.status != 'pending':
+            return Response({'error': 'Only pending bookings can be cancelled.'}, 
+                          status=status.HTTP_400_BAD_REQUEST)
+        
+        # Update booking status to cancelled
+        booking.status = 'cancelled'
+        booking.save()
+        
+        serializer = BookingSerializer(booking)
+        return Response(serializer.data)
