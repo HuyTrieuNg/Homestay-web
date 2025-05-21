@@ -318,7 +318,7 @@ const BookingStatistics = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div className="rounded-lg">
                             <h3 className="text-lg font-semibold text-gray-700 mb-2 text-center">Homestay Doanh Thu Cao Nhất</h3>
                             <div className="h-96 bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -393,7 +393,103 @@ const BookingStatistics = () => {
                                 </ResponsiveContainer>
                             </div>
                         </div>
+                    </div> */}
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Doanh thu cao nhất */}
+                        <div className="rounded-lg">
+                            <h3 className="text-lg font-semibold text-gray-700 mb-2 text-center">
+                                Homestay Doanh Thu Cao Nhất
+                            </h3>
+                            <div className="h-[700px] bg-gray-50 p-4 rounded-lg border border-gray-200 overflow-auto">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart
+                                        layout="vertical"
+                                        data={prepareTopHomestaysData()}
+                                        margin={{ top: 10, right: 20, left: 50, bottom: 10 }}  
+                                        animationBegin={0}
+                                        animationDuration={1500}
+                                        barCategoryGap={100}   // Tăng khoảng cách giữa các nhóm
+                                        barGap={100}           // Tăng khoảng cách giữa các bar
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis type="number" />
+                                        <YAxis
+                                            type="category"
+                                            dataKey="name"
+                                            tick={{ fontSize: 13 }}
+                                            width={150} // Giảm nếu nhãn ngắn
+                                            tickFormatter={value =>
+                                                value.length > 25 ? value.slice(0, 25) + '...' : value
+                                            }
+                                        />
+                                        <Tooltip
+                                            wrapperStyle={{ zIndex: 10 }}
+                                            formatter={(value, name) => [`$${value}`, name]}
+                                            cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
+                                        />
+                                        <Legend />
+                                        <Bar
+                                            dataKey="revenue"
+                                            name="Doanh Thu"
+                                            fill={PRIMARY_COLOR}
+                                            radius={[0, 6, 6, 0]}
+                                            barSize={32}
+                                        />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        {/* Được đặt nhiều nhất */}
+                        <div className="rounded-lg">
+                            <h3 className="text-lg font-semibold text-gray-700 mb-2 text-center">
+                                Homestay Được Đặt Nhiều Nhất
+                            </h3>
+                            <div className="h-[700px] bg-gray-50 p-4 rounded-lg border border-gray-200 overflow-auto">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart
+                                        layout="vertical"
+                                        data={prepareTopBookedHomestaysData()}
+                                        margin={{ top: 10, right: 20, left: 50, bottom: 10 }}
+                                        animationBegin={0}
+                                        animationDuration={1500}
+                                        barCategoryGap={80}
+                                        barGap={20}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis type="number" />
+                                        <YAxis
+                                            type="category"
+                                            dataKey="name"
+                                            tick={{ fontSize: 13 }}
+                                            width={100}
+                                            tickFormatter={value =>
+                                                value.length > 25 ? value.slice(0, 25) + '...' : value
+                                            }
+                                        />
+                                        <Tooltip
+                                            wrapperStyle={{ zIndex: 10 }}
+                                            formatter={(value, name) => [`${value} lượt`, name]}
+                                            cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
+                                        />
+                                        <Legend />
+                                        <Bar
+                                            dataKey="count"
+                                            name="Số Đặt Phòng"
+                                            fill="#00C49F"
+                                            radius={[0, 6, 6, 0]}
+                                            barSize={32}
+                                        />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
                     </div>
+                    
+
+   
+
                 </div>
             ) : (
                 <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-700 text-center">
