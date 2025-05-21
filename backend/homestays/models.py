@@ -92,6 +92,7 @@ class Homestay(models.Model):
 class HomestayImage(models.Model):
     homestay = models.ForeignKey(Homestay, on_delete=models.CASCADE, related_name="images")
     # image = models.ImageField(upload_to="homestays/images")
-    image = CloudinaryField('image') 
+    # image = CloudinaryField('image') 
+    image = CloudinaryField('image', folder='homestay_images')
     def __str__(self):
         return f"Image for {self.homestay.name}"

@@ -25,7 +25,7 @@ class Command(BaseCommand):
         checkin_date = date(2025, 4, 1)
         checkout_date = date(2025, 4, 4)
         status = "pending"
-        currency = "VND"
+        currency = "USD"
 
         for homestay in homestays:
             user = random.choice(users)  # Chọn user ngẫu nhiên
