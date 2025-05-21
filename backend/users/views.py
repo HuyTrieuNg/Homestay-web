@@ -4,6 +4,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from users.models import User, Profile
+from rest_framework.pagination import PageNumberPagination
 
 from users.serializer import MyTokenObtainPairSerializer, RegisterSerializer, UserSerializer
 
@@ -120,20 +121,35 @@ class UserStatisticsView(APIView):
         })
 
 # 1. Danh sách người dùng (có tìm kiếm từ khóa)
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 class UserListView(generics.ListAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAdmin]
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         keyword = self.request.query_params.get('keyword', '')
-        return User.objects.filter(
-            Q(type__in=["guest", "host"]) &
-            (
-                Q(username__icontains=keyword) |
-                Q(email__icontains=keyword) |
-                Q(name__icontains=keyword)
-            )
+        role = self.request.query_params.get('role', None)
+        
+        # Xây dựng query cơ bản
+        queryset = User.objects.filter(
+            Q(username__icontains=keyword) |
+            Q(name__icontains=keyword)
         )
+        
+        # Lọc theo vai trò nếu được chỉ định
+        if role:
+            if role in ['guest', 'host']:
+                queryset = queryset.filter(type=role)
+        else:
+            # Mặc định chỉ lấy guest và host
+            queryset = queryset.filter(type__in=["guest", "host"])
+            
+        return queryset.order_by('id')
 
 
 # 2. Cấp quyền host
