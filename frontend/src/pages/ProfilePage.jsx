@@ -99,147 +99,147 @@ const ProfilePage = () => {
   if (!user) return <p>Loading...</p>;
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <button
-        onClick={() => window.history.back()}
-        className="text-black mb-4 flex items-center text-3xl font-semibold cursor-pointer"
-      >
-        <svg
-          className="w-6 h-6 mr-3 flex-shrink-0"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-        <span>Thông tin cá nhân</span>
-      </button>
-      <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div className="min-h-screen bg-[#fafafa]">
+      <div className="max-w-6xl mx-auto p-6">
         <button
-          onClick={handleLogout}
-          className="bg-red-500 px-4 py-2 rounded-lg"
+          onClick={() => window.history.back()}
+          className="text-black mb-4 flex items-center text-3xl font-semibold cursor-pointer"
         >
-          Logout
-        </button>
-
-        <div className="flex flex-col items-center mb-4">
-          <div className="relative w-32 h-32">
-            {formData.avatarPreview ? (
-              <img
-                src={formData.avatarPreview}
-                alt="Avatar Preview"
-                className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-lg object-cover"
-              />
-            ) : (
-              <img
-                src={formData.avatar || "/default-avatar.png"}
-                alt="Avatar"
-                className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-lg object-cover"
-              />
-            )}
-
-            <label
-              htmlFor="avatar-upload"
-              className="absolute bottom-0 right-0 bg-white text-white p-2 rounded-full shadow-md cursor-pointer hover:bg-gray-200 transition"
-            >
-              📷
-            </label>
-            <input
-              id="avatar-upload"
-              type="file"
-              name="avatar"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-m font-medium text-gray-600">
-              Username
-            </label>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-              disabled
-            />
-          </div>
-          <div>
-            <label className="block text-m font-medium text-gray-600">
-              Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-            />
-          </div>
-          <div>
-            <label className="block text-m font-medium text-gray-600">
-              Phone
-            </label>
-            <input
-              type="text"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-            />
-          </div>
-          <div>
-            <label className="block text-m font-medium text-gray-600">
-              Work
-            </label>
-            <input
-              type="text"
-              name="work"
-              value={formData.work}
-              onChange={handleChange}
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-            />
-          </div>
-          <div>
-            <label className="block text-m font-medium text-gray-600">
-              About
-            </label>
-            <textarea
-              name="about"
-              value={formData.about}
-              onChange={handleChange}
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-            ></textarea>
-          </div>
-          <div>
-            <label className="block text-m font-medium text-gray-600">
-              Interests
-            </label>
-            <textarea
-              name="interests"
-              value={formData.interests}
-              onChange={handleChange}
-              className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-            ></textarea>
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-[#FF385C] hover:bg-[#FF384C] text-white p-2 rounded-md cursor-pointer"
+          <svg
+            className="w-6 h-6 mr-3 flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            Update Profile
-          </button>
-        </form>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          <span>Thông tin cá nhân</span>
+        </button>
+        <div className="max-w-lg mx-auto p-8 bg-white shadow-xl rounded-3xl border border-gray-100 mt-6">
+          <div className="flex flex-col items-center mb-6">
+            <div className="relative w-32 h-32 mb-2">
+              {formData.avatarPreview ? (
+                <img
+                  src={formData.avatarPreview}
+                  alt="Avatar Preview"
+                  className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-lg object-cover"
+                />
+              ) : (
+                <img
+                  src={formData.avatar || "/default-avatar.png"}
+                  alt="Avatar"
+                  className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-lg object-cover"
+                />
+              )}
+              <label
+                htmlFor="avatar-upload"
+                className="absolute bottom-0 right-0 bg-white text-gray-700 p-2 rounded-full shadow-md cursor-pointer hover:bg-gray-200 transition border border-gray-300"
+                title="Đổi ảnh đại diện"
+              >
+                📷
+              </label>
+              <input
+                id="avatar-upload"
+                type="file"
+                name="avatar"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </div>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 px-4 py-2 rounded-lg text-white font-semibold shadow hover:bg-red-600 transition mb-2"
+            >
+              Đăng xuất
+            </button>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-m font-medium text-gray-600">
+                Username
+              </label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black bg-gray-100"
+                disabled
+              />
+            </div>
+            <div>
+              <label className="block text-m font-medium text-gray-600">
+                Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+              />
+            </div>
+            <div>
+              <label className="block text-m font-medium text-gray-600">
+                Phone
+              </label>
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+              />
+            </div>
+            <div>
+              <label className="block text-m font-medium text-gray-600">
+                Work
+              </label>
+              <input
+                type="text"
+                name="work"
+                value={formData.work}
+                onChange={handleChange}
+                className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+              />
+            </div>
+            <div>
+              <label className="block text-m font-medium text-gray-600">
+                About
+              </label>
+              <textarea
+                name="about"
+                value={formData.about}
+                onChange={handleChange}
+                className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+              ></textarea>
+            </div>
+            <div>
+              <label className="block text-m font-medium text-gray-600">
+                Interests
+              </label>
+              <textarea
+                name="interests"
+                value={formData.interests}
+                onChange={handleChange}
+                className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+              ></textarea>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-[#FF385C] hover:bg-[#FF384C] text-white p-2 rounded-md cursor-pointer text-lg font-semibold shadow-lg"
+            >
+              Cập nhật thông tin
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

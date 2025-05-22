@@ -30,7 +30,13 @@ const HomestayCard = ({ homestay }) => {
       )}
       <div className="p-4">
         <h3 className="text-lg font-semibold">{homestay.name}</h3>
-        <p className="text-gray-500">📍 {homestay.address}</p>
+        <p className="text-gray-500">📍 {[
+          homestay.address,
+          homestay.province?.name,
+          homestay.district?.name,
+          homestay.commune?.name,
+        ].filter(Boolean).join(", ")}
+        </p>
         <div className="flex items-center mt-1">
           <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
           <span className="ml-1 text-gray-700 font-medium">{homestay.rating?.toFixed(1) || 0}</span>

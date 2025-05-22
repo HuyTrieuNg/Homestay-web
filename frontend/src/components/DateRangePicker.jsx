@@ -90,6 +90,13 @@ const DateRangePicker = ({
     }
   }, []);
 
+  // Đồng bộ lại state khi initialStart/initialEnd thay đổi
+  useEffect(() => {
+    const { startDate: newStart, endDate: newEnd } = getValidInitialDates();
+    setStart(newStart);
+    setEnd(newEnd);
+  }, [initialStart, initialEnd, unavailableDates]);
+
   const findNextAvailableDate = useCallback(
     (date) => {
       let newDate = normalizeDate(date);

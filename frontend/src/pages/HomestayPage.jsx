@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "@utils/axiosInstance";
 import AmenityList from "../components/AmenityList";
 import ReserveBox from "@/components/ReserveBox";
+import HostInfo from "@/components/HostInfo";
 import { ArrowLeft, Trash2, CheckCircle, Key, MessageCircle, Map as MapIcon, Tag } from "lucide-react";
 import Navbar from "@/components/NavBar";
 import Map from "@/components/Map";
@@ -165,7 +166,7 @@ function HomestayPage() {
         <div>
           <button
             onClick={() => window.history.back()}
-            className="text-black mb-4 flex items-center text-3xl font-semibold cursor-pointer"
+            className="text-black mb-4 flex items-center text-3xl font-bold cursor-pointer"
           >
             <svg
               className="w-6 h-6 mr-3 flex-shrink-0"
@@ -180,13 +181,20 @@ function HomestayPage() {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            <span>{homestay.name}</span>
+            <span className="ml-1 text-3xl font-bold text-gray-900">{homestay.name}</span>
           </button>
-          <div className="flex flex-wrap items-center text-sm text-gray-500 mb-4">
-            <p>{homestay.address}</p>
+          <div className="flex flex-wrap items-center text-base text-gray-700 mb-4 font-medium">
+            <p className="mr-2">
+              <span className="font-semibold">Địa chỉ:</span> {[
+                homestay.address,
+                homestay.province?.name,
+                homestay.district?.name,
+                homestay.commune?.name,
+              ].filter(Boolean).join(", ")}
+            </p>
             <span className="mx-2">•</span>
             <p>
-              {averageRating} · {reviews.length} đánh giá
+              <span className="font-semibold">{averageRating}</span> · {reviews.length} đánh giá
             </p>
           </div>
 
@@ -239,25 +247,35 @@ function HomestayPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8">
           {/* Cột trái: Chi tiết Homestay */}
           <div>
-            <p className="text-lg mb-4 text-gray-700">
+            <p className="text-lg mb-4 text-gray-800 font-semibold">
               8 khách · 4 phòng ngủ · 6 giường · 1 phòng tắm
             </p>
-            <p className="mb-8 text-gray-700 leading-relaxed">
+            <p className="mb-8 text-gray-800 leading-relaxed text-base font-normal">
               {homestay.description}
             </p>
 
+            {/* Host Info */}
+            <div className="mb-6">
+              <HostInfo homestayId={homestay.id} />
+            </div>
+
             {/* Tiện ích */}
             <div className="border-t pt-6">
-              <h2 className="text-xl font-semibold mb-4">
+              <h2 className="text-xl font-bold mb-4 text-gray-900">
                 Nơi này có những gì cho bạn
               </h2>
               <AmenityList amenities={homestay.amenities} />
             </div>
           </div>
-          <ReserveBox 
-            basePrice={homestay.base_price} 
-            homestayId={homestay.id}
-          />
+          {/* Cột phải: ReserveBox */}
+          <div>
+            <ReserveBox 
+              basePrice={homestay.base_price} 
+              homestayId={homestay.id}
+              initialStart={new Date()}
+              initialEnd={new Date(Date.now() + 24 * 60 * 60 * 1000)}
+            />
+          </div>
         </div>
 
         {/* Bản đồ */}
