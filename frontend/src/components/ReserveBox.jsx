@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import DateRangePicker from "./DateRangePicker";
 import useBookingLogic from "@/hooks/useBookingLogic";
@@ -38,9 +38,6 @@ const ReserveBox = ({ initialStart, initialEnd, basePrice, homestayId }) => {
       alert("Vui lòng chọn ngày trước khi đặt phòng!");
       return;
     }
-    console.log("start", range.start);
-    console.log("end", range.end);
-
     const checkInDate = range.start;
     const checkOutDate = range.end;
     console.log("Booking:", {
@@ -56,6 +53,47 @@ const ReserveBox = ({ initialStart, initialEnd, basePrice, homestayId }) => {
     );
   };
 
+  useEffect(() => {
+    if (!unavailableDates || unavailableDates.length === 0) return;
+    const isUnavailable = (date) => {
+      if (!date) return false;
+      return unavailableDates.some(
+        (d) => new Date(d).toDateString() === new Date(date).toDateString()
+      );
+    };
+    const findFirstValidStartDate = () => {
+      let today = new Date();
+      today.setHours(0, 0, 0, 0);
+      let currentDate = today;
+      while (isUnavailable(currentDate)) {
+        currentDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000);
+      }
+      return currentDate;
+    };
+    const findFirstValidEndDate = (startDate) => {
+      if (!startDate) return null;
+      let currentDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000);
+      while (isUnavailable(currentDate)) {
+        currentDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000);
+      }
+      return currentDate;
+    };
+    let needUpdate = false;
+    let newStart = range.start;
+    let newEnd = range.end;
+    if (isUnavailable(range.start)) {
+      newStart = findFirstValidStartDate();
+      needUpdate = true;
+    }
+    if (isUnavailable(range.end) || !range.end || newEnd <= newStart) {
+      newEnd = findFirstValidEndDate(newStart);
+      needUpdate = true;
+    }
+    if (needUpdate) {
+      setRange({ start: newStart, end: newEnd });
+    }
+  }, [unavailableDates, range.start, range.end]);
+
   return (
     <div className="border border-gray-200 rounded-xl p-6 shadow-md">
       <h2 className="text-lg font-semibold mb-2">
@@ -66,6 +104,8 @@ const ReserveBox = ({ initialStart, initialEnd, basePrice, homestayId }) => {
         <DateRangePicker
           onSelectRange={setRange}
           unavailableDates={unavailableDates}
+          initialStart={range.start}
+          initialEnd={range.end}
         />
       </div>
       <div className="mb-4">

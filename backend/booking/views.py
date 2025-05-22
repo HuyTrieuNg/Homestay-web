@@ -45,7 +45,6 @@ class UnavailableDatesView(APIView):
         
         # Log the results
         print(f"Found {booked_dates.count()} unavailable dates")
-        print(f"Unavailable dates: {list(booked_dates)}")
 
         # Return empty array if no dates are found
         if not booked_dates:

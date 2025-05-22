@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from users.serializer import UserSerializer
              
 class ProvinceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,6 +32,9 @@ class HomestaySerializer(serializers.ModelSerializer):
     amenities = AmenitySerializer(many=True)
     rating = serializers.FloatField(read_only=True)
     review_count = serializers.IntegerField(read_only=True)
+    commune = CommuneSerializer()
+    district = DistrictSerializer()
+    province = ProvinceSerializer()
 
     class Meta:
         model = Homestay

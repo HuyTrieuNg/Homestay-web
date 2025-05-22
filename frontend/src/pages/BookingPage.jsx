@@ -136,24 +136,14 @@ function BookingPage() {
   }
 
   const handleBooking = async () => {
-    try {
-      const response = await axiosInstance.post(
-        `homestays/booking/${bookingData.id}/`,
-        {
-          checkin_date: format(bookingData.checkInDate, "yyyy-MM-dd"),
-          checkout_date: format(bookingData.checkOutDate, "yyyy-MM-dd"),
-          adults: bookingData.numberOfAdults,
-          children: bookingData.numberOfChildren,
-          currency: "USD",
-          note: bookingData.note,
-        }
-      );
-
-      alert(`Đặt phòng thành công! Tổng tiền: ${response.data.total_amount}`);
-    } catch (error) {
-      console.error("Lỗi đặt phòng:", error.response.data);
-      alert("Lỗi đặt phòng. Vui lòng thử lại sau.");
-    }
+    navigate("/booking/confirm", {
+      state: {
+        booking: bookingData,
+        homestay,
+        total: totalPrice,
+        numNights,
+      },
+    });
   };
 
   return (

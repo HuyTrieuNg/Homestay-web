@@ -12,6 +12,8 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from datetime import datetime, timezone, timedelta
 from django.utils import timezone as django_timezone
+from users.models import User
+from users.serializer import UserSerializer
 from rest_framework.pagination import PageNumberPagination
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -50,6 +52,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 
 #         serializer = HomestaySerializer(homestays, many=True, context={'request': self.request})
 #         return Response(serializer.data)
+
 
 class HomestayListView(APIView):
     permission_classes = [AllowAny]
@@ -337,3 +340,13 @@ class HomestaySearchView(APIView):
                 {'error': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+class HostByHomestayView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, homestay_id):
+        homestay = Homestay.objects.filter(id=homestay_id).select_related('host').first()
+        if not homestay or not homestay.host:
+            return Response({"error": "Homestay or host not found."}, status=status.HTTP_404_NOT_FOUND)
+        serializer = UserSerializer(homestay.host, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
