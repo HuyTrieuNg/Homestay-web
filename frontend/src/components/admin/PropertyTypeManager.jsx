@@ -38,7 +38,6 @@ const PropertyTypeManager = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Quản lý Loại Homestay</h1>
       
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">{editingId ? "Cập nhật loại homestay" : "Thêm loại homestay mới"}</h2>
@@ -78,23 +77,27 @@ const PropertyTypeManager = () => {
         <div className="p-4 bg-gray-50 border-b">
           <h2 className="font-semibold">Danh sách loại homestay</h2>
         </div>
-        <ul className="divide-y divide-gray-200">
-          {propertyTypes.length === 0 ? (
-            <li className="p-4 text-center text-gray-500">Không có dữ liệu</li>
-          ) : (
-            propertyTypes.map(pt => (
-              <li key={pt.id} className="flex justify-between items-center p-4 hover:bg-gray-50">
-                <span className="font-medium">{pt.name}</span>
-                <button 
-                  onClick={() => handleEdit(pt)} 
-                  className="text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Sửa
-                </button>
-              </li>
-            ))
-          )}
-        </ul>
+        <div className="max-h-72 overflow-y-auto">
+          <ul className="divide-y divide-gray-200">
+            {propertyTypes.length === 0 ? (
+              <li className="p-4 text-center text-gray-500">Không có dữ liệu</li>
+            ) : (
+              propertyTypes.map(pt => (
+                <li key={pt.id} className="flex justify-between items-center p-4 hover:bg-gray-50">
+                  <span className="font-medium">{pt.name}</span>
+                  <button 
+                    onClick={() => handleEdit(pt)} 
+                    className="text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    Sửa
+                  </button>
+                </li>
+                
+              ))
+            )}
+            
+          </ul>
+        </div>
       </div>
     </div>
   );

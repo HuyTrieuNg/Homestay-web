@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from .permissions import IsHost
 from homestays.models import Homestay, HomestayImage
 from .serializers import *
@@ -75,18 +76,61 @@ class HomestayDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 class HostBookingListView(APIView):
-    permission_classes = [IsHost]
+    # permission_classes = [IsHost]
+    
+    # def get(self, request):
+    #     type_view = request.query_params.get('type')
+    #     if type_view in ['pending', 'confirmed', 'cancelled', 'rejected']:
+    #         bookings = Booking.objects.filter(homestay__host=request.user, status=type_view).order_by('checkin_date')
+    #     else:
+    #         bookings = Booking.objects.filter(homestay__host=request.user).order_by('checkin_date')
+    #     serializer = BookingSerializer(bookings, many=True)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
+    pagination_class = StandardResultsSetPagination
     
     def get(self, request):
-        type_view = request.query_params.get('type')
-        if type_view in ['pending', 'confirmed', 'cancelled', 'rejected']:
-            bookings = Booking.objects.filter(homestay__host=request.user, status=type_view).order_by('checkin_date')
-        else:
-            bookings = Booking.objects.filter(homestay__host=request.user).order_by('checkin_date')
-        serializer = BookingSerializer(bookings, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            # Lọc booking theo host
+            bookings = Booking.objects.filter(homestay__host=request.user)
+            
+            # Áp dụng bộ lọc type
+            booking_type = request.query_params.get('type')
+            if booking_type and booking_type != 'all':
+                bookings = bookings.filter(status=booking_type)
+            
+            # Thêm sắp xếp rõ ràng 
+            bookings = bookings.order_by('-checkin_date')
+            
+            # Tối ưu query với select_related
+            bookings = bookings.select_related(
+                'user', 
+                'homestay'
+            )
+            
+            # Loại bỏ prefetch_related và only() tạm thời để test
+            
+            # Thực hiện phân trang
+            paginator = self.pagination_class()
+            result_page = paginator.paginate_queryset(bookings, request)
+            
+            # Sử dụng BookingSerializer thay vì BookingListSerializer để test
+            serializer = BookingListSerializer(result_page, many=True)
+            
+            return paginator.get_paginated_response(serializer.data)
+            
+        except Exception as e:
+            # Log lỗi để debug
+            print(f"Error in HostBookingListView: {str(e)}")
+            return Response(
+                {"error": "Internal server error", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class HostBookingView(APIView):
     permission_classes = [IsHost]
@@ -154,6 +198,8 @@ class BookingLineListView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Booking.DoesNotExist:
             return Response({"message": "Booking not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
 
 class HomestayAvailabilityViews(APIView):
     permission_classes = [IsHost]

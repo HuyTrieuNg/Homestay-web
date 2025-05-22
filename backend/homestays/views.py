@@ -14,38 +14,103 @@ from datetime import datetime, timezone, timedelta
 from django.utils import timezone as django_timezone
 from users.models import User
 from users.serializer import UserSerializer
+from rest_framework.pagination import PageNumberPagination
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 12
+    page_size_query_param = 'page_size'
+    max_page_size = 24
+
+# class HomestayListView(APIView):
+#     permission_classes = [AllowAny]
+
+#     def get(self, request):
+#         property_type_id = request.query_params.get('property_type_id', None)
+#         province = request.query_params.get('province', None)
+#         max_guests = request.query_params.get('max_guest_lte', None)  # Lấy giá trị max_guest từ query
+
+#         homestays = Homestay.objects.select_related(
+#             'type', 'commune__district__province'
+#         ).prefetch_related(
+#             'images', 
+#             'amenities'
+#         )
+
+#         if property_type_id:
+#             homestays = homestays.filter(type_id=property_type_id)
+            
+#         if province:
+#             print("Province filter value:", province)
+#             homestays = homestays.filter(commune__district__province__name__icontains=province)
+
+#         if max_guests:
+#             try:
+#                 max_guests = int(max_guests)
+#                 homestays = homestays.filter(max_guests__gte=max_guests)
+#             except ValueError:
+#                 return Response({"error": "Invalid max_guest value"}, status=status.HTTP_400_BAD_REQUEST)
+
+#         serializer = HomestaySerializer(homestays, many=True, context={'request': self.request})
+#         return Response(serializer.data)
+
 
 class HomestayListView(APIView):
     permission_classes = [AllowAny]
-
+    pagination_class = StandardResultsSetPagination
+    
     def get(self, request):
-        property_type_id = request.query_params.get('property_type_id', None)
-        province = request.query_params.get('province', None)
-        max_guests = request.query_params.get('max_guest_lte', None)  # Lấy giá trị max_guest từ query
-
-        homestays = Homestay.objects.select_related(
-            'type', 'commune__district__province'
-        ).prefetch_related(
-            'images', 
-            'amenities'
-        )
-
-        if property_type_id:
-            homestays = homestays.filter(type_id=property_type_id)
+        try:
+            property_type_id = request.query_params.get('property_type_id', None)
+            province = request.query_params.get('province', None)
+            max_guests = request.query_params.get('max_guest_lte', None)  # Lấy giá trị max_guest từ query
+    
+            homestays = Homestay.objects.select_related(
+                'type', 'commune__district__province'
+            ).prefetch_related(
+                'images', 
+                'amenities'
+            )
             
-        if province:
-            print("Province filter value:", province)
-            homestays = homestays.filter(commune__district__province__name__icontains=province)
-
-        if max_guests:
-            try:
-                max_guests = int(max_guests)
-                homestays = homestays.filter(max_guests__gte=max_guests)
-            except ValueError:
-                return Response({"error": "Invalid max_guest value"}, status=status.HTTP_400_BAD_REQUEST)
-
-        serializer = HomestaySerializer(homestays, many=True, context={'request': self.request})
-        return Response(serializer.data)
+            
+            if property_type_id:
+                homestays = homestays.filter(type_id=property_type_id)
+                
+            if province:
+                print("Province filter value:", province)
+                homestays = homestays.filter(commune__district__province__name__icontains=province)
+    
+            if max_guests:
+                try:
+                    max_guests = int(max_guests)
+                    homestays = homestays.filter(max_guests__gte=max_guests)
+                except ValueError:
+                    return Response({"error": "Invalid max_guest value"}, status=status.HTTP_400_BAD_REQUEST)
+            homestays = homestays.order_by('base_price')
+            # Thêm phân trang
+            paginator = self.pagination_class()
+            result_page = paginator.paginate_queryset(homestays, request)
+            
+            if result_page is not None:
+                serializer = HomestayListLiteSerializer(result_page, many=True, context={'request': request})
+                return paginator.get_paginated_response(serializer.data)
+            
+            # Fallback nếu không phân trang được
+            serializer = HomestayListLiteSerializer(homestays, many=True, context={'request': request})
+            return Response(serializer.data)
+            
+        except Exception as e:
+            # Log lỗi nhưng không làm crash API
+            import traceback
+            print(f"Error in HomestayListView: {str(e)}")
+            print(traceback.format_exc())
+            
+            # Trả về danh sách trống nhưng định dạng tương tự như response có phân trang
+            return Response({
+                "count": 0,
+                "next": None,
+                "previous": None,
+                "results": []
+            })
 
     
 class HomestayDetailView(RetrieveAPIView):

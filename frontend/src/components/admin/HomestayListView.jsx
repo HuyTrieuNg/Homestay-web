@@ -6,19 +6,45 @@ const HomestayListView = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [propertyTypes, setPropertyTypes] = useState({});
+  
+  // State cho phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    count: 0,
+    next: null,
+    previous: null
+  });
+
+  // Tính tổng số trang dựa trên count và page_size (mặc định là 12)
+  const totalPages = Math.ceil(pagination.count / 12);
 
   useEffect(() => {
-    fetchHomestays();
+    fetchHomestays(currentPage);
     fetchPropertyTypes();
-  }, []);
+    // Scroll về đầu trang khi chuyển trang
+    window.scrollTo(0, 0);
+  }, [currentPage]);
 
-  const fetchHomestays = async () => {
+  const fetchHomestays = async (page = 1) => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get("/homestays/");
-      setHomestays(res.data);
+      const res = await axiosInstance.get(`/homestays/?page=${page}`);
+      
+      // Xử lý phân trang
+      if (res.data && res.data.results) {
+        setHomestays(res.data.results);
+        setPagination({
+          count: res.data.count || 0,
+          next: res.data.next,
+          previous: res.data.previous
+        });
+      } else {
+        // Fallback cho API không phân trang
+        setHomestays(Array.isArray(res.data) ? res.data : []);
+      }
     } catch (err) {
       console.error("Error fetching homestays:", err);
+      setHomestays([]);
     } finally {
       setLoading(false);
     }
@@ -41,7 +67,14 @@ const HomestayListView = () => {
     if (window.confirm("Bạn có chắc muốn xoá homestay này?")) {
       try {
         await axiosInstance.delete(`/homestays/admin/${id}/delete/`);
-        setHomestays(prev => prev.filter(h => h.id !== id));
+        
+        // Nếu đang ở trang đã xoá hết item, quay về trang trước
+        if (homestays.length === 1 && currentPage > 1) {
+          setCurrentPage(prev => prev - 1);
+        } else {
+          // Tải lại dữ liệu trang hiện tại
+          fetchHomestays(currentPage);
+        }
       } catch (err) {
         console.error("Error deleting homestay:", err);
         alert("Lỗi khi xoá homestay.");
@@ -49,10 +82,15 @@ const HomestayListView = () => {
     }
   };
 
+  // Lọc homestays theo từ khóa tìm kiếm
   const filteredHomestays = homestays.filter(h => 
-    h.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    h.address.toLowerCase().includes(searchTerm.toLowerCase())
+    h.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    h.address?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Tính toán thông tin hiển thị phân trang
+  const startItem = pagination.count ? ((currentPage - 1) * 12) + 1 : 0;
+  const endItem = Math.min(startItem + (homestays.length || 0) - 1, pagination.count || 0);
 
   return (
     <div className="p-4">
@@ -78,7 +116,10 @@ const HomestayListView = () => {
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-4 bg-gray-50 border-b flex justify-between items-center">
           <h2 className="font-semibold">Danh sách Homestay</h2>
-          <div className="text-sm text-gray-500">Tổng: {filteredHomestays.length} homestay</div>
+          <div className="text-sm text-gray-500">
+            {pagination.count > 0 && 
+              `Hiển thị ${startItem}-${endItem} trong tổng số ${pagination.count} homestay`}
+          </div>
         </div>
 
         {loading ? (
@@ -104,11 +145,15 @@ const HomestayListView = () => {
                   <tr key={h.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="flex items-center">
-                        {h.image ? (
+                        {h.images && h.images.length > 0 ? (
                           <img 
-                            src={h.image} 
+                            src={h.images[0]} 
                             alt={h.name} 
                             className="h-10 w-10 rounded-md object-cover mr-3" 
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "https://via.placeholder.com/40x40?text=No+Image";
+                            }}
                           />
                         ) : (
                           <div className="h-10 w-10 rounded-md bg-gray-200 flex items-center justify-center mr-3">
@@ -128,7 +173,7 @@ const HomestayListView = () => {
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {propertyTypes[h.type] || 'Không xác định'}
+                        {h.type && propertyTypes[h.type.id || h.type] || 'Không xác định'}
                       </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
@@ -148,6 +193,79 @@ const HomestayListView = () => {
           </div>
         )}
       </div>
+
+      {/* Phân trang giống HomePage */}
+      {!loading && pagination.count > 0 && (
+        <div className="flex justify-center mt-6 gap-2">
+          <button
+            onClick={() => setCurrentPage(p => p - 1)}
+            disabled={!pagination.previous}
+            className={`px-3 py-1 rounded ${
+              !pagination.previous
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600 text-white"
+            }`}
+          >
+            ←
+          </button>
+          
+          {/* Hiển thị các trang */}
+          <div className="flex gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(p => 
+                p === 1 || 
+                p === totalPages || 
+                (p >= currentPage - 1 && p <= currentPage + 1)
+              )
+              .map((p, i, arr) => {
+                // Thêm dấu ... nếu có khoảng cách giữa các số
+                if (i > 0 && arr[i] - arr[i-1] > 1) {
+                  return (
+                    <React.Fragment key={`ellipsis-${p}`}>
+                      <span className="px-3 py-1 text-gray-500">...</span>
+                      <button
+                        onClick={() => setCurrentPage(p)}
+                        className={`px-3 py-1 rounded ${
+                          currentPage === p
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    </React.Fragment>
+                  );
+                }
+                
+                return (
+                  <button
+                    key={p}
+                    onClick={() => setCurrentPage(p)}
+                    className={`px-3 py-1 rounded ${
+                      currentPage === p
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
+          </div>
+          
+          <button
+            onClick={() => setCurrentPage(p => p + 1)}
+            disabled={!pagination.next}
+            className={`px-3 py-1 rounded ${
+              !pagination.next
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600 text-white"
+            }`}
+          >
+            →
+          </button>
+        </div>
+      )}
     </div>
   );
 };

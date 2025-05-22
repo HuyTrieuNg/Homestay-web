@@ -9,7 +9,7 @@ const AddressSearch = ({ onSelectAddress }) => {
 
   useEffect(() => {
     axiosInstance
-      .get("homestays/provinces")
+      .get("homestays/provinces/")
       .then((response) => {
         setAddresses(response.data);
         console.log("Addresses:", response.data);

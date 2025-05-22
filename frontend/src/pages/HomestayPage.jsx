@@ -21,7 +21,7 @@ function HomestayPage() {
   useEffect(() => {
     if (id) {
       axiosInstance
-        .get(`homestays/${id}`)
+        .get(`homestays/${id}/`)
         .then((response) => {
           console.log("Homestay data:", response.data);
           setHomestay(response.data);

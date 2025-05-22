@@ -90,7 +90,7 @@ function BookingPage() {
   useEffect(() => {
     if (bookingData.id && !homestay) {
       axiosInstance
-        .get(`homestays/${bookingData.id}`)
+        .get(`homestays/${bookingData.id}/`)
         .then((response) => {
           console.log("Homestay data:", response.data);
           setHomestay(response.data);

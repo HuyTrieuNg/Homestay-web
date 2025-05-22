@@ -93,3 +93,29 @@ class PropertitypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyType
         fields = '__all__'
+
+class HomestayListLiteSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField()
+    type = PropertyTypeSerializer()
+    commune = CommuneSerializer()
+    district = DistrictSerializer()
+    province = ProvinceSerializer()
+    rating = serializers.FloatField(read_only=True)
+    review_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Homestay
+        fields = ["id", "name", "base_price", "address", "images", 
+                  "type", "commune", "district", "province", 
+                  "rating", "review_count"]
+
+
+    def get_images(self, obj):
+        """Chỉ trả về ảnh đầu tiên"""
+        request = self.context.get("request")
+        image = obj.images.first()
+        if image and image.image:
+            if request:
+                return [request.build_absolute_uri(image.image.url)]
+            return [image.image.url]
+        return []

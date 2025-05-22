@@ -25,15 +25,11 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-
   // Logout function
   const logoutUser = useCallback(() => {
     localStorage.removeItem("authTokens");
     setAuthTokens(null);
     setUser(null);
-    
-    localStorage.removeItem("avatar");
-
     delete axiosInstance.defaults.headers.Authorization;
     // navigate('/login')
   }, []);
@@ -60,14 +56,6 @@ export const AuthProvider = ({ children }) => {
         // Xử lý chuyển hướng dựa trên role
         const userRole = jwtDecode(data.access).type;
         const currentPath = location.pathname;
-
-        // Lưu avatar vào localStorage giảm fetching
-        axiosInstance.get("/profile/avatar").then((res) => {
-        const avatarUrl = res.data.avatar_url;
-        localStorage.setItem("avatar", avatarUrl);
-        setAvatar(avatarUrl); // hoặc lưu vào auth context
-        });
-
         if (currentPath.startsWith("/booking")) {
           window.location.reload();
         } else {
