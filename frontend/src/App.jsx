@@ -24,6 +24,8 @@ import AdminDashboard from "./pages/Admin/Dashboard";
 import UserManagementPage from "./pages/Admin/UserManagementPage";
 import HomestayManagementPage from "./pages/Admin/HomestayManagementPage";
 import FeatureSettingsPage from "./pages/Admin/FeatureSettingsPage";
+import BookingConfirmPage from "./pages/BookingConfirmPage";
+import BookingSuccessPage from "./pages/BookingSuccessPage";
 
 function App() {
   return (
@@ -37,6 +39,8 @@ function App() {
           <Route path="/booking" element={<BookingPage />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
           <Route path="/search-results" element={<SearchResultsPage />} />
+          <Route path="/booking/confirm" element={<BookingConfirmPage />} />
+          <Route path="/booking/success" element={<BookingSuccessPage />} />
 
           <Route element={<PrivateRoute />}>
             <Route path="/profile" element={<ProfilePage />} />
