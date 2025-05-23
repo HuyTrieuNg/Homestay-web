@@ -248,7 +248,7 @@ function HomestayPage() {
           {/* Cột trái: Chi tiết Homestay */}
           <div>
             <p className="text-lg mb-4 text-gray-800 font-semibold">
-              8 khách · 4 phòng ngủ · 6 giường · 1 phòng tắm
+              {homestay.max_guests ? `${homestay.max_guests} khách` : "- khách"} · 4 phòng ngủ · 6 giường · 1 phòng tắm
             </p>
             <p className="mb-8 text-gray-800 leading-relaxed text-base font-normal">
               {homestay.description}

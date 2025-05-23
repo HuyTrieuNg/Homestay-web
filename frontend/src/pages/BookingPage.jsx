@@ -199,17 +199,21 @@ function BookingPage() {
                 unavailableDates={unavailableDates}
               />
               {/* Số người ở */}
-              <BookingGuestPicker
-                initialGuests={{
-                  adults: bookingData.numberOfAdults,
-                  children: bookingData.numberOfChildren,
-                  pets: bookingData.numberOfPets,
-                }}
-                isDropdown={false}
-                isModalGuestOpen={isModalGuestOpen}
-                setIsModalGuestOpen={setIsModalGuestOpen}
-                onGuestsChange={updateGuests}
-              />
+              <div className="mb-2">
+                <BookingGuestPicker
+                  initialGuests={{
+                    adults: bookingData.numberOfAdults,
+                    children: bookingData.numberOfChildren,
+                    pets: bookingData.numberOfPets,
+                  }}
+                  isDropdown={false}
+                  isModalGuestOpen={isModalGuestOpen}
+                  setIsModalGuestOpen={setIsModalGuestOpen}
+                  onGuestsChange={updateGuests}
+                  haveMaxGuests={true}
+                  maxGuests={homestay.max_guests}
+                />
+              </div>
             </div>
             <hr className="border-t border-gray-300 my-4" />
             {/* thông tin thanh toán */}
