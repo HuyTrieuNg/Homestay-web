@@ -114,6 +114,7 @@ const ReserveBox = ({ initialStart, initialEnd, basePrice, homestayId }) => {
           isDropdown={true}
           guests={guests}
           onGuestsChange={setGuests}
+          haveMaxGuests={true}
         />
       </div>
 

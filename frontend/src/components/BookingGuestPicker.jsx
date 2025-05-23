@@ -10,6 +10,7 @@ const BookingGuestPicker = ({
   setIsModalGuestOpen,
   onGuestsChange,
   haveMaxGuests = false,
+  maxGuests, 
 }) => {
   const [adults, setAdults] = useState(initialGuests?.adults ?? 1);
   const [children, setChildren] = useState(initialGuests?.children ?? 0);
@@ -18,6 +19,9 @@ const BookingGuestPicker = ({
 
   const totalGuests = adults + children;
   const totalPets = pets;
+  const guestLimit = typeof maxGuests === 'number' ? maxGuests : undefined;
+
+  const canAddGuest = guestLimit ? totalGuests < guestLimit : true;
 
   const handleSave = () => {
     console.log("Clicked Save!");
@@ -56,20 +60,21 @@ const BookingGuestPicker = ({
             <div className="absolute">
               <GuestSelector
                 adults={adults}
-                setAdults={setAdults}
+                setAdults={n => canAddGuest || n < adults ? setAdults(n) : null}
                 numChildren={children}
-                setChildren={setChildren}
+                setChildren={n => canAddGuest || n < children ? setChildren(n) : null}
                 pets={pets}
                 setPets={setPets}
                 onSave={handleSave}
                 onCancel={handleCancel}
                 haveMaxGuests={haveMaxGuests}
+                maxGuests={guestLimit}
+                totalGuests={totalGuests}
               />
             </div>
           )}
         </div>
       ) : (
-        // Trường hợp Modal
         <div>
           <div className="flex justify-between items-start mb-4">
             <div>
@@ -77,6 +82,9 @@ const BookingGuestPicker = ({
               <p className="text-gray-700">
                 {totalGuests} Khách
                 {totalPets ? `, ${totalPets} thú cưng` : ""}
+                {guestLimit && (
+                  <span className="ml-2 text-xs text-gray-500">(Tối đa {guestLimit})</span>
+                )}
               </p>
             </div>
             <button
@@ -88,17 +96,19 @@ const BookingGuestPicker = ({
           </div>
           {isModalGuestOpen && (
             <div className="fixed inset-0 flex items-center justify-center backdrop-blur-xs z-50">
-              <GuestSelector
-                adults={adults}
-                setAdults={setAdults}
-                numChildren={children}
-                setChildren={setChildren}
-                pets={pets}
-                setPets={setPets}
-                onSave={handleSave}
-                onCancel={handleCancel}
-                haveMaxGuests={haveMaxGuests}
-              />
+                <GuestSelector
+                  adults={adults}
+                  setAdults={n => canAddGuest || n < adults ? setAdults(n) : null}
+                  numChildren={children}
+                  setChildren={n => canAddGuest || n < children ? setChildren(n) : null}
+                  pets={pets}
+                  setPets={setPets}
+                  onSave={handleSave}
+                  onCancel={handleCancel}
+                  haveMaxGuests={haveMaxGuests}
+                  maxGuests={guestLimit}
+                  totalGuests={totalGuests}
+                />
             </div>
           )}
         </div>
@@ -116,6 +126,7 @@ BookingGuestPicker.propTypes = {
   setIsModalGuestOpen: PropTypes.func,
   onGuestsChange: PropTypes.func,
   haveMaxGuests: PropTypes.bool,
+  maxGuests: PropTypes.number,
 };
 
 export default BookingGuestPicker;
