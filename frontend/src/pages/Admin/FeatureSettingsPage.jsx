@@ -11,13 +11,11 @@ const FeatureSettingsPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Cột trái: Quản lý loại homestay */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Cài đặt Loại Homestay</h2>
             <PropertyTypeManager />
           </div>
 
           {/* Cột phải: Quản lý tiện ích */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Cài đặt Tiện ích</h2>
             <AmenityManager />
           </div>
         </div>

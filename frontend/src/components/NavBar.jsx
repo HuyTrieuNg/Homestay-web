@@ -46,16 +46,18 @@ const Navbar = () => {
       {/* Main Navigation Bar */}
       <nav className="flex items-center justify-between px-10 pt-4">
         {/* Logo */}
-        <div className="flex items-center">
-          <img
-            src="https://res.cloudinary.com/drfwzrqqj/image/upload/v1747688845/create_logo_for_stayhub_with_1_1_ratio_no_text_primary_color_FF5A5F_no_background_eiqhu7.png" 
-            alt="Logo"
-            className="h-10 w-10 mr-3 rounded-full scale-150"
-          />
-          <span className="text-2xl font-bold transition-colors duration-300 " style={{ color: "#FF5A5F" }}>
-            StayHub
-          </span>
-        </div>
+        <a href="/">
+          <div className="flex items-center">
+            <img
+              src="https://res.cloudinary.com/drfwzrqqj/image/upload/v1747688845/create_logo_for_stayhub_with_1_1_ratio_no_text_primary_color_FF5A5F_no_background_eiqhu7.png" 
+              alt="Logo"
+              className="h-10 w-10 mr-3 rounded-full scale-150"
+            />
+            <span className="text-2xl font-bold transition-colors duration-300 " style={{ color: "#FF5A5F" }}>
+              StayHub
+            </span>
+          </div>
+        </a>
 
         {/* Center Navigation */}
         <div className="flex-1 flex justify-center">

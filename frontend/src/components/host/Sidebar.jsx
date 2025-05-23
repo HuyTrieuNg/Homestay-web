@@ -149,54 +149,7 @@ function Sidebar({ onSelectHomestay, selectedHomestay, refresh }) {
         </ul>
       )}
       
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f1f1f1;
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #bbb;
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #999;
-        }
-        
-        @keyframes move-dot {
-          0% {
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-          }
-          25% {
-            top: 50%;
-            left: 100%;
-            transform: translate(-50%, -50%);
-          }
-          50% {
-            top: 100%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-          }
-          75% {
-            top: 50%;
-            left: 0;
-            transform: translate(0, -50%);
-          }
-          100% {
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-          }
-        }
-        
-        .dot-animation {
-          animation: move-dot 3s linear infinite;
-        }
-      `}</style>
+     
     </div>
   );
 }

@@ -7,6 +7,8 @@ import HostInfo from "@/components/HostInfo";
 import { ArrowLeft, Trash2, CheckCircle, Key, MessageCircle, Map as MapIcon, Tag } from "lucide-react";
 import Navbar from "@/components/NavBar";
 import Map from "@/components/Map";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 
 function HomestayPage() {
   const { id } = useParams();
@@ -183,7 +185,7 @@ function HomestayPage() {
             </svg>
             <span className="ml-1 text-3xl font-bold text-gray-900">{homestay.name}</span>
           </button>
-          <div className="flex flex-wrap items-center text-base text-gray-700 mb-4 font-medium">
+          {/* <div className="flex flex-wrap items-center text-base text-gray-700 mb-4 font-medium">
             <p className="mr-2">
               <span className="font-semibold">Địa chỉ:</span> {[
                 homestay.address,
@@ -194,6 +196,29 @@ function HomestayPage() {
             </p>
             <span className="mx-2">•</span>
             <p>
+              <span className="font-semibold">{averageRating}</span> · {reviews.length} đánh giá
+            </p>
+          </div> */}
+
+
+          <div className="flex justify-between items-center text-base text-gray-700 font-medium mb-4">
+            {/* Bên trái: địa chỉ + địa chỉ chi tiết */}
+            <div>
+              <p>
+                <span className="font-semibold">Địa chỉ:</span>{" "}
+                {[homestay.province?.name, homestay.district?.name, homestay.commune?.name]
+                  .filter(Boolean)
+                  .join(", ")}
+              </p>
+              <p className="text-gray-600 break-words">
+                <span className="font-semibold">Địa chỉ chi tiết: </span>
+                {[homestay.address].filter(Boolean).join(", ")}
+              </p>
+            </div>
+
+            {/* Bên phải: đánh giá */}
+            <p className="flex items-center gap-1 whitespace-nowrap">
+              <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
               <span className="font-semibold">{averageRating}</span> · {reviews.length} đánh giá
             </p>
           </div>

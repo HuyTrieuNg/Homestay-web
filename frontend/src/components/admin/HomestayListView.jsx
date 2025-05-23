@@ -104,7 +104,7 @@ const HomestayListView = () => {
               placeholder="Tìm kiếm theo tên, địa chỉ..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="border border-gray-300 rounded p-2 pl-10 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="border border-gray-300 rounded p-2 pl-10 w-full focus:ring-2 focus:ring-[#ff5a5f] focus:border-[#ff5a5f] outline-none"
             />
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -124,7 +124,7 @@ const HomestayListView = () => {
 
         {loading ? (
           <div className="p-8 flex justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#ff5a5f]"></div>
           </div>
         ) : filteredHomestays.length === 0 ? (
           <div className="p-6 text-center text-gray-500">Không tìm thấy homestay nào</div>
@@ -203,7 +203,7 @@ const HomestayListView = () => {
             className={`px-3 py-1 rounded ${
               !pagination.previous
                 ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600 text-white"
+                : "bg-[#ff5a5f] hover:bg-[#e14c4f] text-white"
             }`}
           >
             ←
@@ -227,7 +227,7 @@ const HomestayListView = () => {
                         onClick={() => setCurrentPage(p)}
                         className={`px-3 py-1 rounded ${
                           currentPage === p
-                            ? "bg-blue-500 text-white"
+                            ? "bg-[#ff5a5f] text-white"
                             : "bg-gray-200 hover:bg-gray-300 text-gray-700"
                         }`}
                       >
@@ -243,7 +243,7 @@ const HomestayListView = () => {
                     onClick={() => setCurrentPage(p)}
                     className={`px-3 py-1 rounded ${
                       currentPage === p
-                        ? "bg-blue-500 text-white"
+                        ? "bg-[#ff5a5f] text-white"
                         : "bg-gray-200 hover:bg-gray-300 text-gray-700"
                     }`}
                   >
@@ -259,7 +259,7 @@ const HomestayListView = () => {
             className={`px-3 py-1 rounded ${
               !pagination.next
                 ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600 text-white"
+                : "bg-[#ff5a5f] hover:bg-[#e14c4f] text-white"
             }`}
           >
             →

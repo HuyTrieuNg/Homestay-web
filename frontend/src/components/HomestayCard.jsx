@@ -31,7 +31,7 @@ const HomestayCard = ({ homestay }) => {
       <div className="p-4">
         <h3 className="text-lg font-semibold">{homestay.name}</h3>
         <p className="text-gray-500">📍 {[
-          homestay.address,
+          
           homestay.province?.name,
           homestay.district?.name,
           homestay.commune?.name,
