@@ -98,7 +98,7 @@ const Header = () => {
                     alt="User Avatar"
                     className="w-8 h-8 rounded-full mr-2"
                   />
-                  <span>{user?.name || "Người dùng"}</span>
+                  <span className="text-[#ff5a5f] font-bold">{user?.name || "Người dùng"}</span>
                 </button>
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-md transition-opacity duration-200">

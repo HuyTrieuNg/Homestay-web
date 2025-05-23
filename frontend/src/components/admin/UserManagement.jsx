@@ -223,7 +223,7 @@ const UserManagement = () => {
             className={`px-3 py-1 rounded ${
               !pagination.previous
                 ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600 text-white"
+                : "bg-[#ff5a5f] hover:bg-[#e14c4f] text-white"
             }`}
           >
             ←
@@ -247,7 +247,7 @@ const UserManagement = () => {
                         onClick={() => setCurrentPage(p)}
                         className={`px-3 py-1 rounded ${
                           currentPage === p
-                            ? "bg-blue-500 text-white"
+                            ? "bg-[#ff5a5f] text-white"
                             : "bg-gray-200 hover:bg-gray-300 text-gray-700"
                         }`}
                       >
@@ -263,7 +263,7 @@ const UserManagement = () => {
                     onClick={() => setCurrentPage(p)}
                     className={`px-3 py-1 rounded ${
                       currentPage === p
-                        ? "bg-blue-500 text-white"
+                        ? "bg-[#ff5a5f] text-white"
                         : "bg-gray-200 hover:bg-gray-300 text-gray-700"
                     }`}
                   >
@@ -279,7 +279,7 @@ const UserManagement = () => {
             className={`px-3 py-1 rounded ${
               !pagination.next
                 ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600 text-white"
+                : "bg-[#ff5a5f] hover:bg-[#e14c4f] text-white"
             }`}
           >
             →
