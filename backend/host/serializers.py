@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from homestays.models import Homestay, Amenity, HomestayImage
+from users.models import User
+from booking.models import Booking
 from .common_serializers import AmenitySerializer
 
 
@@ -72,3 +74,26 @@ class HomestaySerializer(serializers.ModelSerializer):
             instance.amenities.set(amenities)
             
         return instance
+
+
+#serializer riêng để tăng tốc độ load trang quản lý booking
+
+class UserLiteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [ 'name']
+
+# Serializer nhẹ cho Homestay
+class HomestayLiteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Homestay
+        fields = [ 'name']
+
+# Serializer nhẹ cho BookingList
+class BookingListSerializer(serializers.ModelSerializer):
+    user = UserLiteSerializer(read_only=True)
+    homestay = HomestayLiteSerializer(read_only=True)
+    
+    class Meta:
+        model = Booking
+        fields = '__all__' # Hoặc chỉ định các trường bạn muốn

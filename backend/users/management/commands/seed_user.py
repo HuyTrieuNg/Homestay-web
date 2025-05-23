@@ -14,6 +14,7 @@ class Command(BaseCommand):
             {"username": "host2", "name": "Host Two", "phone": "0987654321", "type": "host", "password": "password123"},
             {"username": "guest1", "name": "Guest One", "phone": "0345678901", "type": "guest", "password": "password123"},
             {"username": "guest2", "name": "Guest Two", "phone": "0765432109", "type": "guest", "password": "password123"},
+            {"username": "administrator", "name": "Admin User", "phone": "0123456789", "type": "admin", "password": "administrator"},
         ]
 
         for user_data in users_data:

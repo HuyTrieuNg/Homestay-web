@@ -52,16 +52,39 @@ class Command(BaseCommand):
                     'location_rating': random.randint(4, 5) if random.random() < 0.8 else random.randint(1, 3),
                     'value_rating': random.randint(4, 5) if random.random() < 0.8 else random.randint(1, 3),
                 }
+                
+                # Quyết định xem host có phản hồi review không (khoảng 60% reviews có phản hồi)
+                host_response = None
+                if random.random() < 0.6:
+                    host_response = fake.paragraph(nb_sentences=2)
+                    
+                    # Nếu đánh giá tốt, host cảm ơn khách
+                    if ratings['overall_rating'] >= 4:
+                        host_response = f"Cảm ơn bạn đã đánh giá. {host_response}"
+                    # Nếu đánh giá không tốt, host xin lỗi và hứa cải thiện
+                    else:
+                        host_response = f"Chúng tôi xin lỗi vì những bất tiện. {host_response} Chúng tôi sẽ cải thiện dịch vụ tốt hơn."
 
+                # Tạo ngày phản hồi của host (nếu có) sau ngày tạo review 1-3 ngày
+                review_date = booking.checkout_date
+                
                 # Tạo review
-                Review.objects.create(
+                review = Review.objects.create(
                     user=booking.user,
                     homestay=booking.homestay,
                     booking=booking,
                     **ratings,
                     comment=fake.paragraph(nb_sentences=3),
-                    created_at=booking.checkout_date,
-                    updated_at=booking.checkout_date
+                    host_response=host_response,
+                    created_at=review_date,
+                    updated_at=review_date
                 )
+                
+                # Nếu có phản hồi từ host, cập nhật thời gian updated_at
+                if host_response:
+                    # Host trả lời trong khoảng 1-3 ngày
+                    response_days = random.randint(1, 3)
+                    review.updated_at = review_date + timezone.timedelta(days=response_days)
+                    review.save()
 
-        self.stdout.write(self.style.SUCCESS('Successfully seeded reviews')) 
+        self.stdout.write(self.style.SUCCESS('Successfully seeded reviews'))

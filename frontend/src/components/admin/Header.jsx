@@ -15,29 +15,34 @@ const Header = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      const cachedAvatar = localStorage.getItem("avatar");
-      if (cachedAvatar) {
-        setAvatar(cachedAvatar);
-      }
-    } else {
-      setAvatar(null);
+      axiosInstance
+        .get("/profile/avatar")
+        .then((response) => {
+          console.log("API Response:", response.data);
+          setAvatar(response.data.avatar_url);
+        })
+        .catch((error) => {
+          console.error("Error fetching profile:", error);
+        });
     }
   }, [isAuthenticated]);
 
   const handleLogout = () => {
     logoutUser();
-    localStorage.removeItem("avatar");
-    setAvatar(null);
     navigate("/login");
   };
-
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50 transition-shadow duration-300 hover:shadow-lg">
       <div className="container mx-auto flex justify-between items-center p-4">
         <h1 className="text-2xl font-bold transition-colors duration-300" style={{ color: PRIMARY_COLOR }}>
-          <span className="cursor-pointer" onClick={() => navigate("/admin")}>
-            Bảng Điều Khiển Admin
+          <span className="flex items-center cursor-pointer " onClick={() => navigate("/admin")}>
+            <img
+              src="https://res.cloudinary.com/drfwzrqqj/image/upload/v1747688845/create_logo_for_stayhub_with_1_1_ratio_no_text_primary_color_FF5A5F_no_background_eiqhu7.png" 
+              alt="Logo"
+              className="h-10 w-10 mr-3 rounded-full scale-150"
+            />
+            <span className="text-2xl font-bold transition-colors duration-300" style={{ color: PRIMARY_COLOR }}>StayHub Admin</span>
           </span>
         </h1>
         

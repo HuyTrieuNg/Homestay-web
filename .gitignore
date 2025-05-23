@@ -198,3 +198,5 @@ dist-ssr
 *.sw?
 
 package-lock.json
+
+backend/temp/

@@ -57,7 +57,6 @@ const AmenityManager = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Quản lý Tiện ích</h1>
 
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">{editingId ? "Cập nhật tiện ích" : "Thêm tiện ích mới"}</h2>
@@ -73,8 +72,8 @@ const AmenityManager = () => {
               required
             />
           </div>
-          <div className="w-48">
-            <label htmlFor="amenityCategory" className="block text-sm font-medium text-gray-700 mb-1">Loại tiện ích</label>
+          <div className="w-32">
+            <label htmlFor="amenityCategory" className="block text-sm font-medium text-gray-700 mb-1">Loại</label>
             <select 
               id="amenityCategory"
               value={form.category} 
@@ -87,7 +86,7 @@ const AmenityManager = () => {
               <option value="safety">An toàn</option>
             </select>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center h-[42px]">
             <button 
               type="submit" 
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
@@ -116,7 +115,10 @@ const AmenityManager = () => {
         {amenities.length === 0 ? (
           <div className="p-4 text-center text-gray-500">Không có dữ liệu</div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div 
+            className="divide-y divide-gray-200"
+            style={{ maxHeight: 400, overflowY: "auto" }}
+          >
             {amenities.map(a => (
               <div key={a.id} className="flex justify-between items-center p-4 hover:bg-gray-50">
                 <div className="flex flex-col">
