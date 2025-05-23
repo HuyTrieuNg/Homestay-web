@@ -57,28 +57,28 @@ const AmenityManager = () => {
 
   return (
     <div className="p-4">
-
+      {/* Form section */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">{editingId ? "Cập nhật tiện ích" : "Thêm tiện ích mới"}</h2>
         <form onSubmit={handleSubmit} className="flex flex-wrap gap-4 items-end">
           <div className="flex-grow min-w-[200px]">
-            <label htmlFor="amenityName" className="block text-sm font-medium text-gray-700 mb-1">Tên tiện ích</label>
+            <label htmlFor="amenityName" className="block text-sm font-medium text-gray-600 mb-1">Tên tiện ích</label>
             <input 
               id="amenityName"
               value={form.name} 
               onChange={e => setForm({ ...form, name: e.target.value })} 
               placeholder="Nhập tên tiện ích" 
-              className="border border-gray-300 rounded p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" 
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               required
             />
           </div>
           <div className="w-32">
-            <label htmlFor="amenityCategory" className="block text-sm font-medium text-gray-700 mb-1">Loại</label>
+            <label htmlFor="amenityCategory" className="block text-sm font-medium text-gray-600 mb-1">Loại</label>
             <select 
               id="amenityCategory"
               value={form.category} 
               onChange={e => setForm({ ...form, category: e.target.value })} 
-              className="border border-gray-300 rounded p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="essentials">Cơ bản</option>
               <option value="features">Tính năng</option>
@@ -86,10 +86,10 @@ const AmenityManager = () => {
               <option value="safety">An toàn</option>
             </select>
           </div>
-          <div className="flex gap-2 items-center h-[42px]">
+          <div className="flex gap-2 items-center">
             <button 
               type="submit" 
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
             >
               {editingId ? "Cập nhật" : "Thêm"}
             </button>
@@ -97,7 +97,7 @@ const AmenityManager = () => {
               <button 
                 type="button"
                 onClick={resetForm} 
-                className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition-colors"
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
               >
                 Hủy
               </button>
@@ -106,30 +106,27 @@ const AmenityManager = () => {
         </form>
       </div>
 
+      {/* List section */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-4 bg-gray-50 border-b flex justify-between items-center">
-          <h2 className="font-semibold">Danh sách tiện ích</h2>
+          <h2 className="font-semibold text-gray-800">Danh sách tiện ích</h2>
           <div className="text-sm text-gray-500">Tổng: {amenities.length} tiện ích</div>
         </div>
-        
-        {amenities.length === 0 ? (
-          <div className="p-4 text-center text-gray-500">Không có dữ liệu</div>
+          {amenities.length === 0 ? (
+          <div className="p-6 text-center text-gray-500">Không có dữ liệu</div>
         ) : (
-          <div 
-            className="divide-y divide-gray-200"
-            style={{ maxHeight: 400, overflowY: "auto" }}
-          >
+          <div className="divide-y divide-gray-200" style={{ maxHeight: '400px', overflowY: 'auto' }}>
             {amenities.map(a => (
-              <div key={a.id} className="flex justify-between items-center p-4 hover:bg-gray-50">
-                <div className="flex flex-col">
-                  <span className="font-medium">{a.name}</span>
+              <div key={a.id} className="flex justify-between items-center px-4 py-3 hover:bg-gray-50">
+                <div className="flex flex-col gap-1">
+                  <span className="font-medium text-gray-900">{a.name}</span>
                   <span className={getCategoryBadgeClass(a.category)}>
                     {getCategoryLabel(a.category)}
                   </span>
                 </div>
                 <button 
                   onClick={() => handleEdit(a)} 
-                  className="text-blue-600 hover:text-blue-800 font-medium"
+                  className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
                 >
                   Sửa
                 </button>
