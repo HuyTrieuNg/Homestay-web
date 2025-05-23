@@ -13,12 +13,15 @@ const GuestSelector = ({
   onSave,
   onCancel,
   haveMaxGuests = false,
+  maxGuests: maxGuestsProp, // accept maxGuests prop
 }) => {
-  const [maxGuests, setMaxGuests] = useState(6);
+  const [maxGuests, setMaxGuests] = useState(maxGuestsProp ?? 6);
   const { id } = useParams();
 
   useEffect(() => {
-    if (haveMaxGuests && id) {
+    if (typeof maxGuestsProp === "number") {
+      setMaxGuests(maxGuestsProp);
+    } else if (haveMaxGuests && id) {
       axiosInstance
         .get(`homestays/${id}/maxGuests`)
         .then((response) => {
@@ -26,11 +29,10 @@ const GuestSelector = ({
         })
         .catch((error) => {
           console.error("Error fetching max guests:", error);
-          // Set a default max guests if API call fails
           setMaxGuests(6);
         });
     }
-  }, [haveMaxGuests, id]);
+  }, [haveMaxGuests, id, maxGuestsProp]);
 
   const totalGuests = adults + numChildren;
   const canIncrease = !haveMaxGuests || totalGuests < maxGuests;
@@ -40,8 +42,11 @@ const GuestSelector = ({
       <h2 className="text-lg font-semibold mb-2">Khách</h2>
       {haveMaxGuests && maxGuests !== null ? (
         <p className="text-sm text-gray-500 mb-3">
-          Tối đa <span className="font-semibold">{maxGuests} khách</span>, không
-          tính thú cưng.
+          Tối đa{" "}
+          <span className="font-semibold">
+            {maxGuests} khách
+          </span>
+          , không tính thú cưng.
         </p>
       ) : null}
 
