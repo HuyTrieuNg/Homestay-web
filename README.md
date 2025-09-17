@@ -1,5 +1,14 @@
 # Home-stay-web
 
+## Demo online
+
+- Website: https://stayhub-vn.onrender.com/
+- Tài khoản dùng thử:
+  - Host: `host1` / mật khẩu: `password123`
+  - Khách: `guest1` / mật khẩu: `password123`
+  - Quản trị: `administrator` / mật khẩu: `administrator`
+- Lưu ý: Render có hiện tượng cold start. Lần truy cập đầu sau một thời gian không hoạt động có thể chậm 30–60 giây; nếu gặp trang trắng hoặc timeout, hãy reload (F5) vài lần.
+
 ## 1. Clone Repository
 
 ```sh
